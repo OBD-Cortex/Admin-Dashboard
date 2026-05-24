@@ -1,41 +1,31 @@
 /**
- * MongoDB Client Singleton — OBD-Cortex
- * ──────────────────────────────────────
- * Maintains a single MongoClient across all Next.js API route invocations.
- * In development, the client is cached on `globalThis` to survive hot-reloads.
- * In production, the module scope is sufficient.
+ * MongoDB Client Connection Manager — OBD-Cortex Admin
+ * ──────────────────────────────────────────────────
+ * This module establishes and exports a single, pooled MongoDB connection instance
+ * shared across all serverless API routes.
+ * 
+ * Maintainability Considerations:
+ * 1. Connection Leaks: Next.js runs in a serverless-like runtime. To prevent 
+ *    exhausting database sockets, we cache the connection promise.
+ * 2. Hot-Reload Safety: During local development (`next dev`), Next.js clears 
+ *    the module cache on every code change. Caching the client promise on the 
+ *    Node `globalThis` object prevents establishing new connection pools on every edit.
  */
 
 import { MongoClient } from 'mongodb';
 import { loadEnvSecrets } from './env';
 
-// Ensure env secrets are loaded before building the URI
+// Legacy hook to ensure configurations are initialized before building the URI
 loadEnvSecrets();
 
-function buildUri() {
-    // Priority 1: Full MONGO_URI from environment
-    if (process.env.MONGO_URI) return process.env.MONGO_URI;
+// The primary connection string. Must be set at the OS/Hosting level.
+const uri = process.env.MONGO_URI;
 
-    // Priority 2: Build from individual variables (UNAME, PW, C_URL)
-    const username = process.env.UNAME;
-    const password = process.env.PW;
-    const clusterUrl = process.env.C_URL;
-
-    if (clusterUrl) {
-        const cleanUrl = clusterUrl.replace('mongodb+srv://', '').split('/')[0];
-        const user = encodeURIComponent(username || '');
-        const pw = encodeURIComponent(password || '');
-        return `mongodb+srv://${user}:${pw}@${cleanUrl}/?retryWrites=true&w=majority`;
-    }
-
-    // Fallback: local MongoDB
-    return 'mongodb://localhost:27017/rag_db';
-}
-
-const uri = buildUri();
-
+// Connection Pool Configuration
 const options = {
+    // Fail fast after 5 seconds if MongoDB Atlas is unreachable (prevent hanging requests)
     serverSelectionTimeoutMS: 5000,
+    // Tag all transactions for Atlas Real-Time Performance profiling
     appName: 'obd-cortex-admin-next',
 };
 
@@ -43,31 +33,32 @@ let client;
 let clientPromise;
 
 if (process.env.NODE_ENV === 'development') {
-    // In dev, use a global variable to preserve the client across hot-reloads
+    // In development mode, check if a global client promise already exists.
+    // This survives Next.js live-reload cycles and prevents connection socket leaks.
     if (!globalThis._mongoClientPromise) {
         client = new MongoClient(uri, options);
         globalThis._mongoClientPromise = client.connect();
     }
     clientPromise = globalThis._mongoClientPromise;
 } else {
-    // In production, create a single client instance
+    // In production hosting (Hostinger Node.js), a single persistent client 
+    // instance is sufficient across the runtime process lifecycle.
     client = new MongoClient(uri, options);
     clientPromise = client.connect();
 }
 
 /**
- * Returns the connected MongoClient instance.
- * Usage:  const client = await getClient();
- *         const db = client.db('rag_db');
+ * Retrieves the cached MongoClient instance.
+ * @returns {Promise<MongoClient>} A promise that resolves to the connected client.
  */
 export async function getClient() {
     return clientPromise;
 }
 
 /**
- * Returns the `devices` collection handle directly.
- * Usage:  const col = await getDevicesCollection();
- *         const docs = await col.find({}).toArray();
+ * Accesses the 'devices' collection directly.
+ * Encapsulates the target database ('rag_db') and collection ('devices') mappings.
+ * @returns {Promise<Collection>} MongoDB collection handle.
  */
 export async function getDevicesCollection() {
     const c = await clientPromise;

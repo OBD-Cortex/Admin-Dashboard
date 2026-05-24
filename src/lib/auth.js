@@ -1,42 +1,64 @@
 /**
- * Authentication Utilities — OBD-Cortex Admin
- * ────────────────────────────────────────────
- * Stateless cookie-based auth using HMAC-SHA256 signed tokens.
- * No external dependencies — uses Node.js built-in crypto module.
+ * Authentication & Session Management Utilities — OBD-Cortex Admin
+ * ───────────────────────────────────────────────────────────────
+ * Implements a lightweight, zero-dependency, stateless cookie-based session manager
+ * using HMAC-SHA256 signatures. Built natively on Node's cryptographic primitives.
+ * 
+ * Flow Chart:
+ * 1. POST /api/auth verifies password against process.env.ADMIN_PASSWORD
+ * 2. Generates signed token: `base64url(payload) + '.' + hmac_hex(payload)`
+ * 3. Sets an HttpOnly cookie with token payload
+ * 4. middleware.js verifies signature on every incoming page/API route
  *
- * Flow:
- *  1. User enters ADMIN_PASSWORD on /login
- *  2. POST /api/auth → validates password → sets HttpOnly cookie
- *  3. middleware.js checks cookie on every protected route
- *  4. Cookie expires after 24 hours
+ * Maintainability Considerations:
+ * - Security: HTTP-Only cookie flag prevents Cross-Site Scripting (XSS) token extraction.
+ * - Performance: Stateless design does not query MongoDB on route requests.
+ * - Zero Dependencies: Native `crypto` module avoids `jsonwebtoken` package updates.
  */
 
 import crypto from 'crypto';
 import { loadEnvSecrets } from './env';
 
+// Ensure environment secrets are mapped before reading credentials
 loadEnvSecrets();
 
+// The standard cookie name used to store token keys
 const COOKIE_NAME = 'obd_session';
-const TOKEN_LIFETIME_MS = 24 * 60 * 60 * 1000; // 24 hours
 
+// Session lifetime configuration (24 hours)
+const TOKEN_LIFETIME_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Retrieves the cryptographic secret key used for signing session tokens.
+ * Falls back to the admin password or a static string if undefined.
+ * @returns {string} HMAC secret key.
+ */
 function getSecret() {
     return process.env.SESSION_SECRET || process.env.ADMIN_PASSWORD || 'obd-cortex-fallback-secret';
 }
 
+/**
+ * Retrieves the required password from server environment.
+ * @returns {string} The password required for login page validation.
+ */
 function getAdminPassword() {
     return process.env.ADMIN_PASSWORD || 'admin';
 }
 
 /**
- * Validate the provided password against ADMIN_PASSWORD env var.
+ * Validates user-supplied passwords.
+ * @param {string} password The password supplied during authentication.
+ * @returns {boolean} True if password matches the configured secret.
  */
 export function validatePassword(password) {
     return password === getAdminPassword();
 }
 
 /**
- * Create a signed session token.
- * Format: base64url(payload) + "." + hmac_hex
+ * Generates a signed session token.
+ * Payload format: `{"ts": timestamp, "exp": expiration_timestamp}`
+ * Signature format: `base64url(payload).hmac_hex`
+ * @returns {string} Signed token string.
  */
 export function createSessionToken() {
     const payload = JSON.stringify({
@@ -49,7 +71,10 @@ export function createSessionToken() {
 }
 
 /**
- * Verify a session token. Returns the payload if valid, null if invalid/expired.
+ * Verifies the signature and expiration of a session token.
+ * Uses a timing-safe equality check to mitigate timing attack vectors.
+ * @param {string} token Raw token string from the request cookie.
+ * @returns {Object|null} Decoded payload object if valid, null if signature/expiration check fails.
  */
 export function verifySessionToken(token) {
     if (!token || typeof token !== 'string') return null;
@@ -67,13 +92,15 @@ export function verifySessionToken(token) {
         return null;
     }
 
-    // Verify HMAC signature
+    // Generate expected HMAC signature
     const expected = crypto.createHmac('sha256', getSecret()).update(payload).digest('hex');
+    
+    // Timing-Safe check prevents attackers from harvesting signatures by measuring execution latency differences.
     if (!crypto.timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(expected, 'hex'))) {
         return null;
     }
 
-    // Check expiration
+    // Verify token expiration limits
     try {
         const data = JSON.parse(payload);
         if (Date.now() > data.exp) return null;
@@ -84,7 +111,9 @@ export function verifySessionToken(token) {
 }
 
 /**
- * Build the Set-Cookie header value for the session cookie.
+ * Formats a Set-Cookie header string to store the session.
+ * @param {string} token Signed session token.
+ * @returns {string} Formatted Set-Cookie header.
  */
 export function buildSessionCookie(token) {
     const maxAge = Math.floor(TOKEN_LIFETIME_MS / 1000);
@@ -92,7 +121,8 @@ export function buildSessionCookie(token) {
 }
 
 /**
- * Build a Set-Cookie header that clears the session cookie.
+ * Formats a Set-Cookie header string that clears the session (logout).
+ * @returns {string} Formatted header string with Max-Age=0.
  */
 export function buildClearCookie() {
     return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;

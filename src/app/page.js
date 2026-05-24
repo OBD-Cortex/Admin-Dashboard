@@ -1,5 +1,19 @@
 'use client';
 
+/**
+ * Main Fleet Administrator Dashboard Page — Device-Identity-Mapper
+ * ─────────────────────────────────────────────────────────────
+ * Serves as the central state-machine and layout compiler. Coordinates
+ * authentication checks, search/filter queries, modal views,
+ * deletion handshakes, and user notifications.
+ *
+ * Maintainability Considerations:
+ * 1. Debounced Searching: To prevent database indexing overload, keystroke
+ *    filtering utilizes a 350ms timeout threshold before querying API routes.
+ * 2. Referential Stability: Data fetching functions are memoized with `useCallback`
+ *    to prevent infinite rendering loops within useEffect dependency arrays.
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
@@ -14,18 +28,26 @@ function Dashboard() {
     const router = useRouter();
     const { toast } = useToast();
 
-    const [stats, setStats] = useState(null);
-    const [devices, setDevices] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [currentFilter, setCurrentFilter] = useState('all');
-    const [searchValue, setSearchValue] = useState('');
-    const [generateModalOpen, setGenerateModalOpen] = useState(false);
-    const [qrModalOpen, setQrModalOpen] = useState(false);
-    const [selectedToken, setSelectedToken] = useState(null);
+    // ─────────────────────────────────────────────────────────────
+    // CLIENT STATES
+    // ─────────────────────────────────────────────────────────────
+    const [stats, setStats] = useState(null);               // Stores total, paired, and manufacturing metrics
+    const [devices, setDevices] = useState([]);             // Array of device objects matching active filters
+    const [loading, setLoading] = useState(true);           // Displays skeleton table shimmers during load states
+    const [currentFilter, setCurrentFilter] = useState('all'); // State filters: 'all', 'manufactured', 'registered', 'paired'
+    const [searchValue, setSearchValue] = useState('');     // Raw search text entered in ActionBar input
+    const [generateModalOpen, setGenerateModalOpen] = useState(false); // Controls bulk provision view
+    const [qrModalOpen, setQrModalOpen] = useState(false);             // Controls print label display
+    const [selectedToken, setSelectedToken] = useState(null);         // Device token currently inspected in QRModal
 
+    // Ref container storing the active search debounce timer handle
     const debounceRef = useRef(null);
 
-    // ---- Auth Check ----
+    // ─────────────────────────────────────────────────────────────
+    // DATA FETCHING & SYNCHRONIZATION
+    // ─────────────────────────────────────────────────────────────
+
+    // Validate if session JWT is still active. If not, redirect to Login.
     useEffect(() => {
         const checkAuth = async () => {
             try {
@@ -41,18 +63,18 @@ function Dashboard() {
         checkAuth();
     }, [router]);
 
-    // ---- Fetch Stats ----
+    // Retrieve aggregated stats for display in dashboard cards
     const fetchStats = useCallback(async () => {
         try {
             const res = await fetch('/api/stats');
             const data = await res.json();
             setStats(data);
         } catch {
-            // silent
+            // Fails silently to prevent console log spam on session dropouts
         }
     }, []);
 
-    // ---- Fetch Devices ----
+    // Retrieve filtered device lists matching query boundaries
     const fetchDevices = useCallback(
         async (search = '', filter = 'all') => {
             setLoading(true);
@@ -73,13 +95,17 @@ function Dashboard() {
         []
     );
 
-    // ---- Initial Load ----
+    // Initial boot load hook
     useEffect(() => {
         fetchStats();
         fetchDevices();
     }, [fetchStats, fetchDevices]);
 
-    // ---- Search (debounced) ----
+    // ─────────────────────────────────────────────────────────────
+    // COMPONENT INTERACTION HANDLERS
+    // ─────────────────────────────────────────────────────────────
+
+    // Debounces typing keys. Waits 350ms of silence before calling the backend.
     const handleSearchChange = (value) => {
         setSearchValue(value);
         if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -88,32 +114,32 @@ function Dashboard() {
         }, 350);
     };
 
-    // ---- Filter Change ----
+    // Filter toggle handler (All, Manufactured, Registered, Paired)
     const handleFilterChange = (filter) => {
         setCurrentFilter(filter);
         fetchDevices(searchValue, filter);
     };
 
-    // ---- Generate Callback ----
+    // Callback fired when bulk creation completes successfully
     const handleGenerated = (data) => {
         toast(`Successfully generated ${data.generated} device${data.generated > 1 ? 's' : ''}`, 'success');
         fetchStats();
         fetchDevices(searchValue, currentFilter);
 
-        // Auto-show QR if single device was generated
+        // Auto-show QR viewer modal if only a single device was provisioned
         if (data.tokens && data.tokens.length === 1) {
             setSelectedToken(data.tokens[0]);
             setQrModalOpen(true);
         }
     };
 
-    // ---- Show QR ----
+    // Inspectors hook to display print labels
     const handleShowQR = (token) => {
         setSelectedToken(token);
         setQrModalOpen(true);
     };
 
-    // ---- Delete Device ----
+    // Deletes a device registration from database. Refuses deletion if device is paired.
     const handleDelete = async (token) => {
         if (!confirm(`Delete device ${token}? This action cannot be undone.`)) return;
 
