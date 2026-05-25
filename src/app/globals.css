@@ -467,6 +467,15 @@ body::after {
     box-shadow: 0 0 6px var(--accent-green);
 }
 
+.status-badge.failed {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--accent-red);
+}
+.status-badge.failed .dot {
+    background: var(--accent-red);
+    box-shadow: 0 0 6px var(--accent-red);
+}
+
 /* ---- Icon Buttons ---- */
 .icon-btn {
     display: inline-flex;

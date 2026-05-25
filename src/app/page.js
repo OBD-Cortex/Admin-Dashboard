@@ -41,6 +41,7 @@ function Dashboard() {
     const [qrModalOpen, setQrModalOpen] = useState(false);             // Controls print label display
     const [selectedToken, setSelectedToken] = useState(null);         // Device token currently inspected in QRModal
     const [ingestModalOpen, setIngestModalOpen] = useState(false);     // Controls document ingestion upload view
+    const [ragStatus, setRagStatus] = useState('loading');             // RAG VM connectivity state: 'loading', 'connected', 'disconnected'
 
     // Ref container storing the active search debounce timer handle
     const debounceRef = useRef(null);
@@ -97,11 +98,27 @@ function Dashboard() {
         []
     );
 
+    // Retrieve health metrics (database and Python RAG connectivity status)
+    const fetchHealth = useCallback(async () => {
+        try {
+            const res = await fetch('/api/health');
+            const data = await res.json();
+            setRagStatus(data.rag || 'disconnected');
+        } catch {
+            setRagStatus('disconnected');
+        }
+    }, []);
+
     // Initial boot load hook
     useEffect(() => {
         fetchStats();
         fetchDevices();
-    }, [fetchStats, fetchDevices]);
+        fetchHealth();
+
+        // Check RAG connection status periodically every 30 seconds
+        const healthPoll = setInterval(fetchHealth, 30000);
+        return () => clearInterval(healthPoll);
+    }, [fetchStats, fetchDevices, fetchHealth]);
 
     // ─────────────────────────────────────────────────────────────
     // COMPONENT INTERACTION HANDLERS
@@ -166,7 +183,7 @@ function Dashboard() {
 
     return (
         <div className="app-container">
-            <Header />
+            <Header ragStatus={ragStatus} />
             <StatsGrid stats={stats} />
             <ActionBar
                 searchValue={searchValue}

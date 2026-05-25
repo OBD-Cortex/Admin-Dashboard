@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
-export default function Header() {
+export default function Header({ ragStatus }) {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -22,6 +22,31 @@ export default function Header() {
                     <span className="gradient-text">OBD-Cortex</span> Admin
                 </h1>
                 <span className="header-badge">Manufacturer Dashboard</span>
+                
+                <span 
+                    className={`status-badge ${
+                        ragStatus === 'connected' ? 'paired' : 
+                        ragStatus === 'disconnected' ? 'failed' : 
+                        ragStatus === 'not_configured' ? 'manufactured' : 'registered'
+                    }`} 
+                    style={{ 
+                        fontSize: '11px', 
+                        padding: '4px 10px', 
+                        marginLeft: '12px' 
+                    }}
+                    title={
+                        ragStatus === 'connected' ? 'FastAPI Droplet VM is online.' : 
+                        ragStatus === 'disconnected' ? 'FastAPI Droplet VM is offline.' : 
+                        ragStatus === 'not_configured' ? 'Droplet URL is not configured.' : 'Checking status...'
+                    }
+                >
+                    <span className="dot"></span>
+                    RAG: {
+                        ragStatus === 'connected' ? 'Connected' : 
+                        ragStatus === 'disconnected' ? 'Offline' : 
+                        ragStatus === 'not_configured' ? 'Unconfigured' : 'Checking...'
+                    }
+                </span>
             </div>
 
             <div className="header-right">
