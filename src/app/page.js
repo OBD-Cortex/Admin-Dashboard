@@ -22,6 +22,7 @@ import ActionBar from '@/components/ActionBar';
 import DeviceTable from '@/components/DeviceTable';
 import GenerateModal from '@/components/GenerateModal';
 import QRModal from '@/components/QRModal';
+import UploadModal from '@/components/UploadModal';
 import { ToastProvider, useToast } from '@/components/Toast';
 
 function Dashboard() {
@@ -39,6 +40,7 @@ function Dashboard() {
     const [generateModalOpen, setGenerateModalOpen] = useState(false); // Controls bulk provision view
     const [qrModalOpen, setQrModalOpen] = useState(false);             // Controls print label display
     const [selectedToken, setSelectedToken] = useState(null);         // Device token currently inspected in QRModal
+    const [ingestModalOpen, setIngestModalOpen] = useState(false);     // Controls document ingestion upload view
 
     // Ref container storing the active search debounce timer handle
     const debounceRef = useRef(null);
@@ -172,6 +174,7 @@ function Dashboard() {
                 currentFilter={currentFilter}
                 onFilterChange={handleFilterChange}
                 onGenerateClick={() => setGenerateModalOpen(true)}
+                onIngestClick={() => setIngestModalOpen(true)}
             />
             <DeviceTable
                 devices={devices}
@@ -188,6 +191,10 @@ function Dashboard() {
                 isOpen={qrModalOpen}
                 onClose={() => setQrModalOpen(false)}
                 token={selectedToken}
+            />
+            <UploadModal
+                isOpen={ingestModalOpen}
+                onClose={() => setIngestModalOpen(false)}
             />
         </div>
     );
