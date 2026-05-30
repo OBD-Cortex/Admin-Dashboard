@@ -18,8 +18,33 @@ export async function GET() {
         dbStatus = 'disconnected';
     }
 
-    // Temporarily mocked to disconnected to allow previewing the UI without RAG_API_URL configured
-    ragStatus = 'disconnected';
+    const ragApiUrl = process.env.RAG_API_URL;
+
+    if (!ragApiUrl) {
+        ragStatus = 'not_configured';
+    } else {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+            const res = await fetch(`${ragApiUrl}/api/health`, {
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/json',
+                },
+            });
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+                const data = await res.json();
+                ragStatus = data.status === 'ok' ? 'connected' : 'disconnected';
+            } else {
+                ragStatus = 'disconnected';
+            }
+        } catch {
+            ragStatus = 'disconnected';
+        }
+    }
 
     return NextResponse.json({
         status: (dbStatus === 'connected' && ragStatus === 'connected') ? 'ok' : 'degraded',
