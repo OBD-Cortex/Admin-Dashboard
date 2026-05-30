@@ -6,5 +6,10 @@
  */
 
 export function loadEnvSecrets() {
-    // Relying on native process.env populated by host environment variables.
+    if (!process.env.RAG_API_URL) {
+        console.warn("[!] Warning: RAG_API_URL is missing in environment.");
+    }
+    if (!process.env.MOBILE_API_KEY) {
+        console.warn("[!] Warning: MOBILE_API_KEY is missing in environment.");
+    }
 }

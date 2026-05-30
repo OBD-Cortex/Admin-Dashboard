@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDevicesCollection } from '@/lib/mongodb';
 
-/**
- * DELETE /api/delete — Delete a device
- * Query param: token
- */
 export async function DELETE(request) {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
@@ -13,19 +8,22 @@ export async function DELETE(request) {
         return NextResponse.json({ error: 'Token parameter is required' }, { status: 400 });
     }
 
-    const targetToken = token.trim().toUpperCase();
-    const col = await getDevicesCollection();
-    const device = await col.findOne({ device_token: targetToken });
-
-    if (!device) {
-        return NextResponse.json({ error: 'Device not found' }, { status: 404 });
+    try {
+        const targetToken = token.trim().toUpperCase();
+        const res = await fetch(`${process.env.RAG_API_URL}/api/admin/devices/${encodeURIComponent(targetToken)}`, {
+            method: 'DELETE',
+            headers: { 'X-API-Key': process.env.MOBILE_API_KEY },
+            cache: 'no-store'
+        });
+        
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            return NextResponse.json({ error: errData.detail || 'Failed to delete device' }, { status: res.status });
+        }
+        
+        const data = await res.json();
+        return NextResponse.json({ status: 'deleted', token: targetToken });
+    } catch (e) {
+        return NextResponse.json({ error: 'Failed to reach RAG API' }, { status: 502 });
     }
-
-    if (device.status === 'paired') {
-        return NextResponse.json({ error: 'Cannot delete a paired device. Unpair it first.' }, { status: 400 });
-    }
-
-    await col.deleteOne({ device_token: targetToken });
-
-    return NextResponse.json({ status: 'deleted', token: targetToken });
 }

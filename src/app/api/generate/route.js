@@ -1,65 +1,32 @@
 import { NextResponse } from 'next/server';
-import { getDevicesCollection } from '@/lib/mongodb';
 
-/**
- * POST /api/generate — Provision new devices
- * Body: { count: number (1–50) }
- */
 export async function POST(request) {
-    const body = await request.json();
-    const count = parseInt(body.count) || 1;
+    try {
+        const body = await request.json();
+        const count = parseInt(body.count) || 1;
 
-    if (count < 1 || count > 50) {
-        return NextResponse.json({ error: 'Count must be between 1 and 50' }, { status: 400 });
-    }
-
-    const col = await getDevicesCollection();
-    const tokens = [];
-    const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-
-    for (let i = 0; i < count; i++) {
-        let token = '';
-        let attempts = 0;
-        const maxAttempts = 20;
-
-        while (attempts < maxAttempts) {
-            attempts++;
-            let seg1 = '';
-            let seg2 = '';
-            for (let j = 0; j < 4; j++) {
-                seg1 += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-                seg2 += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-            }
-            const testToken = `OBD-${seg1}-${seg2}`;
-            const exists = await col.findOne({ device_token: testToken });
-            if (!exists) {
-                token = testToken;
-                break;
-            }
+        if (count < 1 || count > 100) {
+            return NextResponse.json({ error: 'Count must be between 1 and 100' }, { status: 400 });
         }
 
-        if (!token) {
-            return NextResponse.json(
-                { error: `Failed to generate unique token after ${maxAttempts} attempts` },
-                { status: 500 }
-            );
-        }
-
-        await col.insertOne({
-            device_token: token,
-            vin: null,
-            brand: null,
-            model: null,
-            year: null,
-            owner_id: null,
-            status: 'manufactured',
-            created_at: new Date(),
-            registered_at: null,
-            paired_at: null,
+        const res = await fetch(`${process.env.RAG_API_URL}/api/admin/devices/generate`, {
+            method: 'POST',
+            headers: { 
+                'X-API-Key': process.env.MOBILE_API_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ count }),
+            cache: 'no-store'
         });
-
-        tokens.push(token);
+        
+        if (!res.ok) {
+            const err = await res.text();
+            return NextResponse.json({ error: `RAG API Error: ${err}` }, { status: res.status });
+        }
+        
+        const data = await res.json();
+        return NextResponse.json(data);
+    } catch (e) {
+        return NextResponse.json({ error: 'Failed to reach RAG API' }, { status: 502 });
     }
-
-    return NextResponse.json({ generated: tokens.length, tokens });
 }

@@ -1,37 +1,26 @@
 import { NextResponse } from 'next/server';
-import { getDevicesCollection } from '@/lib/mongodb';
 
-/**
- * GET /api/devices — List / search devices
- * Query params: status, search
- */
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const search = searchParams.get('search');
+    const status = searchParams.get('status') || '';
+    const search = searchParams.get('search') || '';
 
-    const filter = {};
-
-    if (status && status !== 'all') {
-        filter.status = status;
+    const ragUrl = `${process.env.RAG_API_URL}/api/admin/devices?status=${encodeURIComponent(status)}&search=${encodeURIComponent(search)}`;
+    
+    try {
+        const res = await fetch(ragUrl, {
+            headers: { 'X-API-Key': process.env.MOBILE_API_KEY },
+            cache: 'no-store'
+        });
+        
+        if (!res.ok) {
+            const err = await res.text();
+            return NextResponse.json({ error: `RAG API Error: ${err}` }, { status: res.status });
+        }
+        
+        const data = await res.json();
+        return NextResponse.json(data);
+    } catch (e) {
+        return NextResponse.json({ error: 'Failed to reach RAG API' }, { status: 502 });
     }
-
-    if (search) {
-        const query = search.trim();
-        filter.$or = [
-            { device_token: { $regex: query, $options: 'i' } },
-            { vin: { $regex: query, $options: 'i' } },
-            { brand: { $regex: query, $options: 'i' } },
-            { model: { $regex: query, $options: 'i' } },
-            { year: { $regex: query, $options: 'i' } },
-        ];
-    }
-
-    const col = await getDevicesCollection();
-    const devices = await col.find(filter).sort({ created_at: -1 }).limit(200).toArray();
-
-    return NextResponse.json({
-        devices,
-        count: devices.length,
-    });
 }
