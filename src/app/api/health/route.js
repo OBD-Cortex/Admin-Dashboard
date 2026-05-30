@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getClient } from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,15 +8,6 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
     let dbStatus = 'unknown';
     let ragStatus = 'unknown';
-
-    try {
-        const client = await getClient();
-        await client.db('admin').command({ ping: 1 });
-        dbStatus = 'connected';
-    } catch {
-        dbStatus = 'disconnected';
-    }
-
     const ragApiUrl = process.env.RAG_API_URL;
 
     if (!ragApiUrl) {
@@ -37,12 +27,15 @@ export async function GET() {
 
             if (res.ok) {
                 const data = await res.json();
-                ragStatus = data.status === 'ok' ? 'connected' : 'disconnected';
+                ragStatus = 'connected';
+                dbStatus = data.database || 'unknown';
             } else {
                 ragStatus = 'disconnected';
+                dbStatus = 'disconnected';
             }
         } catch {
             ragStatus = 'disconnected';
+            dbStatus = 'disconnected';
         }
     }
 
