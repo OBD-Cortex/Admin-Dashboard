@@ -17,10 +17,13 @@ export async function GET(request) {
     }
 
     if (search) {
-        const query = search.trim().toUpperCase();
+        const query = search.trim();
         filter.$or = [
             { device_token: { $regex: query, $options: 'i' } },
             { vin: { $regex: query, $options: 'i' } },
+            { brand: { $regex: query, $options: 'i' } },
+            { model: { $regex: query, $options: 'i' } },
+            { year: { $regex: query, $options: 'i' } },
         ];
     }
 

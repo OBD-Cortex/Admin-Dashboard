@@ -34,7 +34,7 @@ export default function ActionBar({
                 </svg>
                 <input
                     type="text"
-                    placeholder="Search by token or VIN…"
+                    placeholder="Search by token, VIN, brand, or model…"
                     value={searchValue}
                     onChange={(e) => onSearchChange(e.target.value)}
                 />

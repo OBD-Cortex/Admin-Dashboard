@@ -55,7 +55,14 @@ export default function DeviceTable({ devices, onShowQR, onDelete, loading }) {
                                 <span className="cell-token">{device.device_token}</span>
                             </td>
                             <td>
-                                <span className="cell-vin">{device.vin || '—'}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span className="cell-vin">{device.vin || '—'}</span>
+                                    {device.brand && (
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                            {device.brand} {device.model} ({device.year})
+                                        </span>
+                                    )}
+                                </div>
                             </td>
                             <td>
                                 <span className={`status-badge ${device.status}`}>

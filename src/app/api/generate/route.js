@@ -48,6 +48,9 @@ export async function POST(request) {
         await col.insertOne({
             device_token: token,
             vin: null,
+            brand: null,
+            model: null,
+            year: null,
             owner_id: null,
             status: 'manufactured',
             created_at: new Date(),
