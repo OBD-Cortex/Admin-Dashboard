@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/requireAuth';
 
 /**
  * POST /api/ingest — File Upload Forwarder
@@ -6,6 +7,9 @@ import { NextResponse } from 'next/server';
  * server-side to the Python RAG API on the droplet VM.
  */
 export async function POST(request) {
+    try { requireAuth(request); } catch (e) {
+        return NextResponse.json({ error: e.message }, { status: e.status });
+    }
     try {
         const formData = await request.formData();
         const file = formData.get('file');

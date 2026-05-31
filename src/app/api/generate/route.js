@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/requireAuth';
 
 export async function POST(request) {
+    try { requireAuth(request); } catch (e) {
+        return NextResponse.json({ error: e.message }, { status: e.status });
+    }
     try {
         const body = await request.json();
         const count = parseInt(body.count) || 1;

@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/requireAuth';
 
 export async function DELETE(request) {
+    try { requireAuth(request); } catch (e) {
+        return NextResponse.json({ error: e.message }, { status: e.status });
+    }
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
 
