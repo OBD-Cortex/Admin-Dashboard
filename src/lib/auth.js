@@ -117,7 +117,7 @@ export function verifySessionToken(token) {
  */
 export function buildSessionCookie(token) {
     const maxAge = Math.floor(TOKEN_LIFETIME_MS / 1000);
-    return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
+    return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=${maxAge}`;
 }
 
 /**
@@ -125,7 +125,7 @@ export function buildSessionCookie(token) {
  * @returns {string} Formatted header string with Max-Age=0.
  */
 export function buildClearCookie() {
-    return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+    return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0`;
 }
 
 export { COOKIE_NAME };
