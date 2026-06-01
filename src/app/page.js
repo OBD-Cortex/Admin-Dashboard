@@ -24,6 +24,7 @@ import GenerateModal from '@/components/GenerateModal';
 import QRModal from '@/components/QRModal';
 import UploadModal from '@/components/UploadModal';
 import { ToastProvider, useToast } from '@/components/Toast';
+import KnowledgeBase from '@/components/KnowledgeBase';
 
 function Dashboard() {
     const router = useRouter();
@@ -199,6 +200,7 @@ function Dashboard() {
                 onDelete={handleDelete}
                 loading={loading}
             />
+            <KnowledgeBase refreshTrigger={ingestModalOpen} />
             <GenerateModal
                 isOpen={generateModalOpen}
                 onClose={() => setGenerateModalOpen(false)}

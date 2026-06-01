@@ -1,4 +1,5 @@
 'use client';
+import React, { useState } from 'react';
 
 function formatDate(dateStr) {
     if (!dateStr) return '—';
@@ -11,6 +12,11 @@ function formatDate(dateStr) {
 }
 
 export default function DeviceTable({ devices, onShowQR, onDelete, loading }) {
+    const [expandedTokens, setExpandedTokens] = useState({});
+    
+    const toggleExpand = (token) => {
+        setExpandedTokens(prev => ({ ...prev, [token]: !prev[token] }));
+    };
     if (loading) {
         return (
             <div className="table-wrapper">
@@ -42,23 +48,45 @@ export default function DeviceTable({ devices, onShowQR, onDelete, loading }) {
                 <thead>
                     <tr>
                         <th>Device Token</th>
-                        <th>VIN</th>
+                        <th>Vehicle</th>
                         <th>Status</th>
                         <th>Created</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {devices.map((device) => (
-                        <tr key={device.device_token}>
+                    {devices.map((device) => {
+                        const hasHistory = device.vehicles && device.vehicles.length > 1;
+                        const isExpanded = expandedTokens[device.device_token];
+                        return (
+                        <React.Fragment key={device.device_token}>
+                        <tr>
                             <td>
                                 <span className="cell-token">{device.device_token}</span>
                             </td>
                             <td>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span className="cell-vin">{device.vin || '—'}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span className="cell-vin">{device.vin || '—'}</span>
+                                        {hasHistory && (
+                                            <button 
+                                                onClick={() => toggleExpand(device.device_token)}
+                                                style={{
+                                                    background: 'var(--bg-glass)',
+                                                    border: '1px solid var(--border)',
+                                                    color: 'var(--text-secondary)',
+                                                    fontSize: '10px',
+                                                    padding: '2px 6px',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                }}
+                                            >
+                                                {device.vehicles.length} Cars {isExpanded ? '▲' : '▼'}
+                                            </button>
+                                        )}
+                                    </div>
                                     {device.brand && (
-                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                             {device.brand} {device.model} ({device.year})
                                         </span>
                                     )}
@@ -129,7 +157,29 @@ export default function DeviceTable({ devices, onShowQR, onDelete, loading }) {
                                 </div>
                             </td>
                         </tr>
-                    ))}
+                        {isExpanded && hasHistory && (
+                            <tr style={{ background: 'var(--bg-card-hover)' }}>
+                                <td colSpan="5" style={{ padding: 0 }}>
+                                    <div style={{ padding: '16px 24px', fontSize: '12px', borderBottom: '1px solid var(--border)' }}>
+                                        <div style={{ marginBottom: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Vehicle History:</div>
+                                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            {device.vehicles.map((v, i) => (
+                                                <li key={i} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                                                    <span className="cell-vin">{v.vin}</span>
+                                                    <span style={{ color: 'var(--text-muted)' }}>{v.brand} {v.model} ({v.year})</span>
+                                                    <span style={{ color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                                                        Paired: {formatDate(v.paired_at)}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                        </React.Fragment>
+                        );
+                    })}
                 </tbody>
             </table>
         </div>
