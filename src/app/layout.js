@@ -1,4 +1,5 @@
 import './globals.css';
+import { ToastProvider } from '@/components/Toast';
 
 export const metadata = {
     title: 'OBD-Cortex Admin',
@@ -16,7 +17,9 @@ export default function RootLayout({ children }) {
                     rel="stylesheet"
                 />
             </head>
-            <body>{children}</body>
+            <body>
+                <ToastProvider>{children}</ToastProvider>
+            </body>
         </html>
     );
 }

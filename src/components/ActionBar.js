@@ -1,5 +1,8 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+
 const FILTERS = [
     { label: 'All', value: 'all' },
     { label: 'Manufactured', value: 'manufactured' },
@@ -8,13 +11,39 @@ const FILTERS = [
 ];
 
 export default function ActionBar({
-    searchValue,
-    onSearchChange,
-    currentFilter,
-    onFilterChange,
     onGenerateClick,
     onIngestClick,
 }) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    
+    const [searchValue, setSearchValue] = useState(searchParams.get('search') || '');
+    const currentFilter = searchParams.get('status') || 'all';
+
+    const updateUrl = useCallback((search, status) => {
+        const params = new URLSearchParams(searchParams);
+        if (search) params.set('search', search);
+        else params.delete('search');
+        
+        if (status !== 'all') params.set('status', status);
+        else params.delete('status');
+        
+        router.push(`/?${params.toString()}`);
+    }, [router, searchParams]);
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (searchValue !== (searchParams.get('search') || '')) {
+                updateUrl(searchValue, currentFilter);
+            }
+        }, 350);
+        return () => clearTimeout(timer);
+    }, [searchValue, currentFilter, updateUrl, searchParams]);
+
+    const handleFilterChange = (filter) => {
+        updateUrl(searchValue, filter);
+    };
     return (
         <div className="action-bar">
             {/* Search */}
@@ -36,7 +65,7 @@ export default function ActionBar({
                     type="text"
                     placeholder="Search by token, VIN, brand, or model…"
                     value={searchValue}
-                    onChange={(e) => onSearchChange(e.target.value)}
+                    onChange={(e) => setSearchValue(e.target.value)}
                 />
             </div>
 
@@ -46,7 +75,7 @@ export default function ActionBar({
                     <button
                         key={f.value}
                         className={`filter-btn${currentFilter === f.value ? ' active' : ''}`}
-                        onClick={() => onFilterChange(f.value)}
+                        onClick={() => handleFilterChange(f.value)}
                     >
                         {f.label}
                     </button>

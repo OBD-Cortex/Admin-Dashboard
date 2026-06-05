@@ -23,6 +23,7 @@ export async function POST(request) {
         response.headers.set('Set-Cookie', buildSessionCookie(token));
         return response;
     } catch (err) {
+        console.error('[Auth API] Login exception:', err);
         return NextResponse.json({ error: 'Authentication failed' }, { status: 500 });
     }
 }

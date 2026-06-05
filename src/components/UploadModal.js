@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/components/Toast';
+import Modal from '@/components/Modal';
 
 /**
  * UploadModal Component
@@ -90,8 +91,8 @@ export default function UploadModal({ isOpen, onClose }) {
     // File validation: PDF/CSV format and 10MB size limit
     const validateAndSetFile = (selectedFile) => {
         const name = selectedFile.name.toLowerCase();
-        if (!name.endsWith('.pdf') && !name.endsWith('.csv')) {
-            toast('Unsupported file format. Please upload a PDF or CSV manual.', 'error');
+        if (!name.endsWith('.pdf') && !name.endsWith('.csv') && !name.endsWith('.md') && !name.endsWith('.txt')) {
+            toast('Unsupported file format. Please upload a PDF, CSV, Markdown, or Text manual.', 'error');
             return;
         }
         if (selectedFile.size > 10 * 1024 * 1024) {
@@ -221,36 +222,14 @@ export default function UploadModal({ isOpen, onClose }) {
     };
 
     return (
-        <div className={`modal-overlay${isOpen ? ' active' : ''}`} onClick={() => !uploading && onClose()}>
-            <div className="modal-content" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
-                
-                {/* Modal close icon */}
-                <button
-                    className="modal-close"
-                    onClick={onClose}
-                    disabled={uploading}
-                    style={{ opacity: uploading ? 0.3 : 1 }}
-                    aria-label="Close"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                </button>
-
-                <h2 className="modal-title">Ingest RAG Knowledge</h2>
-                <p className="modal-subtitle">
-                    Upload manuals (PDF) or DTC catalogs (CSV) directly to the 
-                    OBD-Cortex knowledge-base. Embedding generation and vector syncing run in the background.
-                </p>
+        <Modal 
+            isOpen={isOpen} 
+            onClose={onClose} 
+            disableClose={uploading}
+            maxWidth="500px"
+            title="Ingest RAG Knowledge"
+            subtitle="Upload manuals (PDF), DTC catalogs (CSV), or notes (MD/TXT) directly to the OBD-Cortex knowledge-base. Embedding generation and vector syncing run in the background."
+        >
 
                 {/* File Upload Zone */}
                 {!file ? (
@@ -265,7 +244,7 @@ export default function UploadModal({ isOpen, onClose }) {
                             type="file"
                             ref={fileInputRef}
                             onChange={handleFileSelect}
-                            accept=".pdf,.csv"
+                            accept=".pdf,.csv,.md,.txt"
                             className="sr-only"
                         />
                         <div className="upload-icon-wrap">
@@ -275,8 +254,8 @@ export default function UploadModal({ isOpen, onClose }) {
                                 <line x1="12" y1="3" x2="12" y2="15" />
                             </svg>
                         </div>
-                        <div className="upload-text-main">Drag & drop manual PDF or CSV here</div>
-                        <div className="upload-text-sub">Supports PDF manuals & CSV code catalogs up to 10MB</div>
+                        <div className="upload-text-main">Drag & drop files here</div>
+                        <div className="upload-text-sub">Supports PDF, CSV, MD, and TXT files up to 10MB</div>
                     </div>
                 ) : (
                     <div className="file-selected-box">
@@ -301,7 +280,7 @@ export default function UploadModal({ isOpen, onClose }) {
                         </div>
                         <div className="file-info">
                             <div className="file-name">{file.name}</div>
-                            <div className="file-size">{(file.size / 1024).toFixed(1)} KB — {file.name.endsWith('.pdf') ? 'PDF Manual' : 'CSV catalog'}</div>
+                            <div className="file-size">{(file.size / 1024).toFixed(1)} KB — {file.name.endsWith('.pdf') ? 'PDF Manual' : file.name.endsWith('.csv') ? 'CSV Catalog' : file.name.endsWith('.md') ? 'Markdown Doc' : 'Text Doc'}</div>
                         </div>
                         <button
                             className="remove-file-btn"
@@ -370,7 +349,6 @@ export default function UploadModal({ isOpen, onClose }) {
                         </button>
                     )}
                 </div>
-            </div>
-        </div>
+        </Modal>
     );
 }

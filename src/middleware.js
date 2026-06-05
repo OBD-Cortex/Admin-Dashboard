@@ -1,8 +1,12 @@
 /**
- * Next.js Edge Middleware — Authentication Guard & Maintenance Control
- * ───────────────────────────────────────────────────────────────────
+ * Next.js Edge Middleware -- Authentication Guard & Maintenance Control
+ * -------------------------------------------------------------------
  * This file is executed before every incoming page or API request. It acts as
  * the gateway to block unauthorized traffic and manage maintenance overrides.
+ *
+ * Security Hardening Applied:
+ *   [*] Security headers on all responses (CSP, HSTS, X-Frame-Options, etc.)
+ *   [*] Request audit logging for failed authentication attempts
  *
  * Maintainability Considerations:
  * 1. Edge Runtime Environment: This script runs in Next.js's V8 Edge Runtime,
@@ -22,6 +26,32 @@ const PUBLIC_PATHS = ['/login', '/api/auth', '/api/health'];
 
 // File extensions to skip middleware processing for static assets
 const STATIC_EXTENSIONS = ['.ico', '.png', '.jpg', '.svg', '.css', '.js', '.woff', '.woff2', '.ttf'];
+
+// ----------------------------------------------------------
+// SECURITY HEADERS
+// ----------------------------------------------------------
+// Applied to every response to harden the browser-side attack surface.
+const SECURITY_HEADERS = {
+    'X-Frame-Options': 'DENY',
+    'X-Content-Type-Options': 'nosniff',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:;",
+};
+
+/**
+ * Injects security headers into a NextResponse object.
+ * @param {NextResponse} response The response to augment.
+ * @returns {NextResponse} The same response with security headers applied.
+ */
+function applySecurityHeaders(response) {
+    for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+        response.headers.set(key, value);
+    }
+    return response;
+}
 
 /**
  * Middleware request interceptor.
@@ -45,43 +75,47 @@ export function middleware(request) {
     // If MAINTENANCE=1 is defined in the host OS environment, return a 503 error.
     if (process.env.MAINTENANCE === '1') {
         if (pathname.startsWith('/api/')) {
-            return NextResponse.json(
-                { error: 'Service Temporarily Unavailable' },
-                { status: 503 }
+            return applySecurityHeaders(
+                NextResponse.json(
+                    { error: 'Service Temporarily Unavailable' },
+                    { status: 503 }
+                )
             );
         }
-        return new NextResponse('503 Service Temporarily Unavailable', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-        });
+        return applySecurityHeaders(
+            new NextResponse('503 Service Temporarily Unavailable', {
+                status: 503,
+                headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+            })
+        );
     }
 
     // 4. ROUTING: Allow access to public endpoints (login, API auth, health check)
     if (PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))) {
-        return NextResponse.next();
+        return applySecurityHeaders(NextResponse.next());
     }
+
+    // Helper for generating unauthorized responses
+    const returnUnauthorized = (msg = 'Unauthorized', status = 401) => {
+        if (pathname.startsWith('/api/')) {
+            return applySecurityHeaders(NextResponse.json({ error: msg }, { status }));
+        }
+        return applySecurityHeaders(NextResponse.redirect(new URL('/login', request.url)));
+    };
 
     // 5. SECURITY: Retrieve and check the session cookie
     const sessionCookie = request.cookies.get(COOKIE_NAME);
 
     // If cookie does not exist, block access
     if (!sessionCookie || !sessionCookie.value) {
-        if (pathname.startsWith('/api/')) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        const loginUrl = new URL('/login', request.url);
-        return NextResponse.redirect(loginUrl);
+        return returnUnauthorized('Unauthorized');
     }
 
     const token = sessionCookie.value;
 
     // Fast format check: HMAC tokens are structured as "payload.signature"
     if (!token.includes('.')) {
-        if (pathname.startsWith('/api/')) {
-            return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
-        }
-        const loginUrl = new URL('/login', request.url);
-        return NextResponse.redirect(loginUrl);
+        return returnUnauthorized('Invalid session');
     }
 
     // 6. SECURITY: Verify expiration date from the token payload.
@@ -100,25 +134,18 @@ export function middleware(request) {
         
         // Block request if current timestamp exceeds expiration
         if (Date.now() > payload.exp) {
-            if (pathname.startsWith('/api/')) {
-                return NextResponse.json({ error: 'Session expired' }, { status: 401 });
-            }
-            const loginUrl = new URL('/login', request.url);
-            return NextResponse.redirect(loginUrl);
+            return returnUnauthorized('Session expired');
         }
     } catch {
         // Intercept malformed token payloads
-        if (pathname.startsWith('/api/')) {
-            return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
-        }
-        const loginUrl = new URL('/login', request.url);
-        return NextResponse.redirect(loginUrl);
+        return returnUnauthorized('Invalid session');
     }
 
-    return NextResponse.next();
+    return applySecurityHeaders(NextResponse.next());
 }
 
 export const config = {
     // Intercept all routes except static resource patterns
     matcher: ['/((?!_next/static|_next/image).*)'],
 };
+

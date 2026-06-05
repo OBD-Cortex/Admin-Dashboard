@@ -23,9 +23,14 @@ export async function POST(request) {
         }
 
         const filename = file.name;
-        if (!filename.endsWith('.pdf') && !filename.endsWith('.csv')) {
+        if (
+            !filename.endsWith('.pdf') &&
+            !filename.endsWith('.csv') &&
+            !filename.endsWith('.md') &&
+            !filename.endsWith('.txt')
+        ) {
             return NextResponse.json(
-                { error: 'Unsupported file format. Only PDF and CSV files are allowed.' },
+                { error: 'Unsupported file format. Only PDF, CSV, MD, and TXT files are allowed.' },
                 { status: 400 }
             );
         }

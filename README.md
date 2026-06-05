@@ -78,6 +78,7 @@ To maintain clean code standards and a robust modular approach:
 2. **Standardized Authorization (`src/lib/requireAuth.js`)**: Evaluates HTTP-only cookie JWT signatures. Correctly catches and isolates authorization failures inside route handlers to avoid masked status code overrides.
 3. **Next.js 15 Compatibility**: Routes utilizing dynamic path variables (such as `/api/knowledge/[source]/route.js`) await the async `params` object prior to destructuring, conforming to Next.js 15 routing parameters specifications.
 4. **Emoji Restrictions**: Visual indicators use inline SVG path glyphs or ASCII shapes rather than emojis, adhering to code standard constraints.
+5. **UI Component Consolidation**: Repetitive UI dialogs (Generate, QR, Upload) have been refactored into a single, highly reusable `<Modal>` component to ensure visual consistency and completely eliminate layout duplication.
 
 ---
 
@@ -110,12 +111,17 @@ To maintain clean code standards and a robust modular approach:
 #### Option A: Hostinger Dashboard (Recommended)
 In your Node.js app settings, add these environment variables:
 ```
-UNAME=your_mongodb_username
-PW=your_mongodb_password
-C_URL=cluster0.abc.mongodb.net
-ADMIN_PASSWORD=your_secure_admin_password
-SESSION_SECRET=any_random_string_here
+RAG_API_URL=http://your-fastapi-droplet-ip:8000
+MOBILE_API_KEY=your_secure_backend_api_key
+ADMIN_PASSWORD_HASH=your_sha256_password_hash
+SESSION_SECRET=your_secure_random_session_secret
 ```
+
+> [!TIP]
+> You can generate a SHA-256 hash of your password in a Linux terminal by running:
+> ```bash
+> echo -n "your_admin_password" | sha256sum
+> ```
 
 #### Option B: File-based (Advanced)
 1. Navigate to your home directory (`/home/uXXXXXXX/`).
@@ -135,12 +141,10 @@ SESSION_SECRET=any_random_string_here
 
 | Variable | Required | Description |
 |---|---|---|
-| `UNAME` | Yes | MongoDB Atlas username |
-| `PW` | Yes | MongoDB Atlas password |
-| `C_URL` | Yes | MongoDB cluster URL (e.g., `cluster0.abc.mongodb.net`) |
-| `ADMIN_PASSWORD` | Yes | Password for the admin login page |
-| `SESSION_SECRET` | Recommended | Secret key for signing session cookies |
-| `MONGO_URI` | Alternative | Full MongoDB URI (overrides UNAME/PW/C_URL) |
+| `RAG_API_URL` | Yes | The URL of the FastAPI VM server |
+| `MOBILE_API_KEY` | Yes | The shared secret API key to communicate with the FastAPI server |
+| `ADMIN_PASSWORD_HASH` | Yes | Hex-encoded SHA-256 hash of the dashboard admin password |
+| `SESSION_SECRET` | Yes | Cryptographic secret key used for signing session cookies |
 | `MAINTENANCE` | Optional | Set to `1` to put the app in maintenance mode (returns 503 HTML/JSON) |
 
 ---

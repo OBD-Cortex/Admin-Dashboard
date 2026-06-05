@@ -48,6 +48,7 @@ export default function DeviceTable({ devices, onShowQR, onDelete, onUnpair, loa
                 <thead>
                     <tr>
                         <th>Device Token</th>
+                        <th>Device ID</th>
                         <th>Vehicle</th>
                         <th>Status</th>
                         <th>Created</th>
@@ -63,6 +64,15 @@ export default function DeviceTable({ devices, onShowQR, onDelete, onUnpair, loa
                         <tr>
                             <td>
                                 <span className="cell-token">{device.device_token}</span>
+                            </td>
+                            <td>
+                                {device.device_id ? (
+                                    <span className="cell-token" style={{ color: 'var(--accent-blue)' }}>
+                                        #{device.device_id}
+                                    </span>
+                                ) : (
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Unassigned</span>
+                                )}
                             </td>
                             <td>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -183,7 +193,7 @@ export default function DeviceTable({ devices, onShowQR, onDelete, onUnpair, loa
                         </tr>
                         {isExpanded && hasHistory && (
                             <tr style={{ background: 'var(--bg-card-hover)' }}>
-                                <td colSpan="5" style={{ padding: 0 }}>
+                                <td colSpan="6" style={{ padding: 0 }}>
                                     <div style={{ padding: '16px 24px', fontSize: '12px', borderBottom: '1px solid var(--border)' }}>
                                         <div style={{ marginBottom: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Vehicle History:</div>
                                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>

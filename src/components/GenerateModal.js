@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Modal from '@/components/Modal';
+import { generateDevices } from '@/app/actions';
 
 export default function GenerateModal({ isOpen, onClose, onGenerated }) {
     const [count, setCount] = useState(1);
@@ -22,21 +24,15 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }) {
         setLoading(true);
 
         try {
-            const res = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ count: parseInt(count) }),
-            });
+            const res = await generateDevices(count);
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || 'Generation failed');
+            if (res.error) {
+                setError(res.error);
                 setLoading(false);
                 return;
             }
 
-            onGenerated(data);
+            onGenerated(res.data);
             onClose();
         } catch (err) {
             setError('Network error. Please try again.');
@@ -45,28 +41,12 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }) {
     };
 
     return (
-        <div className={`modal-overlay${isOpen ? ' active' : ''}`} onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className="modal-close" onClick={onClose} aria-label="Close">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                </button>
-
-                <h2 className="modal-title">Provision New Devices</h2>
-                <p className="modal-subtitle">
-                    Generate new device tokens. Each device receives a unique token for
-                    pairing with the OBD-Cortex mobile app.
-                </p>
+        <Modal 
+            isOpen={isOpen} 
+            onClose={onClose} 
+            title="Provision New Devices"
+            subtitle="Generate new device tokens. Each device receives a unique token for pairing with the OBD-Cortex mobile app."
+        >
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -98,7 +78,6 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }) {
                         {loading ? 'Generating…' : `Generate ${count} Device${count > 1 ? 's' : ''}`}
                     </button>
                 </form>
-            </div>
-        </div>
+        </Modal>
     );
 }

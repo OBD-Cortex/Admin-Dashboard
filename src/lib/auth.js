@@ -30,28 +30,37 @@ const TOKEN_LIFETIME_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Retrieves the cryptographic secret key used for signing session tokens.
- * Falls back to the admin password or a static string if undefined.
+ * Requires process.env.SESSION_SECRET to be defined.
  * @returns {string} HMAC secret key.
  */
 function getSecret() {
-    return process.env.SESSION_SECRET || process.env.ADMIN_PASSWORD || 'obd-cortex-fallback-secret';
+    const secret = process.env.SESSION_SECRET;
+    if (!secret) {
+        throw new Error('SESSION_SECRET is not configured in the environment.');
+    }
+    return secret;
 }
 
 /**
- * Retrieves the required password from server environment.
- * @returns {string} The password required for login page validation.
- */
-function getAdminPassword() {
-    return process.env.ADMIN_PASSWORD || 'admin';
-}
-
-/**
- * Validates user-supplied passwords.
+ * Validates user-supplied passwords against the SHA-256 hash in the environment.
+ * Uses a timing-safe equality check to prevent timing attack vectors.
  * @param {string} password The password supplied during authentication.
- * @returns {boolean} True if password matches the configured secret.
+ * @returns {boolean} True if password matches the configured SHA-256 hash.
  */
 export function validatePassword(password) {
-    return password === getAdminPassword();
+    const hash = process.env.ADMIN_PASSWORD_HASH;
+    if (!hash) {
+        throw new Error('ADMIN_PASSWORD_HASH is not configured in the environment.');
+    }
+
+    const inputHash = crypto.createHash('sha256').update(password).digest('hex');
+    const expectedBuffer = Buffer.from(hash, 'hex');
+    const inputBuffer = Buffer.from(inputHash, 'hex');
+
+    if (expectedBuffer.length !== inputBuffer.length) {
+        return false;
+    }
+    return crypto.timingSafeEqual(expectedBuffer, inputBuffer);
 }
 
 /**
@@ -95,8 +104,15 @@ export function verifySessionToken(token) {
     // Generate expected HMAC signature
     const expected = crypto.createHmac('sha256', getSecret()).update(payload).digest('hex');
     
+    const sigBuffer = Buffer.from(sig, 'hex');
+    const expectedBuffer = Buffer.from(expected, 'hex');
+    
+    if (sigBuffer.length !== expectedBuffer.length) {
+        return null;
+    }
+    
     // Timing-Safe check prevents attackers from harvesting signatures by measuring execution latency differences.
-    if (!crypto.timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(expected, 'hex'))) {
+    if (!crypto.timingSafeEqual(sigBuffer, expectedBuffer)) {
         return null;
     }
 
