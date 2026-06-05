@@ -20,6 +20,12 @@ export default function ClientDashboard({ initialStats, initialDevices }) {
     const [selectedToken, setSelectedToken] = useState(null);
     const [ingestModalOpen, setIngestModalOpen] = useState(false);
     const [ragStatus, setRagStatus] = useState('loading');
+    const [tableLoading, setTableLoading] = useState(false);
+
+    // Turn off loading whenever new data arrives from SSR
+    useEffect(() => {
+        setTableLoading(false);
+    }, [initialDevices]);
 
     // Health polling
     const fetchHealth = useCallback(async () => {
@@ -94,13 +100,14 @@ export default function ClientDashboard({ initialStats, initialDevices }) {
             <ActionBar
                 onGenerateClick={() => setGenerateModalOpen(true)}
                 onIngestClick={() => setIngestModalOpen(true)}
+                onTransitionStart={() => setTableLoading(true)}
             />
             <DeviceTable
                 devices={initialDevices}
                 onShowQR={handleShowQR}
                 onDelete={handleDelete}
                 onUnpair={handleUnpair}
-                loading={false}
+                loading={tableLoading}
             />
             <KnowledgeBase refreshTrigger={ingestModalOpen} />
             <GenerateModal

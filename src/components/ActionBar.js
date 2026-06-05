@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 
 const FILTERS = [
     { label: 'All', value: 'all' },
@@ -13,12 +13,21 @@ const FILTERS = [
 export default function ActionBar({
     onGenerateClick,
     onIngestClick,
+    onTransitionStart,
 }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     
     const [searchValue, setSearchValue] = useState(searchParams.get('search') || '');
     const currentFilter = searchParams.get('status') || 'all';
+    
+    const [isPending, startTransition] = useTransition();
+    const [optimisticFilter, setOptimisticFilter] = useState(currentFilter);
+
+    // Sync optimistic state if URL changes externally
+    useEffect(() => {
+        setOptimisticFilter(currentFilter);
+    }, [currentFilter]);
 
     const updateUrl = useCallback((search, status) => {
         const params = new URLSearchParams(searchParams);
@@ -35,14 +44,21 @@ export default function ActionBar({
     useEffect(() => {
         const timer = setTimeout(() => {
             if (searchValue !== (searchParams.get('search') || '')) {
-                updateUrl(searchValue, currentFilter);
+                if (onTransitionStart) onTransitionStart();
+                startTransition(() => {
+                    updateUrl(searchValue, currentFilter);
+                });
             }
         }, 350);
         return () => clearTimeout(timer);
-    }, [searchValue, currentFilter, updateUrl, searchParams]);
+    }, [searchValue, currentFilter, updateUrl, searchParams, onTransitionStart]);
 
     const handleFilterChange = (filter) => {
-        updateUrl(searchValue, filter);
+        setOptimisticFilter(filter);
+        if (onTransitionStart) onTransitionStart();
+        startTransition(() => {
+            updateUrl(searchValue, filter);
+        });
     };
     return (
         <div className="action-bar">
@@ -74,7 +90,7 @@ export default function ActionBar({
                 {FILTERS.map((f) => (
                     <button
                         key={f.value}
-                        className={`filter-btn${currentFilter === f.value ? ' active' : ''}`}
+                        className={`filter-btn${optimisticFilter === f.value ? ' active' : ''}`}
                         onClick={() => handleFilterChange(f.value)}
                     >
                         {f.label}

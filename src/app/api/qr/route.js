@@ -19,7 +19,10 @@ export async function GET(request) {
     }
 
     const targetToken = token.trim().toUpperCase();
-    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(targetToken)}`;
+    const ragApiUrl = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
+    const payload = `${ragApiUrl.replace(/\/$/, '')}/api/mobile/login?token=${encodeURIComponent(targetToken)}`;
+    
+    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(payload)}`;
     let contentType = 'image/png';
     let ext = 'png';
 
