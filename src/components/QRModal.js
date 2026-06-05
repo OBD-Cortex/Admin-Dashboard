@@ -20,7 +20,6 @@ export default function QRModal({ isOpen, onClose, token }) {
                         />
                     </div>
 
-                    <div className="qr-token">{token}</div>
                     <div className="qr-subtitle">Scan with OBD-Cortex App</div>
 
                     <div className="qr-actions">
