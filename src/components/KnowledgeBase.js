@@ -64,7 +64,12 @@ export default function KnowledgeBase({ refreshTrigger }) {
                     </div>
                 ) : documents.length === 0 ? (
                     <div className="empty-state">
-                        <div className="empty-state-icon">📄</div>
+                        <div className="empty-state-icon" style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', marginBottom: '8px' }}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)' }}>
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
                         <div className="empty-state-title">No documents ingested</div>
                         <div className="empty-state-text">Use the "Ingest Document" button above to upload PDF manuals, DTC CSVs, or text files.</div>
                     </div>

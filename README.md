@@ -34,13 +34,20 @@ Device-Identity-Mapper/
 │   │   ├── login/
 │   │   │   └── page.js     # Login page
 │   │   └── api/
-│   │       ├── auth/route.js      # Login/logout/session check
-│   │       ├── health/route.js    # Health check
-│   │       ├── stats/route.js     # Dashboard statistics
-│   │       ├── devices/route.js   # List/search devices
-│   │       ├── generate/route.js  # Provision new devices
-│   │       ├── delete/route.js    # Delete a device
-│   │       └── qr/route.js       # QR code streaming
+│   │       ├── auth/route.js       # Login/logout/session check
+│   │       ├── health/route.js     # Health check
+│   │       ├── stats/route.js      # Dashboard statistics
+│   │       ├── devices/route.js    # List/search devices
+│   │       ├── generate/route.js   # Provision new devices
+│   │       ├── delete/route.js     # Delete a device
+│   │       ├── unpair/route.js     # Administrative device unlinking
+│   │       ├── ingest/
+│   │       │   ├── route.js        # Multipart document uploading
+│   │       │   └── status/route.js # Ingestion job status polling
+│   │       ├── knowledge/
+│   │       │   ├── route.js        # List ingested documents
+│   │       │   └── [source]/route.js # Delete specific document index
+│   │       └── qr/route.js         # QR code streaming
 │   │
 │   ├── components/          # React UI components
 │   │   ├── Header.js
@@ -49,15 +56,28 @@ Device-Identity-Mapper/
 │   │   ├── ActionBar.js
 │   │   ├── GenerateModal.js
 │   │   ├── QRModal.js
-│   │   └── Toast.js
+│   │   ├── Toast.js
+│   │   ├── UploadModal.js
+│   │   └── KnowledgeBase.js
 │   │
 │   └── lib/                 # Server utilities
-│       ├── mongodb.js       # MongoDB connection singleton
 │       ├── env.js           # Dynamic env loader
-│       └── auth.js          # Session token utilities
+│       ├── auth.js          # Session token utilities
+│       ├── requireAuth.js   # HTTP Route Authentication Guard
+│       └── ragApi.js        # Centralized FastAPI RAG backend client
 │
 └── README.md
 ```
+
+### Architecture Refactoring & Modular Client
+
+The API routes in this application are structured as lightweight security and routing proxies forwarding client requests to the Python FastAPI backend server. 
+
+To maintain clean code standards and a robust modular approach:
+1. **Centralized Client (`src/lib/ragApi.js`)**: Encapsulates VM backend communication details. It handles target URL reconstruction, automatic API key injection (`X-API-Key`), parsing of FastAPI error payloads, and unified connection timeout/network failure exceptions (translating raw socket errors to clear `502 Bad Gateway` status codes).
+2. **Standardized Authorization (`src/lib/requireAuth.js`)**: Evaluates HTTP-only cookie JWT signatures. Correctly catches and isolates authorization failures inside route handlers to avoid masked status code overrides.
+3. **Next.js 15 Compatibility**: Routes utilizing dynamic path variables (such as `/api/knowledge/[source]/route.js`) await the async `params` object prior to destructuring, conforming to Next.js 15 routing parameters specifications.
+4. **Emoji Restrictions**: Visual indicators use inline SVG path glyphs or ASCII shapes rather than emojis, adhering to code standard constraints.
 
 ---
 

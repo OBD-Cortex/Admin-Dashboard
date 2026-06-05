@@ -20,3 +20,8 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+
+# Propject specific files
+.antigravity/
+Testing/
+AGENTS.md

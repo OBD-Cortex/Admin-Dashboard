@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/requireAuth';
 import { fetchFromRag } from '@/lib/ragApi';
 
-export async function DELETE(request) {
+export async function POST(request) {
     try {
         requireAuth(request);
     } catch (e) {
@@ -11,7 +11,6 @@ export async function DELETE(request) {
 
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
-    const force = searchParams.get('force') === 'true';
 
     if (!token) {
         return NextResponse.json({ error: 'Token parameter is required' }, { status: 400 });
@@ -19,14 +18,14 @@ export async function DELETE(request) {
 
     try {
         const targetToken = token.trim().toUpperCase();
-        const path = `/api/admin/devices/${encodeURIComponent(targetToken)}${force ? '?force=true' : ''}`;
-        
-        await fetchFromRag(path, {
-            method: 'DELETE',
-            cache: 'no-store'
-        });
-        
-        return NextResponse.json({ status: 'deleted', token: targetToken });
+        const data = await fetchFromRag(
+            `/api/admin/devices/${encodeURIComponent(targetToken)}/unpair`,
+            {
+                method: 'POST',
+                cache: 'no-store'
+            }
+        );
+        return NextResponse.json(data);
     } catch (e) {
         return NextResponse.json({ error: e.message }, { status: e.status || 500 });
     }

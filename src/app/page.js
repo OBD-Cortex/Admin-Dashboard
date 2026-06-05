@@ -170,6 +170,23 @@ function Dashboard() {
             const data = await res.json();
 
             if (!res.ok) {
+                // If paired, offer force delete option
+                if (data.error && data.error.includes("paired")) {
+                    if (confirm(`${data.error}\n\nDo you want to FORCE delete this device? This will unlink the device from the owner's account.`)) {
+                        const forceRes = await fetch(`/api/delete?token=${encodeURIComponent(token)}&force=true`, {
+                            method: 'DELETE',
+                        });
+                        const forceData = await forceRes.json();
+                        if (!forceRes.ok) {
+                            toast(forceData.error || 'Force delete failed', 'error');
+                            return;
+                        }
+                        toast(`Device ${token} force deleted`, 'success');
+                        fetchStats();
+                        fetchDevices(searchValue, currentFilter);
+                        return;
+                    }
+                }
                 toast(data.error || 'Delete failed', 'error');
                 return;
             }
@@ -179,6 +196,29 @@ function Dashboard() {
             fetchDevices(searchValue, currentFilter);
         } catch {
             toast('Network error during delete', 'error');
+        }
+    };
+
+    // Force unpairs a device from its owner (administrative action)
+    const handleUnpair = async (token) => {
+        if (!confirm(`Are you sure you want to unpair device ${token} from its owner? This will decouple the user account without deleting the device or the user.`)) return;
+
+        try {
+            const res = await fetch(`/api/unpair?token=${encodeURIComponent(token)}`, {
+                method: 'POST',
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                toast(data.error || 'Unpair failed', 'error');
+                return;
+            }
+
+            toast(`Device ${token} successfully unpaired`, 'success');
+            fetchStats();
+            fetchDevices(searchValue, currentFilter);
+        } catch {
+            toast('Network error during unpair', 'error');
         }
     };
 
@@ -198,6 +238,7 @@ function Dashboard() {
                 devices={devices}
                 onShowQR={handleShowQR}
                 onDelete={handleDelete}
+                onUnpair={handleUnpair}
                 loading={loading}
             />
             <KnowledgeBase refreshTrigger={ingestModalOpen} />
