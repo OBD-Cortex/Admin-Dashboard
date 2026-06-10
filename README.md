@@ -17,7 +17,7 @@ This is the full-stack Next.js version of the OBD-Cortex administrative control 
 ## Project Structure
 
 ```
-Device-Identity-Mapper/
+Admin-Dashboard/
 ├── package.json            # Dependencies & scripts
 ├── next.config.mjs         # Next.js configuration
 ├── jsconfig.json           # Path aliases (@/)
@@ -91,7 +91,7 @@ To maintain clean code standards and a robust modular approach:
 3. Click **Create Application** and configure:
    - **Framework**: Next.js
    - **Node.js Version**: 24.x (or latest available)
-   - **Root Directory**: Name of the uploaded folder (e.g., `Device-Identity-Mapper`)
+   - **Root Directory**: Name of the uploaded folder (e.g., `Admin-Dashboard`)
    - **Build Command**: `npm run build`
    - **Package Manager**: npm
    - **Output Directory**: `.next`
@@ -99,7 +99,7 @@ To maintain clean code standards and a robust modular approach:
 
 ### 2. Upload the Project Files
 
-1. Zip the contents of your local `Device-Identity-Mapper/` directory.
+1. Zip the contents of your local `Admin-Dashboard/` directory.
    - **Include**: `package.json`, `next.config.mjs`, `jsconfig.json`, `src/`, `README.md`, `.gitignore`
    - **Exclude**: `node_modules/`, `.next/`, `.env.local`
 2. Go to **File Manager** and open the app directory.
@@ -152,7 +152,7 @@ SESSION_SECRET=your_secure_random_session_secret
 ## Local Development
 
 ```bash
-cd Device-Identity-Mapper
+cd Admin-Dashboard
 npm install
 # Edit .env.local with your credentials
 npm run dev
