@@ -1,7 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { fetchFromRag } from '@/lib/ragApi';
+import { validatePassword } from '@/lib/auth';
 
 export async function deleteDevice(token, force = false) {
     try {
@@ -39,5 +41,44 @@ export async function generateDevices(count) {
         return { success: true, data };
     } catch (error) {
         return { error: error.message || 'Failed to generate devices' };
+    }
+}
+export async function getKnowledgeBase() {
+    try {
+        const data = await fetchFromRag('/api/admin/knowledge', { method: 'GET' });
+        return { documents: data.documents };
+    } catch (error) {
+        return { error: error.message || 'Failed to fetch knowledge base' };
+    }
+}
+
+export async function deleteKnowledgeDocument(source) {
+    try {
+        await fetchFromRag(`/api/admin/knowledge/${encodeURIComponent(source)}`, { method: 'DELETE' });
+        revalidatePath('/');
+        return { success: true };
+    } catch (error) {
+        return { error: error.message || 'Failed to delete document' };
+    }
+}
+
+export async function ingestDocument(formData) {
+    try {
+        const data = await fetchFromRag('/api/ingest', {
+            method: 'POST',
+            body: formData,
+        });
+        return { success: true, ...data };
+    } catch (error) {
+        return { error: error.message || 'Upload to gateway failed' };
+    }
+}
+
+export async function getIngestStatus(jobId) {
+    try {
+        const data = await fetchFromRag(`/api/ingest/status?jobId=${jobId}`, { method: 'GET' });
+        return { success: true, ...data };
+    } catch (error) {
+        return { error: error.message || 'Failed to check status' };
     }
 }

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { getKnowledgeBase, deleteKnowledgeDocument } from '@/app/actions';
 
 export default function KnowledgeBase({ refreshTrigger }) {
     const [documents, setDocuments] = useState([]);
@@ -9,9 +10,8 @@ export default function KnowledgeBase({ refreshTrigger }) {
     const fetchKnowledge = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/knowledge');
-            const data = await res.json();
-            if (data.documents) {
+            const data = await getKnowledgeBase();
+            if (data && data.documents) {
                 setDocuments(data.documents);
             }
         } catch (err) {
@@ -29,13 +29,11 @@ export default function KnowledgeBase({ refreshTrigger }) {
         if (!confirm(`Are you sure you want to delete ${source}?`)) return;
         setDeleting(source);
         try {
-            const res = await fetch(`/api/knowledge/${encodeURIComponent(source)}`, {
-                method: 'DELETE'
-            });
-            if (res.ok) {
+            const res = await deleteKnowledgeDocument(source);
+            if (res.success) {
                 fetchKnowledge();
             } else {
-                alert('Failed to delete document');
+                alert(res.error || 'Failed to delete document');
             }
         } catch (err) {
             alert('Failed to delete document');

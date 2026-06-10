@@ -111,35 +111,7 @@ export function middleware(request) {
         return returnUnauthorized('Unauthorized');
     }
 
-    const token = sessionCookie.value;
 
-    // Fast format check: HMAC tokens are structured as "payload.signature"
-    if (!token.includes('.')) {
-        return returnUnauthorized('Invalid session');
-    }
-
-    // 6. SECURITY: Verify expiration date from the token payload.
-    // This provides a quick client-side check to prevent expired requests.
-    // HMAC signature validation still happens inside route handlers for double security.
-    try {
-        const payloadB64 = token.split('.')[0];
-        // Convert base64url string to standard base64
-        let base64 = payloadB64.replace(/-/g, '+').replace(/_/g, '/');
-        while (base64.length % 4) {
-            base64 += '=';
-        }
-        // Decrypt using Web-Standard 'atob' (available in Edge runtime, unlike Buffer)
-        const decoded = atob(base64);
-        const payload = JSON.parse(decoded);
-        
-        // Block request if current timestamp exceeds expiration
-        if (Date.now() > payload.exp) {
-            return returnUnauthorized('Session expired');
-        }
-    } catch {
-        // Intercept malformed token payloads
-        return returnUnauthorized('Invalid session');
-    }
 
     return applySecurityHeaders(NextResponse.next());
 }

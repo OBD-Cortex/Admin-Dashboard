@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/components/Toast';
 import Modal from '@/components/Modal';
+import { ingestDocument, getIngestStatus } from '@/app/actions';
 
 /**
  * UploadModal Component
@@ -140,15 +141,10 @@ export default function UploadModal({ isOpen, onClose }) {
         formData.append('file', file);
 
         try {
-            const res = await fetch('/api/ingest', {
-                method: 'POST',
-                body: formData,
-            });
+            const res = await ingestDocument(formData);
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                const errMsg = data.error || 'Upload to gateway failed';
+            if (res.error) {
+                const errMsg = res.error || 'Upload to gateway failed';
                 setJobStatus('failed');
                 setProgressPercent(100);
                 setProgressText('Upload failed');
@@ -158,13 +154,13 @@ export default function UploadModal({ isOpen, onClose }) {
                 return;
             }
 
-            setJobId(data.job_id);
-            setJobStatus(data.status || 'queued');
-            addLog(`Ingestion job registered. Job ID: ${data.job_id}`);
+            setJobId(res.job_id);
+            setJobStatus(res.status || 'queued');
+            addLog(`Ingestion job registered. Job ID: ${res.job_id}`);
             addLog('Asynchronous worker thread started on droplet VM.');
 
             // Start polling status from MongoDB directly
-            startPolling(data.job_id);
+            startPolling(res.job_id);
         } catch (err) {
             const errMsg = 'Network communication failure during upload';
             setJobStatus('failed');
@@ -183,11 +179,10 @@ export default function UploadModal({ isOpen, onClose }) {
 
         pollIntervalRef.current = setInterval(async () => {
             try {
-                const res = await fetch(`/api/ingest/status?jobId=${id}`);
-                if (!res.ok) {
+                const data = await getIngestStatus(id);
+                if (data.error) {
                     return;
                 }
-                const data = await res.json();
 
                 setJobStatus(data.status);
                 const progressMsg = data.progress || '';
