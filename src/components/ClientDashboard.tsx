@@ -113,7 +113,6 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                 <div className="space-y-4 border-t border-border/20 pt-6">
                     <div className="space-y-0.5">
                         <h2 className="text-base font-semibold tracking-tight">Device Management</h2>
-                        <p className="text-xs text-muted-foreground">Filter, register, and pair physical diagnostic keys.</p>
                     </div>
                     <ActionBar
                         onGenerateClick={() => setGenerateModalOpen(true)}
@@ -132,8 +131,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                 {/* Section 3: Knowledge Base Catalog */}
                 <div className="space-y-4 border-t border-border/20 pt-6">
                     <div className="space-y-0.5">
-                        <h2 className="text-base font-semibold tracking-tight">Vehicle Knowledge Base</h2>
-                        <p className="text-xs text-muted-foreground">Sync repair manuals and databases to feed mobile diagnostics.</p>
+                        <h2 className="text-base font-semibold tracking-tight">Knowledge Base</h2>
                     </div>
                     <KnowledgeBase refreshTrigger={ingestModalOpen} />
                 </div>

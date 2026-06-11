@@ -1,9 +1,10 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Lato } from 'next/font/google';
 import { ToastProvider } from '@/components/Toast';
 
-const inter = Inter({
+const lato = Lato({
   subsets: ['latin'],
+  weight: ['100', '300', '400', '700', '900'],
   variable: '--font-sans',
 });
 
@@ -14,7 +15,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className={`${inter.variable} dark`}>
+        <html lang="en" className={`${lato.variable} dark`}>
             <body className="min-h-screen bg-background font-sans antialiased">
                 <ToastProvider>{children}</ToastProvider>
             </body>

@@ -36,13 +36,13 @@ export default function LoginPage() {
 
     return (
         <div className="relative flex min-h-screen items-center justify-center bg-background p-4 overflow-hidden">
-            {/* Ambient blur backdrops */}
-            <div className="absolute top-[-20%] left-[-20%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            {/* Ambient purple blur backdrops */}
+            <div className="absolute top-[-20%] left-[-20%] w-[550px] h-[550px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-20%] w-[550px] h-[550px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
-            <Card className="w-full max-w-sm border border-border/40 bg-card/60 backdrop-blur-md shadow-2xl rounded-xl relative z-10">
+            <Card className="w-full max-w-sm border border-border bg-card shadow-2xl rounded-lg relative z-10">
                 <CardHeader className="space-y-1.5 text-center pb-4 pt-6">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary border border-border/30 mx-auto mb-3 shadow-inner">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary border border-border/60 mx-auto mb-3 shadow-inner">
                         <KeyRound className="h-4.5 w-4.5 text-foreground" />
                     </div>
                     <CardTitle className="text-sm font-semibold tracking-tight text-foreground">Manufacturer Admin Gate</CardTitle>
@@ -60,7 +60,7 @@ export default function LoginPage() {
 
                         <div className="space-y-2">
                             <input
-                                className="w-full h-10 px-3 py-2 text-center text-sm rounded-lg border border-border/40 bg-background/80 placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/40 disabled:cursor-not-allowed disabled:opacity-50 font-mono tracking-widest text-foreground transition-all duration-200"
+                                className="w-full h-10 px-3 py-2 text-center text-sm rounded-lg border border-border bg-background placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 font-mono tracking-widest text-foreground transition-all duration-200"
                                 type="password"
                                 placeholder="••••••••"
                                 value={password}
@@ -71,7 +71,7 @@ export default function LoginPage() {
                         </div>
 
                         <Button
-                            className="w-full h-10 text-xs font-semibold cursor-pointer bg-primary hover:bg-primary/95 text-primary-foreground border border-border shadow-sm transition-all duration-200 rounded-lg"
+                            className="w-full h-10 text-xs font-semibold cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground border border-border shadow-sm transition-all duration-200 rounded-lg"
                             type="submit"
                             disabled={loading || !password}
                         >

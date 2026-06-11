@@ -79,7 +79,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
         <div className="space-y-4">
             <div className="flex items-center gap-2 pb-1">
                 <Database className="h-5 w-5 text-muted-foreground" />
-                <h2 className="text-lg font-bold tracking-tight">System Knowledge Base</h2>
+                <h2 className="text-lg font-bold tracking-tight">Knowledge Base</h2>
             </div>
             
             <div className="rounded-md border bg-card overflow-hidden">

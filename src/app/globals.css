@@ -65,35 +65,35 @@
   }
 
   .dark {
-    /* Dim Mode: Warm Charcoal & Gold Accent */
-    --background: 270 5% 8%;
-    --foreground: 240 2% 96%;
+    /* Hostinger Dark Mode Inspired Theme */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --card: 270 7% 12%;
-    --card-foreground: 240 2% 96%;
+    --card: 240 6% 6%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 270 7% 12%;
-    --popover-foreground: 240 2% 96%;
+    --popover: 240 6% 6%;
+    --popover-foreground: 0 0% 100%;
 
-    /* Primary highlight: Gold/bronze text/button color */
-    --primary: 39 49% 56%;
-    --primary-foreground: 270 5% 8%;
+    /* Hostinger brand purple: #CC0BAD */
+    --primary: 310 90% 42%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 270 6% 10%;
-    --secondary-foreground: 240 2% 96%;
+    --secondary: 240 6% 10%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 270 6% 10%;
-    --muted-foreground: 270 3% 66%;
+    --muted: 240 6% 10%;
+    --muted-foreground: 240 5% 65%;
 
-    --accent: 270 7% 18%;
-    --accent-foreground: 240 2% 96%;
+    --accent: 310 90% 42%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 74% 60%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 270 5% 18%;
-    --input: 270 5% 18%;
-    --ring: 39 49% 56%;
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 310 90% 42%;
   }
 }
 
