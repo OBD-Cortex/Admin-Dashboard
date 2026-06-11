@@ -35,7 +35,7 @@ To evaluate this dashboard locally:
     ```bash
     cp .env.example .env
     ```
-4.  Configure `RAG_API_URL` and `MOBILE_API_KEY` inside `.env`.
+4.  Configure `ADMIN_SERVICE_URL` and `ADMIN_JWT_SECRET` inside `.env`.
 5.  Start the local dev server:
     ```bash
     npm run dev

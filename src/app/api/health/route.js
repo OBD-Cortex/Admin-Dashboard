@@ -8,16 +8,16 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
     let dbStatus = 'unknown';
     let ragStatus = 'unknown';
-    const ragApiUrl = process.env.RAG_API_URL;
+    const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
 
-    if (!ragApiUrl) {
+    if (!adminServiceUrl) {
         ragStatus = 'not_configured';
     } else {
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-            const res = await fetch(`${ragApiUrl}/api/health`, {
+            const res = await fetch(`${adminServiceUrl}/api/health`, {
                 signal: controller.signal,
                 headers: {
                     'Accept': 'application/json',

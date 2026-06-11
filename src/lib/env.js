@@ -6,8 +6,8 @@
  */
 
 export function loadEnvSecrets() {
-    if (!process.env.RAG_API_URL) {
-        console.warn("[!] Warning: RAG_API_URL is missing in environment.");
+    if (!process.env.ADMIN_SERVICE_URL) {
+        console.warn("[!] Warning: ADMIN_SERVICE_URL is missing in environment.");
     }
     if (!process.env.ADMIN_JWT_SECRET) {
         console.warn("[!] Warning: ADMIN_JWT_SECRET is missing in environment.");

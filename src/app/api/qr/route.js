@@ -19,8 +19,8 @@ export async function GET(request) {
     }
 
     const targetToken = token.trim().toUpperCase();
-    const ragApiUrl = process.env.RAG_API_URL || process.env.RAG_URL || 'http://127.0.0.1:8000';
-    const payload = `${ragApiUrl.replace(/\/$/, '')}/api/mobile/login?token=${encodeURIComponent(targetToken)}`;
+    const adminServiceUrl = process.env.ADMIN_SERVICE_URL || 'http://127.0.0.1:8000';
+    const payload = `${adminServiceUrl.replace(/\/$/, '')}/api/mobile/login?token=${encodeURIComponent(targetToken)}`;
     
     let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(payload)}`;
     let contentType = 'image/png';

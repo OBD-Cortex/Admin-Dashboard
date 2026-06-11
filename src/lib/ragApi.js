@@ -45,15 +45,15 @@ function generateAdminJwt(secret) {
 }
 
 export async function fetchFromRag(path, options = {}) {
-    const ragApiUrl = process.env.RAG_API_URL;
+    const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
     const secret = process.env.ADMIN_JWT_SECRET;
 
-    if (!ragApiUrl || !secret) {
-        console.error('[RAG API Client] Server configuration error: RAG_API_URL or ADMIN_JWT_SECRET is missing.');
+    if (!adminServiceUrl || !secret) {
+        console.error('[RAG API Client] Server configuration error: ADMIN_SERVICE_URL or ADMIN_JWT_SECRET is missing.');
         throw { status: 500, message: 'Server configuration error: Backend credentials are not configured.' };
     }
 
-    const url = `${ragApiUrl.replace(/\/$/, '')}${path}`;
+    const url = `${adminServiceUrl.replace(/\/$/, '')}${path}`;
     const headers = new Headers(options.headers || {});
     
     // Inject the native HS256 JWT

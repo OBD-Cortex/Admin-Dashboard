@@ -24,7 +24,7 @@ Before deploying, configure your environment variables. Create a `.env` file at 
 
 ```env
 # The URL pointing to your DigitalOcean Admin-Service deployment
-RAG_API_URL=https://admin.yourdomain.com
+ADMIN_SERVICE_URL=https://admin.yourdomain.com
 
 # A highly secure random string used to sign session cookies
 SESSION_SECRET=your_super_secret_cookie_signing_key_here
