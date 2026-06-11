@@ -75,9 +75,9 @@
     --popover: 240 6% 6%;
     --popover-foreground: 0 0% 100%;
 
-    /* Hostinger brand purple: #CC0BAD */
-    --primary: 310 90% 42%;
-    --primary-foreground: 0 0% 100%;
+    /* Sky Blue accent: #89b4fa */
+    --primary: 217 92% 76%;
+    --primary-foreground: 240 10% 4%;
 
     --secondary: 240 6% 10%;
     --secondary-foreground: 0 0% 100%;
@@ -85,15 +85,15 @@
     --muted: 240 6% 10%;
     --muted-foreground: 240 5% 65%;
 
-    --accent: 310 90% 42%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 217 92% 76%;
+    --accent-foreground: 240 10% 4%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 6% 15%;
     --input: 240 6% 15%;
-    --ring: 310 90% 42%;
+    --ring: 217 92% 76%;
   }
 }
 
@@ -104,5 +104,15 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+
+  /* Hide native spin buttons on number inputs */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
   }
 }

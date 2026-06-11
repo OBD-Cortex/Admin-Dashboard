@@ -41,14 +41,8 @@ export default function LoginPage() {
             <div className="absolute bottom-[-20%] right-[-20%] w-[550px] h-[550px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
             <Card className="w-full max-w-sm border border-border bg-card shadow-2xl rounded-lg relative z-10">
-                <CardHeader className="space-y-1.5 text-center pb-4 pt-6">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary border border-border/60 mx-auto mb-3 shadow-inner">
-                        <KeyRound className="h-4.5 w-4.5 text-foreground" />
-                    </div>
-                    <CardTitle className="text-sm font-semibold tracking-tight text-foreground">Manufacturer Admin Gate</CardTitle>
-                    <CardDescription className="text-xs text-muted-foreground">
-                        Enter passcode to unlock the diagnostic control console.
-                    </CardDescription>
+                <CardHeader className="text-center pb-4 pt-6">
+                    <CardTitle className="text-lg font-bold tracking-tight text-foreground">Login</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-6">
                     <form className="space-y-4" onSubmit={handleSubmit}>
@@ -78,10 +72,10 @@ export default function LoginPage() {
                             {loading ? (
                                 <>
                                     <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                                    Unlocking...
+                                    Logging in...
                                 </>
                             ) : (
-                                'Sign In'
+                                'Login'
                             )}
                         </Button>
                     </form>
