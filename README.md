@@ -9,7 +9,7 @@ The **Admin Dashboard** is a secure Next.js App Router application hosted on Hos
 This Next.js control plane leverages Server-First rendering principles:
 1.  **Server Actions Core:** All database mutators and backend service integrations use Server Actions (`src/app/actions.js`). This completely shields endpoints and sensitive tokens from exposure to the user's browser.
 2.  **Edge Runtime Guard:** Secure cookies auth runs inside the V8 Edge Runtime (using `middleware.js`). Browser-native `atob()` handles JWT parsing instead of Node-specific `Buffer` module to prevent crashes in the V8 Edge runtime environment.
-3.  **Encapsulated API Key Forwarding:** Outgoing backend API requests are proxied via `fetchFromRag()` inside `src/lib/ragApi.js`. The browser client never handles the `MOBILE_API_KEY`.
+3.  **Encapsulated API Key Forwarding:** Outgoing backend API requests are proxied via `fetchFromAdminService()` inside `src/lib/adminServiceApi.js`. The browser client never handles the `MOBILE_API_KEY`.
 4.  **Static Security Baseline:** The application utilizes standard HTTPS (SSL auto-provisioned by Hostinger) and injects strict security headers (CSP, HSTS, X-Frame-Options Deny) on every page.
 
 ---
@@ -18,7 +18,7 @@ This Next.js control plane leverages Server-First rendering principles:
 
 *   `src/app/actions.js`: Implements Server Actions for device pairing, document deletes, and status updates.
 *   `src/middleware.js`: Injects security headers, blocks maintenance traffic, and verifies the session cookies.
-*   `src/lib/ragApi.js`: Centralized fetch proxy communicating with the backend APIs.
+*   `src/lib/adminServiceApi.js`: Centralized fetch proxy communicating with the backend APIs.
 *   `src/components/`: Modular React components (e.g. `DeviceTable.js`, `KnowledgeBase.js`, `UploadModal.js`).
 
 ---

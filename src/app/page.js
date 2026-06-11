@@ -1,4 +1,4 @@
-import { fetchFromRag } from '@/lib/ragApi';
+import { fetchFromAdminService } from '@/lib/adminServiceApi';
 import ClientDashboard from '@/components/ClientDashboard';
 
 export const dynamic = 'force-dynamic';
@@ -14,7 +14,7 @@ export default async function HomePage({ searchParams }) {
     // Fetch stats
     let stats = null;
     try {
-        stats = await fetchFromRag('/api/admin/stats', { cache: 'no-store' });
+        stats = await fetchFromAdminService('/api/admin/stats', { cache: 'no-store' });
     } catch (e) {
         console.error('Failed to fetch stats:', e);
     }
@@ -26,7 +26,7 @@ export default async function HomePage({ searchParams }) {
         if (status !== 'all') params.set('status', status);
         if (search) params.set('search', search);
         
-        const data = await fetchFromRag(`/api/admin/devices?${params.toString()}`, { cache: 'no-store' });
+        const data = await fetchFromAdminService(`/api/admin/devices?${params.toString()}`, { cache: 'no-store' });
         devices = data.devices || [];
     } catch (e) {
         console.error('Failed to fetch devices:', e);

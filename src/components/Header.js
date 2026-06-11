@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { logout } from '@/app/actions';
 
-export default function Header({ ragStatus }) {
+export default function Header({ adminServiceStatus }) {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -26,9 +26,9 @@ export default function Header({ ragStatus }) {
                 
                 <span 
                     className={`status-badge ${
-                        ragStatus === 'connected' ? 'paired' : 
-                        ragStatus === 'disconnected' ? 'failed' : 
-                        ragStatus === 'not_configured' ? 'manufactured' : 'registered'
+                        adminServiceStatus === 'connected' ? 'paired' : 
+                        adminServiceStatus === 'disconnected' ? 'failed' : 
+                        adminServiceStatus === 'not_configured' ? 'manufactured' : 'registered'
                     }`} 
                     style={{ 
                         fontSize: '11px', 
@@ -36,16 +36,16 @@ export default function Header({ ragStatus }) {
                         marginLeft: '12px' 
                     }}
                     title={
-                        ragStatus === 'connected' ? 'FastAPI Droplet VM is online.' : 
-                        ragStatus === 'disconnected' ? 'FastAPI Droplet VM is offline.' : 
-                        ragStatus === 'not_configured' ? 'Droplet URL is not configured.' : 'Checking status...'
+                        adminServiceStatus === 'connected' ? 'Admin Service is online.' : 
+                        adminServiceStatus === 'disconnected' ? 'Admin Service is offline.' : 
+                        adminServiceStatus === 'not_configured' ? 'Admin Service URL is not configured.' : 'Checking status...'
                     }
                 >
                     <span className="dot"></span>
-                    RAG: {
-                        ragStatus === 'connected' ? 'Connected' : 
-                        ragStatus === 'disconnected' ? 'Offline' : 
-                        ragStatus === 'not_configured' ? 'Unconfigured' : 'Checking...'
+                    Admin Service: {
+                        adminServiceStatus === 'connected' ? 'Connected' : 
+                        adminServiceStatus === 'disconnected' ? 'Offline' : 
+                        adminServiceStatus === 'not_configured' ? 'Unconfigured' : 'Checking...'
                     }
                 </span>
             </div>

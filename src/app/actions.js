@@ -2,13 +2,13 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { fetchFromRag } from '@/lib/ragApi';
+import { fetchFromAdminService } from '@/lib/adminServiceApi';
 import { validatePassword } from '@/lib/auth';
 
 export async function deleteDevice(token, force = false) {
     try {
         const query = force ? `?token=${encodeURIComponent(token)}&force=true` : `?token=${encodeURIComponent(token)}`;
-        await fetchFromRag(`/api/admin/devices/${token}${query}`, {
+        await fetchFromAdminService(`/api/admin/devices/${token}${query}`, {
             method: 'DELETE',
         });
         revalidatePath('/');
@@ -20,7 +20,7 @@ export async function deleteDevice(token, force = false) {
 
 export async function unpairDevice(token) {
     try {
-        await fetchFromRag(`/api/admin/devices/${encodeURIComponent(token)}/unpair`, {
+        await fetchFromAdminService(`/api/admin/devices/${encodeURIComponent(token)}/unpair`, {
             method: 'POST',
         });
         revalidatePath('/');
@@ -32,7 +32,7 @@ export async function unpairDevice(token) {
 
 export async function generateDevices(count) {
     try {
-        const data = await fetchFromRag('/api/admin/devices/generate', {
+        const data = await fetchFromAdminService('/api/admin/devices/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ count: parseInt(count, 10) }),
@@ -45,7 +45,7 @@ export async function generateDevices(count) {
 }
 export async function getKnowledgeBase() {
     try {
-        const data = await fetchFromRag('/api/admin/knowledge', { method: 'GET' });
+        const data = await fetchFromAdminService('/api/admin/knowledge', { method: 'GET' });
         return { documents: data.documents };
     } catch (error) {
         return { error: error.message || 'Failed to fetch knowledge base' };
@@ -54,7 +54,7 @@ export async function getKnowledgeBase() {
 
 export async function deleteKnowledgeDocument(source) {
     try {
-        await fetchFromRag(`/api/admin/knowledge/${encodeURIComponent(source)}`, { method: 'DELETE' });
+        await fetchFromAdminService(`/api/admin/knowledge/${encodeURIComponent(source)}`, { method: 'DELETE' });
         revalidatePath('/');
         return { success: true };
     } catch (error) {
@@ -64,7 +64,7 @@ export async function deleteKnowledgeDocument(source) {
 
 export async function ingestDocument(formData) {
     try {
-        const data = await fetchFromRag('/api/ingest', {
+        const data = await fetchFromAdminService('/api/ingest', {
             method: 'POST',
             body: formData,
         });
@@ -76,7 +76,7 @@ export async function ingestDocument(formData) {
 
 export async function getIngestStatus(jobId) {
     try {
-        const data = await fetchFromRag(`/api/ingest/status?jobId=${jobId}`, { method: 'GET' });
+        const data = await fetchFromAdminService(`/api/ingest/status?jobId=${jobId}`, { method: 'GET' });
         return { success: true, ...data };
     } catch (error) {
         return { error: error.message || 'Failed to check status' };

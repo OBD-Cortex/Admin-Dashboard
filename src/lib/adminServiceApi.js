@@ -5,7 +5,7 @@ import crypto from 'crypto';
 loadEnvSecrets();
 
 /**
- * Standard utility to communicate with the FastAPI RAG backend.
+ * Standard utility to communicate with the FastAPI Admin Service backend.
  * Provides unified request proxying, environment verification, header handling,
  * and robust error mapping.
  *
@@ -44,12 +44,12 @@ function generateAdminJwt(secret) {
     return `${signatureInput}.${signature}`;
 }
 
-export async function fetchFromRag(path, options = {}) {
+export async function fetchFromAdminService(path, options = {}) {
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
     const secret = process.env.ADMIN_JWT_SECRET;
 
     if (!adminServiceUrl || !secret) {
-        console.error('[RAG API Client] Server configuration error: ADMIN_SERVICE_URL or ADMIN_JWT_SECRET is missing.');
+        console.error('[Admin Service API Client] Server configuration error: ADMIN_SERVICE_URL or ADMIN_JWT_SECRET is missing.');
         throw { status: 500, message: 'Server configuration error: Backend credentials are not configured.' };
     }
 
@@ -70,8 +70,8 @@ export async function fetchFromRag(path, options = {}) {
     try {
         response = await fetch(url, fetchOptions);
     } catch (networkError) {
-        console.error(`[RAG API Client] Connection failed to ${url}:`, networkError);
-        throw { status: 502, message: 'Failed to reach RAG API backend server' };
+        console.error(`[Admin Service API Client] Connection failed to ${url}:`, networkError);
+        throw { status: 502, message: 'Failed to reach Admin Service API backend server' };
     }
 
     if (!response.ok) {
@@ -87,14 +87,14 @@ export async function fetchFromRag(path, options = {}) {
                 // Keep default message
             }
         }
-        console.error(`[RAG API Client] Backend returned status ${response.status}: ${errorMessage}`);
+        console.error(`[Admin Service API Client] Backend returned status ${response.status}: ${errorMessage}`);
         throw { status: response.status, message: errorMessage };
     }
 
     try {
         return await response.json();
     } catch (parseError) {
-        console.error('[RAG API Client] Failed to parse backend JSON response:', parseError);
-        throw { status: 502, message: 'Invalid response format received from RAG API' };
+        console.error('[Admin Service API Client] Failed to parse backend JSON response:', parseError);
+        throw { status: 502, message: 'Invalid response format received from Admin Service API' };
     }
 }

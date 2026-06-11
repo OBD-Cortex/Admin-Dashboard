@@ -19,7 +19,7 @@ export default function ClientDashboard({ initialStats, initialDevices }) {
     const [qrModalOpen, setQrModalOpen] = useState(false);
     const [selectedToken, setSelectedToken] = useState(null);
     const [ingestModalOpen, setIngestModalOpen] = useState(false);
-    const [ragStatus, setRagStatus] = useState('loading');
+    const [adminServiceStatus, setAdminServiceStatus] = useState('loading');
     const [tableLoading, setTableLoading] = useState(false);
 
     // Turn off loading whenever new data arrives from SSR
@@ -32,9 +32,9 @@ export default function ClientDashboard({ initialStats, initialDevices }) {
         try {
             const res = await fetch('/api/health');
             const data = await res.json();
-            setRagStatus(data.rag || 'disconnected');
+            setAdminServiceStatus(data.adminService || 'disconnected');
         } catch {
-            setRagStatus('disconnected');
+            setAdminServiceStatus('disconnected');
         }
     }, []);
 
@@ -95,7 +95,7 @@ export default function ClientDashboard({ initialStats, initialDevices }) {
 
     return (
         <div className="app-container">
-            <Header ragStatus={ragStatus} />
+            <Header adminServiceStatus={adminServiceStatus} />
             <StatsGrid stats={initialStats} />
             <ActionBar
                 onGenerateClick={() => setGenerateModalOpen(true)}

@@ -7,11 +7,11 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET() {
     let dbStatus = 'unknown';
-    let ragStatus = 'unknown';
+    let adminServiceStatus = 'unknown';
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
 
     if (!adminServiceUrl) {
-        ragStatus = 'not_configured';
+        adminServiceStatus = 'not_configured';
     } else {
         try {
             const controller = new AbortController();
@@ -27,22 +27,22 @@ export async function GET() {
 
             if (res.ok) {
                 const data = await res.json();
-                ragStatus = 'connected';
+                adminServiceStatus = 'connected';
                 dbStatus = data.database || 'unknown';
             } else {
-                ragStatus = 'disconnected';
+                adminServiceStatus = 'disconnected';
                 dbStatus = 'disconnected';
             }
         } catch {
-            ragStatus = 'disconnected';
+            adminServiceStatus = 'disconnected';
             dbStatus = 'disconnected';
         }
     }
 
     return NextResponse.json({
-        status: (dbStatus === 'connected' && ragStatus === 'connected') ? 'ok' : 'degraded',
+        status: (dbStatus === 'connected' && adminServiceStatus === 'connected') ? 'ok' : 'degraded',
         database: dbStatus,
-        rag: ragStatus,
+        adminService: adminServiceStatus,
         uptime: Math.floor(process.uptime()),
         node: process.version,
     });
