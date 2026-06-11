@@ -131,7 +131,7 @@ export default function DeviceTable({
                                             <span
                                                 className={cn(
                                                     "h-1.5 w-1.5 rounded-full shrink-0",
-                                                    device.status === 'paired' && "bg-white",
+                                                    device.status === 'paired' && "bg-primary",
                                                     device.status === 'registered' && "bg-neutral-400",
                                                     device.status === 'manufactured' && "bg-neutral-600",
                                                     device.status === 'failed' && "bg-transparent border border-neutral-500"

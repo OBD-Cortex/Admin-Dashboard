@@ -103,7 +103,7 @@ export default function ActionBar({
                                 className={cn(
                                     "rounded px-2.5 py-1 text-[9px] font-bold tracking-wider transition-all cursor-pointer uppercase",
                                     isActive 
-                                        ? "bg-white text-black font-extrabold" 
+                                        ? "bg-primary text-primary-foreground font-extrabold" 
                                         : "text-neutral-500 hover:text-white"
                                 )}
                             >

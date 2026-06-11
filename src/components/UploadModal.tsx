@@ -290,7 +290,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             <div className="h-1.5 w-full bg-neutral-950 border border-neutral-900 overflow-hidden">
                                 <div
                                     className={cn(
-                                        "h-full bg-white transition-all duration-300",
+                                        "h-full bg-primary transition-all duration-300",
                                         jobStatus === 'failed' && "bg-neutral-800"
                                     )}
                                     style={{ width: `${progressPercent}%` }}
