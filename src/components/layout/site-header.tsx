@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/app/actions';
+import { cn } from '@/lib/utils';
 
 interface SiteHeaderProps {
     adminServiceStatus: string;
@@ -33,7 +34,12 @@ export function SiteHeader({ adminServiceStatus }: SiteHeaderProps) {
             <div className="flex items-center gap-4">
                 {/* Health Status badge */}
                 <div 
-                    className="inline-flex items-center gap-1.5 border border-neutral-800 bg-neutral-950 px-2.5 py-1 text-[10px] font-mono font-medium uppercase text-neutral-400 select-none"
+                    className={cn(
+                        "inline-flex items-center gap-1.5 border px-2.5 py-1 text-[10px] font-mono font-medium uppercase select-none transition-colors",
+                        adminServiceStatus === 'connected' ? "border-emerald-950 bg-emerald-950/10 text-emerald-400" :
+                        adminServiceStatus === 'disconnected' ? "border-rose-950 bg-rose-950/10 text-rose-400" :
+                        "border-blue-950 bg-blue-950/10 text-blue-400"
+                    )}
                     title={
                         adminServiceStatus === 'connected' ? 'Connected' :
                         adminServiceStatus === 'disconnected' ? 'Offline' :
@@ -41,12 +47,17 @@ export function SiteHeader({ adminServiceStatus }: SiteHeaderProps) {
                     }
                 >
                     {adminServiceStatus === 'loading' ? (
-                        <svg className="h-3 w-3 animate-spin text-neutral-500" fill="none" viewBox="0 0 24 24">
+                        <svg className="h-3 w-3 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
                     ) : (
-                        <span className={`h-1.5 w-1.5 rounded-full ${adminServiceStatus === 'connected' ? 'bg-white' : 'bg-neutral-800'}`} />
+                        <span className={cn(
+                            "h-1.5 w-1.5 rounded-full shrink-0",
+                            adminServiceStatus === 'connected' ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" :
+                            adminServiceStatus === 'disconnected' ? "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]" :
+                            "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]"
+                        )} />
                     )}
                     <span>
                         {

@@ -282,16 +282,28 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     {jobStatus && (
                         <div className="space-y-3">
                             <div className="flex justify-between text-[10px] font-bold uppercase">
-                                <span className="text-neutral-400 truncate max-w-[80%]">
+                                <span className={cn(
+                                    "truncate max-w-[80%]",
+                                    jobStatus === 'completed' && "text-emerald-400",
+                                    jobStatus === 'failed' && "text-rose-400",
+                                    jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-400"
+                                )}>
                                     {progressText || 'INGESTION QUEUED...'}
                                 </span>
-                                <span className="text-white font-mono">{progressPercent}%</span>
+                                <span className={cn(
+                                    "font-mono",
+                                    jobStatus === 'completed' && "text-emerald-400",
+                                    jobStatus === 'failed' && "text-rose-400",
+                                    jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-400"
+                                )}>{progressPercent}%</span>
                             </div>
                             <div className="h-1.5 w-full bg-neutral-950 border border-neutral-900 overflow-hidden">
                                 <div
                                     className={cn(
-                                        "h-full bg-primary transition-all duration-300",
-                                        jobStatus === 'failed' && "bg-neutral-800"
+                                        "h-full transition-all duration-300",
+                                        jobStatus === 'completed' && "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]",
+                                        jobStatus === 'failed' && "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.5)]",
+                                        jobStatus !== 'completed' && jobStatus !== 'failed' && "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]"
                                     )}
                                     style={{ width: `${progressPercent}%` }}
                                 />
@@ -304,8 +316,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                         <div key={idx} className="flex gap-2">
                                             <span className="text-neutral-600">[{log.timestamp}]</span>
                                             <span className={cn(
-                                                log.type === 'error' && "text-neutral-500 line-through",
-                                                log.type === 'success' && "text-white font-bold"
+                                                log.type === 'error' && "text-rose-500 font-semibold",
+                                                log.type === 'success' && "text-emerald-400 font-bold"
                                             )}>
                                                 {log.text}
                                             </span>
