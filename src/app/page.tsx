@@ -2,6 +2,8 @@
 import { fetchFromAdminService } from '@/lib/adminServiceApi';
 import ClientDashboard from '@/components/ClientDashboard';
 
+import { Stats, Device } from '@/types';
+
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
@@ -17,7 +19,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     const status = resolvedParams?.status || 'all';
 
     // Fetch stats
-    let stats = null;
+    let stats: Stats | null = null;
     try {
         stats = await fetchFromAdminService('/api/admin/stats', { cache: 'no-store' });
     } catch (e) {
@@ -25,7 +27,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     }
 
     // Fetch devices
-    let devices = [];
+    let devices: Device[] = [];
     try {
         const params = new URLSearchParams();
         if (status !== 'all') params.set('status', status);

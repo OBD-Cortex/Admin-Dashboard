@@ -13,32 +13,7 @@ import UploadModal from '@/components/UploadModal';
 import { useToast } from '@/components/Toast';
 import { deleteDevice, unpairDevice } from '@/app/actions';
 
-interface Vehicle {
-    vin: string;
-    brand: string;
-    model: string;
-    year: number;
-    paired_at: string;
-}
-
-interface Device {
-    device_token: string;
-    device_id: number | null;
-    vin: string | null;
-    brand: string | null;
-    model: string | null;
-    year: number | null;
-    status: 'manufactured' | 'registered' | 'paired' | 'failed' | string;
-    created_at: string;
-    vehicles: Vehicle[];
-}
-
-interface Stats {
-    total: number;
-    manufactured: number;
-    registered: number;
-    paired: number;
-}
+import { Stats, Device } from '@/types';
 
 interface ClientDashboardProps {
     initialStats: Stats | null;

@@ -4,13 +4,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Cpu, Factory, Key, Link as LinkIcon } from 'lucide-react';
 
-interface Stats {
-    total: number;
-    manufactured: number;
-    registered: number;
-    paired: number;
-    [key: string]: number;
-}
+import { Stats } from '@/types';
 
 interface StatsGridProps {
     stats: Stats | null;
