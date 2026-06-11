@@ -18,25 +18,28 @@ export default async function HomePage({ searchParams }: PageProps) {
     const search = resolvedParams?.search || '';
     const status = resolvedParams?.status || 'all';
 
-    // Fetch stats
     let stats: Stats | null = null;
-    try {
-        stats = await fetchFromAdminService('/api/admin/stats', { cache: 'no-store' });
-    } catch (e) {
-        console.error('Failed to fetch stats:', e);
+    let devices: Device[] = [];
+
+    const params = new URLSearchParams();
+    if (status !== 'all') params.set('status', status);
+    if (search) params.set('search', search);
+
+    const [statsResult, devicesResult] = await Promise.allSettled([
+        fetchFromAdminService('/api/admin/stats', { cache: 'no-store' }),
+        fetchFromAdminService(`/api/admin/devices?${params.toString()}`, { cache: 'no-store' })
+    ]);
+
+    if (statsResult.status === 'fulfilled') {
+        stats = statsResult.value;
+    } else {
+        console.error('Failed to fetch stats:', statsResult.reason);
     }
 
-    // Fetch devices
-    let devices: Device[] = [];
-    try {
-        const params = new URLSearchParams();
-        if (status !== 'all') params.set('status', status);
-        if (search) params.set('search', search);
-        
-        const data = await fetchFromAdminService(`/api/admin/devices?${params.toString()}`, { cache: 'no-store' });
-        devices = data.devices || [];
-    } catch (e) {
-        console.error('Failed to fetch devices:', e);
+    if (devicesResult.status === 'fulfilled') {
+        devices = devicesResult.value?.devices || [];
+    } else {
+        console.error('Failed to fetch devices:', devicesResult.reason);
     }
 
     return <ClientDashboard initialStats={stats} initialDevices={devices} />;

@@ -59,19 +59,29 @@ export async function fetchFromAdminService(path, options = {}) {
     // Inject the native HS256 JWT
     headers.set('Authorization', `Bearer ${generateAdminJwt(secret)}`);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
     // Merge headers back into options. Do not explicitly set 'Content-Type' for FormData 
     // to allow the browser/runtime to automatically compute the boundary string.
     const fetchOptions = {
         ...options,
         headers,
+        signal: controller.signal,
     };
 
     let response;
     try {
         response = await fetch(url, fetchOptions);
     } catch (networkError) {
+        if (networkError.name === 'AbortError') {
+            console.error(`[Admin Service API Client] Connection timed out to ${url}`);
+            throw { status: 504, message: 'Connection timed out while reaching Admin Service backend' };
+        }
         console.error(`[Admin Service API Client] Connection failed to ${url}:`, networkError);
         throw { status: 502, message: 'Failed to reach Admin Service API backend server' };
+    } finally {
+        clearTimeout(timeoutId);
     }
 
     if (!response.ok) {
