@@ -41,6 +41,7 @@
     --popover-foreground: 0 0% 0%;
 
     --primary: 221.2 83.2% 53.3%;
+    --primary-end: 243.4 75.4% 58.6%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
@@ -74,6 +75,7 @@
     --popover-foreground: 0 0% 100%;
 
     --primary: 213 94% 68%;
+    --primary-end: 238.6 91.7% 76.5%;
     --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 8%;
@@ -111,5 +113,14 @@
   }
   input[type=number] {
     -moz-appearance: textfield;
+  }
+
+  /* Custom primary color linear gradient overrides to prevent blocky aesthetics */
+  .bg-primary {
+    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-end)) 100%) !important;
+    background-color: transparent !important;
+  }
+  .bg-primary:hover {
+    opacity: 0.9;
   }
 }
