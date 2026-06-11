@@ -1,5 +1,5 @@
 {
-  "name": "device-identity-mapper",
+  "name": "admin-dashboard",
   "version": "2.0.0",
   "private": true,
   "description": "OBD-Cortex Fleet Admin Dashboard — Next.js Full-Stack Application",
