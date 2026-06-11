@@ -62,10 +62,10 @@ export default function DeviceTable({ devices, onShowQR, onDelete, onUnpair, loa
                         return (
                         <React.Fragment key={device.device_token}>
                         <tr>
-                            <td>
+                            <td data-label="Token">
                                 <span className="cell-token">{device.device_token}</span>
                             </td>
-                            <td>
+                            <td data-label="Device ID">
                                 {device.device_id ? (
                                     <span className="cell-token" style={{ color: 'var(--accent-blue)' }}>
                                         #{device.device_id}
@@ -74,22 +74,14 @@ export default function DeviceTable({ devices, onShowQR, onDelete, onUnpair, loa
                                     <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Unassigned</span>
                                 )}
                             </td>
-                            <td>
+                            <td data-label="Vehicle">
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <span className="cell-vin">{device.vin || '—'}</span>
                                         {hasHistory && (
                                             <button 
+                                                className="btn-retro-mini"
                                                 onClick={() => toggleExpand(device.device_token)}
-                                                style={{
-                                                    background: 'var(--bg-glass)',
-                                                    border: '1px solid var(--border)',
-                                                    color: 'var(--text-secondary)',
-                                                    fontSize: '10px',
-                                                    padding: '2px 6px',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                }}
                                             >
                                                 {device.vehicles.length} Cars {isExpanded ? '▲' : '▼'}
                                             </button>
@@ -102,18 +94,18 @@ export default function DeviceTable({ devices, onShowQR, onDelete, onUnpair, loa
                                     )}
                                 </div>
                             </td>
-                            <td>
+                            <td data-label="Status">
                                 <span className={`status-badge ${device.status}`}>
                                     <span className="dot" />
                                     {device.status}
                                 </span>
                             </td>
-                            <td>
+                            <td data-label="Created">
                                 <span className="cell-date">
                                     {formatDate(device.created_at)}
                                 </span>
                             </td>
-                            <td>
+                            <td data-label="Actions">
                                 <div className="cell-actions">
                                     {/* QR Code */}
                                     <button

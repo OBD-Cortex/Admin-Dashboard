@@ -100,28 +100,19 @@ export default function ActionBar({
 
             {/* Ingest Document Button */}
             <button
-                className="filter-btn"
+                className="btn-retro-secondary"
                 onClick={onIngestClick}
-                style={{
-                    marginLeft: 'auto',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 16px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--border)',
-                    background: 'var(--bg-glass)',
-                }}
+                style={{ marginLeft: 'auto' }}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    style={{ width: '15px', height: '15px', color: 'var(--accent-blue)' }}
+                    className="btn-icon"
                 >
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17 8 12 3 7 8" />
