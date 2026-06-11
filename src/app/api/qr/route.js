@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/requireAuth';
 
 /**
  * GET /api/qr — Stream QR code from external API
  * Query params: token, format (png|svg), download
  */
 export async function GET(request) {
-    try { requireAuth(request); } catch (e) {
-        return NextResponse.json({ error: e.message }, { status: e.status });
+    const sessionCookie = request.cookies.get('obd_session');
+    if (!sessionCookie || !sessionCookie.value) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
