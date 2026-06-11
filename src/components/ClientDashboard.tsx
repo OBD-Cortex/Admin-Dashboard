@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SiteHeader } from '@/components/layout/site-header';
 import StatsGrid from '@/components/StatsGrid';
 import ActionBar from '@/components/ActionBar';
@@ -22,10 +21,6 @@ interface ClientDashboardProps {
 
 export default function ClientDashboard({ initialStats, initialDevices }: ClientDashboardProps) {
     const { toast } = useToast();
-
-    // Layout states
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const [activeTab, setActiveTab] = useState('overview');
 
     // Modals states
     const [generateModalOpen, setGenerateModalOpen] = useState(false);
@@ -107,71 +102,50 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     };
 
     return (
-        <div className="flex min-h-screen w-full bg-background overflow-hidden">
-            {/* Left Sidebar */}
-            <AppSidebar
-                collapsed={sidebarCollapsed}
-                setCollapsed={setSidebarCollapsed}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-            />
+        <div className="flex flex-col min-h-screen w-full bg-background">
+            <SiteHeader adminServiceStatus={adminServiceStatus} />
 
-            {/* Right Main Container */}
-            <div className="flex-1 flex flex-col overflow-y-auto min-w-0">
-                <SiteHeader
-                    adminServiceStatus={adminServiceStatus}
-                    activeTab={activeTab}
-                    sidebarOpen={!sidebarCollapsed}
-                    setSidebarOpen={(open) => setSidebarCollapsed(!open)}
-                />
+            <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">
+                {/* Diagnostics Console Overview */}
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-bold tracking-tight font-title uppercase">Diagnostics Control Center</h1>
+                    <p className="text-xs text-muted-foreground">
+                        Manage, provision, and decommission manufacturer diagnostic hardware tokens and knowledge bases.
+                    </p>
+                </div>
 
-                <main className="flex-1 p-6 space-y-6">
-                    {activeTab === 'overview' && (
-                        <>
-                            {/* Overview Heading */}
-                            <div className="space-y-1">
-                                <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
-                                <p className="text-sm text-muted-foreground">
-                                    Manage, provision, and decommission physical diagnostic hardware tokens.
-                                </p>
-                            </div>
+                {/* Section 1: Dashboard Metrics */}
+                <StatsGrid stats={initialStats} />
 
-                            {/* Stats Grid */}
-                            <StatsGrid stats={initialStats} />
+                {/* Section 2: Fleet Manager */}
+                <div className="space-y-4 border-t border-border/20 pt-6">
+                    <div className="space-y-0.5">
+                        <h2 className="text-base font-semibold tracking-tight">Device Fleet Management</h2>
+                        <p className="text-xs text-muted-foreground">Filter, register, and pair physical diagnostic keys.</p>
+                    </div>
+                    <ActionBar
+                        onGenerateClick={() => setGenerateModalOpen(true)}
+                        onIngestClick={() => setIngestModalOpen(true)}
+                        onTransitionStart={() => setTableLoading(true)}
+                    />
+                    <DeviceTable
+                        devices={initialDevices}
+                        onShowQR={handleShowQR}
+                        onDelete={handleDelete}
+                        onUnpair={handleUnpair}
+                        loading={tableLoading}
+                    />
+                </div>
 
-                            {/* Filters & Actions */}
-                            <ActionBar
-                                onGenerateClick={() => setGenerateModalOpen(true)}
-                                onIngestClick={() => setIngestModalOpen(true)}
-                                onTransitionStart={() => setTableLoading(true)}
-                            />
-
-                            {/* Table */}
-                            <DeviceTable
-                                devices={initialDevices}
-                                onShowQR={handleShowQR}
-                                onDelete={handleDelete}
-                                onUnpair={handleUnpair}
-                                loading={tableLoading}
-                            />
-                        </>
-                    )}
-
-                    {activeTab === 'knowledge' && (
-                        <>
-                            {/* Knowledge Base Heading */}
-                            <div className="space-y-1">
-                                <h1 className="text-2xl font-bold tracking-tight">RAG Ingestion Center</h1>
-                                <p className="text-sm text-muted-foreground">
-                                    Sync service manuals and vehicle databases to fuel context search on mobile endpoints.
-                                </p>
-                            </div>
-
-                            <KnowledgeBase refreshTrigger={ingestModalOpen} />
-                        </>
-                    )}
-                </main>
-            </div>
+                {/* Section 3: Knowledge Base Catalog */}
+                <div className="space-y-4 border-t border-border/20 pt-6">
+                    <div className="space-y-0.5">
+                        <h2 className="text-base font-semibold tracking-tight">Vehicle Knowledge Base</h2>
+                        <p className="text-xs text-muted-foreground">Sync repair manuals and databases to feed mobile diagnostics.</p>
+                    </div>
+                    <KnowledgeBase refreshTrigger={ingestModalOpen} />
+                </div>
+            </main>
 
             {/* Modals Container */}
             <GenerateModal

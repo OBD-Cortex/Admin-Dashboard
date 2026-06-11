@@ -35,28 +35,32 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
-            <Card className="w-full max-w-sm">
-                <CardHeader className="space-y-1 text-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mx-auto mb-2">
-                        <KeyRound className="h-6 w-6" />
+        <div className="relative flex min-h-screen items-center justify-center bg-background p-4 overflow-hidden">
+            {/* Ambient blur backdrops */}
+            <div className="absolute top-[-20%] left-[-20%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+
+            <Card className="w-full max-w-sm border border-border/40 bg-card/60 backdrop-blur-md shadow-2xl rounded-xl relative z-10">
+                <CardHeader className="space-y-1.5 text-center pb-4 pt-6">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary border border-border/30 mx-auto mb-3 shadow-inner">
+                        <KeyRound className="h-4.5 w-4.5 text-foreground" />
                     </div>
-                    <CardTitle className="text-xl font-bold tracking-tight">Admin Gate</CardTitle>
-                    <CardDescription>
-                        Enter your manufacturer passcode to unlock the diagnostic console.
+                    <CardTitle className="text-sm font-semibold tracking-tight text-foreground font-title uppercase">Manufacturer Admin Gate</CardTitle>
+                    <CardDescription className="text-xs text-muted-foreground">
+                        Enter passcode to unlock the diagnostic control console.
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pb-6">
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         {error && (
-                            <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-xs text-destructive">
+                            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-2.5 text-[11px] text-destructive font-medium text-center font-mono">
                                 {error}
                             </div>
                         )}
 
                         <div className="space-y-2">
                             <input
-                                className="w-full px-3 py-2 text-center text-sm rounded-md border border-input bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                className="w-full h-10 px-3 py-2 text-center text-sm rounded-lg border border-border/40 bg-background/80 placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/40 disabled:cursor-not-allowed disabled:opacity-50 font-mono tracking-widest text-foreground transition-all duration-200"
                                 type="password"
                                 placeholder="••••••••"
                                 value={password}
@@ -67,13 +71,13 @@ export default function LoginPage() {
                         </div>
 
                         <Button
-                            className="w-full font-semibold"
+                            className="w-full h-10 text-xs font-semibold cursor-pointer bg-primary hover:bg-primary/95 text-primary-foreground border border-border shadow-sm transition-all duration-200 rounded-lg"
                             type="submit"
                             disabled={loading || !password}
                         >
                             {loading ? (
                                 <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                                     Unlocking...
                                 </>
                             ) : (

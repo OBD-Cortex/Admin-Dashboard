@@ -300,10 +300,10 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
                             {/* Logs console */}
                             {logs.length > 0 && (
-                                <div className="rounded-lg border bg-black p-3 font-mono text-[11px] leading-relaxed text-slate-300 max-h-[140px] overflow-y-auto space-y-1">
+                                <div className="rounded-lg border bg-background p-3 font-mono text-[11px] leading-relaxed text-foreground max-h-[140px] overflow-y-auto space-y-1">
                                     {logs.map((log, idx) => (
                                         <div key={idx} className="flex gap-2">
-                                            <span className="text-slate-500">[{log.timestamp}]</span>
+                                            <span className="text-muted-foreground/60">[{log.timestamp}]</span>
                                             <span className={cn(
                                                 log.type === 'error' && "text-red-400",
                                                 log.type === 'success' && "text-green-400"
