@@ -100,7 +100,7 @@ export default function ActionBar({
 
             {/* Ingest Document Button */}
             <button
-                className="btn-retro-secondary"
+                className="btn-secondary"
                 onClick={onIngestClick}
                 style={{ marginLeft: 'auto' }}
             >

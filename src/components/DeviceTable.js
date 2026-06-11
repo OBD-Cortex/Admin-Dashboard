@@ -80,7 +80,7 @@ export default function DeviceTable({ devices, onShowQR, onDelete, onUnpair, loa
                                         <span className="cell-vin">{device.vin || '—'}</span>
                                         {hasHistory && (
                                             <button 
-                                                className="btn-retro-mini"
+                                                className="btn-mini"
                                                 onClick={() => toggleExpand(device.device_token)}
                                             >
                                                 {device.vehicles.length} Cars {isExpanded ? '▲' : '▼'}
