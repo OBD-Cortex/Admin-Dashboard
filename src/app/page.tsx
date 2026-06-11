@@ -1,12 +1,17 @@
+// @ts-ignore
 import { fetchFromAdminService } from '@/lib/adminServiceApi';
 import ClientDashboard from '@/components/ClientDashboard';
 
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage({ searchParams }) {
-    // Note: in Next.js 15, searchParams is technically a Promise, so we should await it if needed,
-    // but in 14 it's an object. Let's handle it safely by awaiting it if it's a promise,
-    // or just accessing it directly.
+interface PageProps {
+    searchParams: Promise<{
+        search?: string;
+        status?: string;
+    }>;
+}
+
+export default async function HomePage({ searchParams }: PageProps) {
     const resolvedParams = await searchParams;
     const search = resolvedParams?.search || '';
     const status = resolvedParams?.status || 'all';

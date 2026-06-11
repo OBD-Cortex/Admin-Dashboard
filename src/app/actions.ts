@@ -2,10 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+// @ts-ignore
 import { fetchFromAdminService } from '@/lib/adminServiceApi';
+// @ts-ignore
 import { validatePassword } from '@/lib/auth';
 
-export async function deleteDevice(token, force = false) {
+export async function deleteDevice(token: string, force: boolean = false) {
     try {
         const query = force ? `?token=${encodeURIComponent(token)}&force=true` : `?token=${encodeURIComponent(token)}`;
         await fetchFromAdminService(`/api/admin/devices/${token}${query}`, {
@@ -13,77 +15,78 @@ export async function deleteDevice(token, force = false) {
         });
         revalidatePath('/');
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         return { error: error.message || 'Failed to delete device' };
     }
 }
 
-export async function unpairDevice(token) {
+export async function unpairDevice(token: string) {
     try {
         await fetchFromAdminService(`/api/admin/devices/${encodeURIComponent(token)}/unpair`, {
             method: 'POST',
         });
         revalidatePath('/');
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         return { error: error.message || 'Failed to unpair device' };
     }
 }
 
-export async function generateDevices(count) {
+export async function generateDevices(count: number | string) {
     try {
         const data = await fetchFromAdminService('/api/admin/devices/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ count: parseInt(count, 10) }),
+            body: JSON.stringify({ count: parseInt(count as string, 10) }),
         });
         revalidatePath('/');
         return { success: true, data };
-    } catch (error) {
+    } catch (error: any) {
         return { error: error.message || 'Failed to generate devices' };
     }
 }
+
 export async function getKnowledgeBase() {
     try {
         const data = await fetchFromAdminService('/api/admin/knowledge', { method: 'GET' });
         return { documents: data.documents };
-    } catch (error) {
+    } catch (error: any) {
         return { error: error.message || 'Failed to fetch knowledge base' };
     }
 }
 
-export async function deleteKnowledgeDocument(source) {
+export async function deleteKnowledgeDocument(source: string) {
     try {
         await fetchFromAdminService(`/api/admin/knowledge/${encodeURIComponent(source)}`, { method: 'DELETE' });
         revalidatePath('/');
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         return { error: error.message || 'Failed to delete document' };
     }
 }
 
-export async function ingestDocument(formData) {
+export async function ingestDocument(formData: FormData) {
     try {
         const data = await fetchFromAdminService('/api/ingest', {
             method: 'POST',
             body: formData,
         });
         return { success: true, ...data };
-    } catch (error) {
+    } catch (error: any) {
         return { error: error.message || 'Upload to gateway failed' };
     }
 }
 
-export async function getIngestStatus(jobId) {
+export async function getIngestStatus(jobId: string) {
     try {
         const data = await fetchFromAdminService(`/api/ingest/status?jobId=${jobId}`, { method: 'GET' });
         return { success: true, ...data };
-    } catch (error) {
+    } catch (error: any) {
         return { error: error.message || 'Failed to check status' };
     }
 }
 
-export async function login(password) {
+export async function login(password: string) {
     try {
         if (!password) {
             return { error: 'Password is required' };
