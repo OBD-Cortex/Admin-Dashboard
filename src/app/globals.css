@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
-
 @theme {
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
