@@ -1,13 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { logout } from '@/app/actions';
 
 export default function Header({ ragStatus }) {
     const router = useRouter();
 
     const handleLogout = async () => {
         try {
-            await fetch('/api/auth', { method: 'DELETE' });
+            await logout();
         } catch (err) {
             // proceed regardless
         }

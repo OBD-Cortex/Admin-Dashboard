@@ -82,3 +82,38 @@ export async function getIngestStatus(jobId) {
         return { error: error.message || 'Failed to check status' };
     }
 }
+
+export async function login(password) {
+    try {
+        if (!password) {
+            return { error: 'Password is required' };
+        }
+
+        if (!validatePassword(password)) {
+            return { error: 'Invalid password' };
+        }
+
+        const cookieStore = await cookies();
+        cookieStore.set('obd_session', 'authenticated', {
+            path: '/',
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: true,
+            maxAge: 24 * 60 * 60, // 24 hours
+        });
+
+        return { success: true };
+    } catch (error) {
+        return { error: 'Authentication failed' };
+    }
+}
+
+export async function logout() {
+    try {
+        const cookieStore = await cookies();
+        cookieStore.delete('obd_session');
+        return { success: true };
+    } catch (error) {
+        return { error: 'Logout failed' };
+    }
+}
