@@ -92,7 +92,7 @@ export default function DeviceTable({
                                     </TableCell>
                                     <TableCell className="font-mono text-xs">
                                         {device.device_id ? (
-                                            <span className="text-blue-500 font-semibold">
+                                            <span className="text-foreground font-semibold">
                                                 #{device.device_id}
                                             </span>
                                         ) : (
@@ -133,10 +133,10 @@ export default function DeviceTable({
                                             <span
                                                 className={cn(
                                                     "h-1.5 w-1.5 rounded-full shrink-0",
-                                                    device.status === 'paired' && "bg-green-500",
-                                                    device.status === 'registered' && "bg-blue-500",
-                                                    device.status === 'manufactured' && "bg-slate-400",
-                                                    device.status === 'failed' && "bg-red-500"
+                                                    device.status === 'paired' && "bg-foreground",
+                                                    device.status === 'registered' && "bg-muted-foreground",
+                                                    device.status === 'manufactured' && "bg-muted-foreground/40",
+                                                    device.status === 'failed' && "bg-transparent border border-muted-foreground"
                                                 )}
                                             />
                                             <span className="capitalize text-[11px]">
@@ -166,7 +166,7 @@ export default function DeviceTable({
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => onUnpair(device.device_token)}
-                                                    className="h-8 w-8 text-yellow-600 dark:text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-600"
+                                                    className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
                                                     title="Unpair vehicle"
                                                 >
                                                     <Unlink className="h-4 w-4" />
@@ -178,7 +178,7 @@ export default function DeviceTable({
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => onDelete(device.device_token)}
-                                                className="h-8 w-8 text-red-500 hover:bg-red-500/10 hover:text-red-500"
+                                                className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
                                                 title="Decommission device"
                                             >
                                                 <Trash2 className="h-4 w-4" />

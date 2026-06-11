@@ -256,7 +256,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         </div>
                     ) : (
                         <div className="flex items-center gap-3 rounded-lg border p-4 bg-muted/30 relative group">
-                            <FileText className={cn("h-8 w-8", file.name.endsWith('.pdf') ? 'text-red-500' : 'text-blue-500')} />
+                            <FileText className="h-8 w-8 text-foreground" />
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-foreground truncate pr-6">{file.name}</p>
                                 <p className="text-xs text-muted-foreground">
@@ -292,7 +292,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                 <div
                                     className={cn(
                                         "h-full transition-all duration-300",
-                                        jobStatus === 'failed' ? "bg-destructive" : jobStatus === 'completed' ? "bg-green-500" : "bg-primary"
+                                        jobStatus === 'failed' ? "bg-destructive" : "bg-foreground"
                                     )}
                                     style={{ width: `${progressPercent}%` }}
                                 />
@@ -305,8 +305,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                         <div key={idx} className="flex gap-2">
                                             <span className="text-muted-foreground/60">[{log.timestamp}]</span>
                                             <span className={cn(
-                                                log.type === 'error' && "text-red-400",
-                                                log.type === 'success' && "text-green-400"
+                                                log.type === 'error' && "text-muted-foreground line-through",
+                                                log.type === 'success' && "text-foreground font-semibold"
                                             )}>
                                                 {log.text}
                                             </span>

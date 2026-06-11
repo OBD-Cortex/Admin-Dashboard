@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '@/app/actions';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { KeyRound, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -41,10 +41,7 @@ export default function LoginPage() {
             <div className="absolute bottom-[-20%] right-[-20%] w-[550px] h-[550px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
             <Card className="w-full max-w-sm border border-border bg-card shadow-2xl rounded-lg relative z-10">
-                <CardHeader className="text-center pb-4 pt-6">
-                    <CardTitle className="text-lg font-bold tracking-tight text-foreground">Login</CardTitle>
-                </CardHeader>
-                <CardContent className="pb-6">
+                <CardContent className="pt-6 pb-6">
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         {error && (
                             <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-2.5 text-[11px] text-destructive font-medium text-center font-mono">

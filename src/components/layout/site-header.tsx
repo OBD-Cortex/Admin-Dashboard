@@ -37,10 +37,10 @@ export function SiteHeader({ adminServiceStatus }: SiteHeaderProps) {
                 <div 
                     className={cn(
                         "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold select-none transition-colors",
-                        adminServiceStatus === 'connected' && "border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-500",
-                        adminServiceStatus === 'disconnected' && "border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-500",
-                        adminServiceStatus === 'not_configured' && "border-yellow-500/20 bg-yellow-500/5 text-yellow-600 dark:text-yellow-500",
-                        adminServiceStatus === 'loading' && "border-slate-500/20 bg-slate-500/5 text-slate-500 dark:text-slate-500"
+                        adminServiceStatus === 'connected' && "border-foreground/20 bg-foreground/5 text-foreground",
+                        adminServiceStatus === 'disconnected' && "border-muted-foreground/20 bg-muted-foreground/5 text-muted-foreground/70",
+                        adminServiceStatus === 'not_configured' && "border-muted-foreground/10 bg-transparent text-muted-foreground/50",
+                        adminServiceStatus === 'loading' && "border-muted-foreground/20 bg-transparent text-muted-foreground"
                     )}
                     title={
                         adminServiceStatus === 'connected' ? 'Admin Service is online' :

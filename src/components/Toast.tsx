@@ -68,13 +68,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                             className={cn(
                                 "flex items-start gap-3 p-4 rounded-lg border bg-card text-card-foreground shadow-lg transition-all duration-300 pointer-events-auto",
                                 t.removing ? "translate-x-full opacity-0" : "translate-x-0 opacity-100",
-                                isSuccess && "border-green-500/30 bg-green-500/5",
-                                isError && "border-red-500/30 bg-red-500/5"
+                                isSuccess && "border-border bg-muted/40",
+                                isError && "border-border bg-muted/40"
                             )}
                         >
-                            {isSuccess && <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />}
-                            {isError && <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />}
-                            {!isSuccess && !isError && <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />}
+                            {isSuccess && <CheckCircle2 className="h-5 w-5 text-foreground shrink-0 mt-0.5" />}
+                            {isError && <AlertCircle className="h-5 w-5 text-foreground shrink-0 mt-0.5" />}
+                            {!isSuccess && !isError && <Info className="h-5 w-5 text-foreground shrink-0 mt-0.5" />}
                             
                             <div className="flex-1 text-sm font-medium leading-normal">
                                 {t.message}

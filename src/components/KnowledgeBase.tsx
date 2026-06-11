@@ -121,7 +121,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                                             size="icon"
                                             onClick={() => handleDelete(doc.source)}
                                             disabled={deleting === doc.source}
-                                            className="h-8 w-8 text-red-500 hover:bg-red-500/10 hover:text-red-500"
+                                            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
                                             title="Delete manual asset"
                                         >
                                             {deleting === doc.source ? (
