@@ -1,4 +1,5 @@
 import { loadEnvSecrets } from './env';
+import crypto from 'crypto';
 
 // Ensure environment variables are registered
 loadEnvSecrets();
@@ -12,20 +13,51 @@ loadEnvSecrets();
  * @param {object} options Fetch options (method, body, headers, cache, etc.)
  * @returns {Promise<any>} Parsed JSON response from the backend.
  */
+function generateAdminJwt(secret) {
+    const header = { alg: "HS256", typ: "JWT" };
+    const payload = {
+        iss: "obd-cortex-admin",
+        aud: "obd-cortex-admin-api",
+        exp: Math.floor(Date.now() / 1000) + 60 // 60 seconds
+    };
+    
+    const encodeBase64Url = (obj) => {
+        return Buffer.from(JSON.stringify(obj))
+            .toString('base64')
+            .replace(/=/g, '')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_');
+    };
+    
+    const encodedHeader = encodeBase64Url(header);
+    const encodedPayload = encodeBase64Url(payload);
+    
+    const signatureInput = `${encodedHeader}.${encodedPayload}`;
+    
+    const signature = crypto.createHmac('sha256', secret)
+        .update(signatureInput)
+        .digest('base64')
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+        
+    return `${signatureInput}.${signature}`;
+}
+
 export async function fetchFromRag(path, options = {}) {
     const ragApiUrl = process.env.RAG_API_URL;
-    const apiKey = process.env.MOBILE_API_KEY;
+    const secret = process.env.ADMIN_JWT_SECRET;
 
-    if (!ragApiUrl || !apiKey) {
-        console.error('[RAG API Client] Server configuration error: RAG_API_URL or MOBILE_API_KEY is missing.');
+    if (!ragApiUrl || !secret) {
+        console.error('[RAG API Client] Server configuration error: RAG_API_URL or ADMIN_JWT_SECRET is missing.');
         throw { status: 500, message: 'Server configuration error: Backend credentials are not configured.' };
     }
 
     const url = `${ragApiUrl.replace(/\/$/, '')}${path}`;
     const headers = new Headers(options.headers || {});
     
-    // Inject the secure mobile API key required by the FastAPI server
-    headers.set('X-API-Key', apiKey);
+    // Inject the native HS256 JWT
+    headers.set('Authorization', `Bearer ${generateAdminJwt(secret)}`);
 
     // Merge headers back into options. Do not explicitly set 'Content-Type' for FormData 
     // to allow the browser/runtime to automatically compute the boundary string.

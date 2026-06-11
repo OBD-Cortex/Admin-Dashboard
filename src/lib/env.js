@@ -9,8 +9,8 @@ export function loadEnvSecrets() {
     if (!process.env.RAG_API_URL) {
         console.warn("[!] Warning: RAG_API_URL is missing in environment.");
     }
-    if (!process.env.MOBILE_API_KEY) {
-        console.warn("[!] Warning: MOBILE_API_KEY is missing in environment.");
+    if (!process.env.ADMIN_JWT_SECRET) {
+        console.warn("[!] Warning: ADMIN_JWT_SECRET is missing in environment.");
     }
     if (!process.env.ADMIN_PASSWORD_HASH) {
         console.warn("[!] Warning: ADMIN_PASSWORD_HASH is missing in environment.");
