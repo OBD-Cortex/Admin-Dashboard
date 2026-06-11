@@ -2,16 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { getKnowledgeBase, deleteKnowledgeDocument } from '@/app/actions';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { FileText, Trash2, Loader2, Database, AlertCircle } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 interface Document {
@@ -68,73 +58,89 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                <span className="text-sm font-medium">Loading knowledge assets...</span>
+            <div className="flex flex-col items-center justify-center py-20 text-neutral-500 gap-3 font-mono">
+                <svg className="h-6 w-6 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span className="text-[10px] font-bold tracking-widest uppercase">LOADING KNOWLEDGE SEGMENTS...</span>
             </div>
         );
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-1">
-                <Database className="h-5 w-5 text-muted-foreground" />
-                <h2 className="text-lg font-bold tracking-tight">Knowledge Base</h2>
+        <div className="space-y-4 font-mono text-xs">
+            <div className="flex items-center gap-2 pb-1 border-b border-neutral-900">
+                <svg className="h-4 w-4 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+                </svg>
+                <h2 className="text-xs font-bold tracking-widest uppercase text-white">KNOWLEDGE REPOSITORY</h2>
             </div>
             
-            <div className="rounded-md border bg-card overflow-hidden">
+            <div className="border border-neutral-900 bg-black overflow-hidden">
                 {documents.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-center border-dashed border-2 rounded-md m-4">
-                        <FileText className="h-8 w-8 text-muted-foreground mb-3" />
-                        <h3 className="font-semibold text-sm">No knowledge manual ingested</h3>
-                        <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                            Click on the "Ingest Document" button in the Dashboard view to upload repair manuals (PDF), error sheets (CSV), or diagnostic guidelines.
+                    <div className="flex flex-col items-center justify-center py-16 text-center border-dashed border border-neutral-800 m-4 bg-neutral-950/20">
+                        <svg className="h-8 w-8 text-neutral-700 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                        </svg>
+                        <h3 className="font-bold text-xs text-white uppercase tracking-wider">No assets ingested</h3>
+                        <p className="text-[10px] text-neutral-500 mt-1 uppercase max-w-sm leading-relaxed">
+                            Upload manuals (PDF), DTC tables (CSV), or diagnostic guidelines using the "Ingest" action.
                         </p>
                     </div>
                 ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Source File</TableHead>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Ingested Chunks</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-neutral-900 text-neutral-400 font-bold uppercase tracking-wider text-[10px] bg-neutral-950/40">
+                                <th className="p-3">Source File</th>
+                                <th className="p-3">Type</th>
+                                <th className="p-3">Ingested Chunks</th>
+                                <th className="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-neutral-900">
                             {documents.map((doc) => (
-                                <TableRow key={doc.source} className="hover:bg-muted/30">
-                                    <TableCell className="font-mono text-xs font-semibold max-w-[250px] truncate">
+                                <tr key={doc.source} className="hover:bg-neutral-950/40 transition-colors">
+                                    <td className="p-3 font-semibold text-white truncate max-w-[250px] select-all">
                                         {doc.source}
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-muted-foreground/10 text-[10px]">
+                                    </td>
+                                    <td className="p-3">
+                                        <span className="inline-flex items-center border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-[9px] font-bold text-neutral-400 uppercase">
                                             {doc.doc_type}
                                         </span>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground text-xs">
-                                        {doc.chunks} vector segments
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
+                                    </td>
+                                    <td className="p-3 text-neutral-400">
+                                        {doc.chunks} VECTOR SEGMENTS
+                                    </td>
+                                    <td className="p-3 text-right">
+                                        <button
                                             onClick={() => handleDelete(doc.source)}
                                             disabled={deleting === doc.source}
-                                            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
-                                            title="Delete manual asset"
+                                            className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 text-neutral-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+                                            title="DELETE DOCUMENT"
                                         >
                                             {deleting === doc.source ? (
-                                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                                <svg className="h-3 w-3 animate-spin text-neutral-500" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                </svg>
                                             ) : (
-                                                <Trash2 className="h-4 w-4" />
+                                                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="3 6 5 6 21 6" />
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                </svg>
                                             )}
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
+                                        </button>
+                                    </td>
+                                </tr>
                             ))}
-                        </TableBody>
-                    </Table>
+                        </tbody>
+                    </table>
                 )}
             </div>
         </div>

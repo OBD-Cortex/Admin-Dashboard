@@ -1,9 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Cpu, Factory, Key, Link as LinkIcon } from 'lucide-react';
-
 import { Stats } from '@/types';
 
 interface StatsGridProps {
@@ -12,34 +9,69 @@ interface StatsGridProps {
 
 export default function StatsGrid({ stats }: StatsGridProps) {
     const cards = [
-        { label: 'Total Devices', key: 'total', icon: Cpu, desc: 'All generated keys' },
-        { label: 'Manufactured', key: 'manufactured', icon: Factory, desc: 'Offline stage keys' },
-        { label: 'Registered', key: 'registered', icon: Key, desc: 'Provisioned on servers' },
-        { label: 'Paired', key: 'paired', icon: LinkIcon, desc: 'Actively linked to vehicles' },
+        {
+            label: 'TOTAL DEVICES',
+            key: 'total',
+            desc: 'ALL CRYPTOGRAPHIC HARDWARE KEYS',
+            icon: (
+                <svg className="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                </svg>
+            )
+        },
+        {
+            label: 'MANUFACTURED',
+            key: 'manufactured',
+            desc: 'KEYS GENERATED BUT UNASSIGNED',
+            icon: (
+                <svg className="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+            )
+        },
+        {
+            label: 'REGISTERED',
+            key: 'registered',
+            desc: 'PROVISIONED IN COGNITO USERPOOL',
+            icon: (
+                <svg className="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m-5 8a5 5 0 1110 0a5 5 0 01-10 0zm-2 0H3m3-3L3 17m3 3L3 17" />
+                </svg>
+            )
+        },
+        {
+            label: 'PAIRED',
+            key: 'paired',
+            desc: 'CONNECTED TO AN OWNER VEHICLE',
+            icon: (
+                <svg className="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+            )
+        },
     ];
 
     return (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-px bg-neutral-900 border border-neutral-900 sm:grid-cols-2 lg:grid-cols-4 font-mono">
             {cards.map((card) => {
-                const Icon = card.icon;
                 const value = stats ? stats[card.key] : null;
                 return (
-                    <Card key={card.key} className="overflow-hidden">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-semibold text-muted-foreground">
+                    <div key={card.key} className="bg-black p-5 flex flex-col justify-between min-h-[120px]">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold tracking-widest text-neutral-400">
                                 {card.label}
-                            </CardTitle>
-                            <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold tracking-tight text-foreground">
-                                {value !== null ? value : '—'}
-                            </div>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                            </span>
+                            {card.icon}
+                        </div>
+                        <div className="mt-4 flex flex-col gap-1">
+                            <span className="text-3xl font-light tracking-tight text-white">
+                                {value !== null ? String(value).padStart(2, '0') : '——'}
+                            </span>
+                            <span className="text-[9px] font-bold tracking-wider text-neutral-500">
                                 {card.desc}
-                            </p>
-                        </CardContent>
-                    </Card>
+                            </span>
+                        </div>
+                    </div>
                 );
             })}
         </div>
