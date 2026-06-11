@@ -37,8 +37,8 @@ const TableBody = React.forwardRef<
 TableBody.displayName = "TableBody"
 
 const TableFooter = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
+  HTMLTableElement,
+  React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
   <table
     ref={ref}
