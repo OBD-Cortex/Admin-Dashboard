@@ -22,25 +22,6 @@ import { loadEnvSecrets } from './env';
 // Ensure environment secrets are mapped before reading credentials
 loadEnvSecrets();
 
-// The standard cookie name used to store token keys
-const COOKIE_NAME = 'obd_session';
-
-// Session lifetime configuration (24 hours)
-const TOKEN_LIFETIME_MS = 24 * 60 * 60 * 1000;
-
-/**
- * Retrieves the cryptographic secret key used for signing session tokens.
- * Requires process.env.SESSION_SECRET to be defined.
- * @returns {string} HMAC secret key.
- */
-function getSecret() {
-    const secret = process.env.SESSION_SECRET;
-    if (!secret) {
-        throw new Error('SESSION_SECRET is not configured in the environment.');
-    }
-    return secret;
-}
-
 /**
  * Validates user-supplied passwords against the SHA-256 hash in the environment.
  * Uses a timing-safe equality check to prevent timing attack vectors.
@@ -63,4 +44,3 @@ export function validatePassword(password) {
     return crypto.timingSafeEqual(expectedBuffer, inputBuffer);
 }
 
-export { COOKIE_NAME };

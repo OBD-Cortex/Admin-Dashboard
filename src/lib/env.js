@@ -15,7 +15,4 @@ export function loadEnvSecrets() {
     if (!process.env.ADMIN_PASSWORD_HASH) {
         console.warn("[!] Warning: ADMIN_PASSWORD_HASH is missing in environment.");
     }
-    if (!process.env.SESSION_SECRET) {
-        console.warn("[!] Warning: SESSION_SECRET is missing in environment.");
-    }
 }
