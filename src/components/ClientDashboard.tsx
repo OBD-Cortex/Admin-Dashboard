@@ -106,21 +106,13 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             <SiteHeader adminServiceStatus={adminServiceStatus} />
 
             <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">
-                {/* Diagnostics Console Overview */}
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-bold tracking-tight font-title uppercase">Diagnostics Control Center</h1>
-                    <p className="text-xs text-muted-foreground">
-                        Manage, provision, and decommission manufacturer diagnostic hardware tokens and knowledge bases.
-                    </p>
-                </div>
-
                 {/* Section 1: Dashboard Metrics */}
                 <StatsGrid stats={initialStats} />
 
-                {/* Section 2: Fleet Manager */}
+                {/* Section 2: Device Manager */}
                 <div className="space-y-4 border-t border-border/20 pt-6">
                     <div className="space-y-0.5">
-                        <h2 className="text-base font-semibold tracking-tight">Device Fleet Management</h2>
+                        <h2 className="text-base font-semibold tracking-tight">Device Management</h2>
                         <p className="text-xs text-muted-foreground">Filter, register, and pair physical diagnostic keys.</p>
                     </div>
                     <ActionBar

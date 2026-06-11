@@ -45,7 +45,7 @@ export default function LoginPage() {
                     <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary border border-border/30 mx-auto mb-3 shadow-inner">
                         <KeyRound className="h-4.5 w-4.5 text-foreground" />
                     </div>
-                    <CardTitle className="text-sm font-semibold tracking-tight text-foreground font-title uppercase">Manufacturer Admin Gate</CardTitle>
+                    <CardTitle className="text-sm font-semibold tracking-tight text-foreground">Manufacturer Admin Gate</CardTitle>
                     <CardDescription className="text-xs text-muted-foreground">
                         Enter passcode to unlock the diagnostic control console.
                     </CardDescription>

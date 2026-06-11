@@ -108,7 +108,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                                         {doc.source}
                                     </TableCell>
                                     <TableCell>
-                                        <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-muted-foreground/10 uppercase tracking-wider text-[10px]">
+                                        <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-muted-foreground/10 text-[10px]">
                                             {doc.doc_type}
                                         </span>
                                     </TableCell>

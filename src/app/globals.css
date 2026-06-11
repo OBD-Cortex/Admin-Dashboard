@@ -23,6 +23,9 @@
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-title: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -62,35 +65,35 @@
   }
 
   .dark {
-    /* Dim Mode: Sophisticated Slate/Charcoal Mid-tone */
-    --background: 220 12% 28%;
-    --foreground: 220 10% 98%;
+    /* Dim Mode: Warm Charcoal & Gold Accent */
+    --background: 270 5% 8%;
+    --foreground: 240 2% 96%;
 
-    --card: 220 12% 34%;
-    --card-foreground: 220 10% 98%;
+    --card: 270 7% 12%;
+    --card-foreground: 240 2% 96%;
 
-    --popover: 220 12% 34%;
-    --popover-foreground: 220 10% 98%;
+    --popover: 270 7% 12%;
+    --popover-foreground: 240 2% 96%;
 
-    /* Primary highlights */
-    --primary: 220 10% 98%;
-    --primary-foreground: 220 12% 20%;
+    /* Primary highlight: Gold/bronze text/button color */
+    --primary: 39 49% 56%;
+    --primary-foreground: 270 5% 8%;
 
-    --secondary: 220 12% 22%;
-    --secondary-foreground: 220 10% 98%;
+    --secondary: 270 6% 10%;
+    --secondary-foreground: 240 2% 96%;
 
-    --muted: 220 12% 22%;
-    --muted-foreground: 220 10% 82%;
+    --muted: 270 6% 10%;
+    --muted-foreground: 270 3% 66%;
 
-    --accent: 220 12% 38%;
-    --accent-foreground: 220 10% 98%;
+    --accent: 270 7% 18%;
+    --accent-foreground: 240 2% 96%;
 
     --destructive: 0 74% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 12% 40%;
-    --input: 220 12% 40%;
-    --ring: 220 10% 80%;
+    --border: 270 5% 18%;
+    --input: 270 5% 18%;
+    --ring: 39 49% 56%;
   }
 }
 

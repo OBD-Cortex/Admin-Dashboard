@@ -192,7 +192,7 @@ export default function DeviceTable({
                                     <TableRow className="bg-muted/10">
                                         <TableCell colSpan={6} className="p-0">
                                             <div className="px-6 py-4 border-b">
-                                                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                                                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3">
                                                     <Car className="h-3.5 w-3.5 text-muted-foreground" />
                                                     Device Association History
                                                 </div>

@@ -26,8 +26,8 @@ export function SiteHeader({ adminServiceStatus }: SiteHeaderProps) {
         <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b bg-background/80 backdrop-blur px-6 shadow-sm">
             {/* Header Left (Brand title only) */}
             <div className="flex items-center gap-2">
-                <span className="font-bold text-lg tracking-tight font-title uppercase">
-                    OBD-Cortex Console
+                <span className="font-bold text-lg tracking-tight">
+                    OBD-Cortex Admin Dashboard
                 </span>
             </div>
 
