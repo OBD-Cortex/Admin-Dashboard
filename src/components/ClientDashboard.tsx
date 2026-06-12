@@ -37,8 +37,9 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     }, [initialDevices]);
 
     const fetchHealth = useCallback(async () => {
+        setAdminServiceStatus('loading');
         try {
-            const res = await fetch('/api/health');
+            const res = await fetch('/test-app/api/health');
             const data = await res.json();
             setAdminServiceStatus(data.adminService || 'disconnected');
         } catch {
@@ -48,8 +49,6 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
 
     useEffect(() => {
         fetchHealth();
-        const healthPoll = setInterval(fetchHealth, 30000);
-        return () => clearInterval(healthPoll);
     }, [fetchHealth]);
 
     const handleGenerated = (data: any) => {
@@ -103,7 +102,10 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
 
     return (
         <div className="flex flex-col min-h-screen w-full bg-background">
-            <SiteHeader adminServiceStatus={adminServiceStatus} />
+            <SiteHeader 
+                adminServiceStatus={adminServiceStatus} 
+                onRefreshHealth={fetchHealth} 
+            />
 
             <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">
                 {/* Section 1: Dashboard Metrics */}

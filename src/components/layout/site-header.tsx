@@ -7,9 +7,10 @@ import { cn } from '@/lib/utils';
 
 interface SiteHeaderProps {
     adminServiceStatus: string;
+    onRefreshHealth?: () => void;
 }
 
-export function SiteHeader({ adminServiceStatus }: SiteHeaderProps) {
+export function SiteHeader({ adminServiceStatus, onRefreshHealth }: SiteHeaderProps) {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -32,17 +33,32 @@ export function SiteHeader({ adminServiceStatus }: SiteHeaderProps) {
 
             {/* Header Right */}
             <div className="flex items-center gap-4">
-                {/* Health Status badge */}
-                <div 
+                {/* Test App Link */}
+                <a
+                    href="https://mydomain/test-app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-8 items-center gap-1.5 border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-mono font-medium uppercase text-white transition-colors cursor-pointer select-none"
+                    title="Open Test App"
+                >
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span>TEST APP</span>
+                </a>
+
+                {/* Health Status badge (Clickable to refresh) */}
+                <button 
+                    onClick={onRefreshHealth}
                     className={cn(
-                        "inline-flex items-center gap-1.5 border px-2.5 py-1 text-[10px] font-mono font-medium uppercase select-none transition-colors",
+                        "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-mono font-medium uppercase select-none transition-colors cursor-pointer hover:opacity-80",
                         adminServiceStatus === 'connected' ? "border-emerald-950 bg-emerald-950/10 text-emerald-400" :
                         adminServiceStatus === 'disconnected' ? "border-rose-950 bg-rose-950/10 text-rose-400" :
                         "border-blue-950 bg-blue-950/10 text-blue-400"
                     )}
                     title={
-                        adminServiceStatus === 'connected' ? 'Connected' :
-                        adminServiceStatus === 'disconnected' ? 'Offline' :
+                        adminServiceStatus === 'connected' ? 'Connected - Click to refresh' :
+                        adminServiceStatus === 'disconnected' ? 'Offline - Click to refresh' :
                         adminServiceStatus === 'not_configured' ? 'Unconfigured' : 'Loading'
                     }
                 >
@@ -66,7 +82,7 @@ export function SiteHeader({ adminServiceStatus }: SiteHeaderProps) {
                             adminServiceStatus === 'not_configured' ? 'SVC: UNCONFIGURED' : 'SVC: CHECK'
                         }
                     </span>
-                </div>
+                </button>
 
                 {/* Log Out Button */}
                 <button
