@@ -23,17 +23,14 @@ This guide outlines how to deploy the Next.js Admin Dashboard onto **Hostinger**
 Before deploying, configure your environment variables. Create a `.env` file at the root of the project:
 
 ```env
-# The URL pointing to your DigitalOcean Admin-Service deployment
+# The URL pointing to your local or deployed Admin-Service backend
 ADMIN_SERVICE_URL=https://admin.yourdomain.com
-
-# A highly secure random string used to sign session cookies
-SESSION_SECRET=your_super_secret_cookie_signing_key_here
 
 # The SHA-256 hash of your desired administrator login password
 ADMIN_PASSWORD_HASH=your_sha256_hashed_password_here
 
-# The internal API key to authenticate requests against the Admin-Service backend
-MOBILE_API_KEY=your_secure_backend_api_key_here
+# The internal HS256 secret to authenticate requests against the Admin-Service backend
+ADMIN_JWT_SECRET=your_32_byte_hex_secret_here
 ```
 
 ---
