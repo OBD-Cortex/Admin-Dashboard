@@ -17,9 +17,10 @@ import { Stats, Device } from '@/types';
 interface ClientDashboardProps {
     initialStats: Stats | null;
     initialDevices: Device[];
+    adminServiceUrl: string;
 }
 
-export default function ClientDashboard({ initialStats, initialDevices }: ClientDashboardProps) {
+export default function ClientDashboard({ initialStats, initialDevices, adminServiceUrl }: ClientDashboardProps) {
     const { toast } = useToast();
 
     // Modals states
@@ -39,7 +40,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     const fetchHealth = useCallback(async () => {
         setAdminServiceStatus('loading');
         try {
-            const res = await fetch('/test-app/api/health');
+            const res = await fetch('/api/health');
             const data = await res.json();
             setAdminServiceStatus(data.adminService || 'disconnected');
         } catch {
@@ -105,6 +106,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             <SiteHeader 
                 adminServiceStatus={adminServiceStatus} 
                 onRefreshHealth={fetchHealth} 
+                adminServiceUrl={adminServiceUrl}
             />
 
             <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">

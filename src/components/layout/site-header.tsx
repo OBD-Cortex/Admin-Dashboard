@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils';
 interface SiteHeaderProps {
     adminServiceStatus: string;
     onRefreshHealth?: () => void;
+    adminServiceUrl?: string;
 }
 
-export function SiteHeader({ adminServiceStatus, onRefreshHealth }: SiteHeaderProps) {
+export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUrl }: SiteHeaderProps) {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -35,7 +36,7 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth }: SiteHeaderPr
             <div className="flex items-center gap-4">
                 {/* Test App Link */}
                 <a
-                    href="https://mydomain/test-app"
+                    href={`${adminServiceUrl ? adminServiceUrl.replace(/\/$/, '') : ''}/test-app`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex h-8 items-center gap-1.5 border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-mono font-medium uppercase text-white transition-colors cursor-pointer select-none"
@@ -49,9 +50,12 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth }: SiteHeaderPr
 
                 {/* Health Status badge (Clickable to refresh) */}
                 <button 
+                    type="button"
                     onClick={onRefreshHealth}
+                    disabled={adminServiceStatus === 'loading'}
                     className={cn(
-                        "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-mono font-medium uppercase select-none transition-colors cursor-pointer hover:opacity-80",
+                        "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-mono font-medium uppercase select-none transition-colors hover:opacity-80",
+                        adminServiceStatus === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer",
                         adminServiceStatus === 'connected' ? "border-emerald-950 bg-emerald-950/10 text-emerald-400" :
                         adminServiceStatus === 'disconnected' ? "border-rose-950 bg-rose-950/10 text-rose-400" :
                         "border-blue-950 bg-blue-950/10 text-blue-400"
@@ -86,6 +90,7 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth }: SiteHeaderPr
 
                 {/* Log Out Button */}
                 <button
+                    type="button"
                     onClick={handleLogout}
                     className="inline-flex h-8 items-center gap-1.5 border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-mono font-medium uppercase text-white transition-colors cursor-pointer select-none"
                     title="Sign Out"
