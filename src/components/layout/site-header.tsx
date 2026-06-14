@@ -38,7 +38,7 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUr
                 <a
                     href={`${adminServiceUrl ? adminServiceUrl.replace(/\/$/, '') : ''}/test-app`}
                     target="_blank"
-                    relative="noopener noreferrer"
+                    rel="noopener noreferrer"
                     className="inline-flex h-8 items-center gap-1.5 border border-border bg-background hover:bg-muted px-3 text-[10px] font-sans font-bold uppercase text-foreground transition-colors cursor-pointer select-none rounded-lg"
                     title="Open Test App"
                 >
