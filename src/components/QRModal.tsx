@@ -9,10 +9,76 @@ interface QRModalProps {
 }
 
 export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
+    const [isDownloading, setIsDownloading] = React.useState(false);
+
     if (!isOpen || !token) return null;
 
     const pngUrl = `/api/qr?format=png&token=${encodeURIComponent(token)}`;
     const pngDownload = `/api/qr?format=png&token=${encodeURIComponent(token)}&download=1`;
+
+    const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (isDownloading) return;
+        setIsDownloading(true);
+
+        try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+
+            await new Promise<void>((resolve, reject) => {
+                img.onload = () => resolve();
+                img.onerror = () => reject(new Error('Failed to load QR code image'));
+                img.src = pngUrl;
+            });
+
+            const qrSize = 300;
+            const canvasWidth = qrSize;
+            const canvasHeight = qrSize + 60;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                throw new Error('Canvas 2D context not available');
+            }
+
+            // Draw white background
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            // Draw QR code image
+            ctx.drawImage(img, 0, 0, qrSize, qrSize);
+
+            // Draw text label below QR code
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 13px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(token, canvasWidth / 2, qrSize + 30);
+
+            // Trigger file download
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `${token}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Failed to generate PNG label:', error);
+            // Fallback download
+            const fallbackLink = document.createElement('a');
+            fallbackLink.href = pngDownload;
+            fallbackLink.download = `${token}.png`;
+            document.body.appendChild(fallbackLink);
+            fallbackLink.click();
+            document.body.removeChild(fallbackLink);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-mono">
@@ -50,18 +116,18 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
                     </div>
 
                     {/* Download option */}
-                    <a 
-                        href={pngDownload} 
-                        download
-                        className="inline-flex h-8 items-center justify-center gap-1.5 border border-neutral-850 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-bold uppercase text-white transition-colors cursor-pointer select-none w-full"
+                    <button 
+                        onClick={handleDownload}
+                        disabled={isDownloading}
+                        className="inline-flex h-8 items-center justify-center gap-1.5 border border-neutral-850 bg-neutral-950 hover:bg-neutral-900 disabled:opacity-50 px-3 text-[10px] font-bold uppercase text-white transition-colors cursor-pointer select-none w-full"
                     >
                         <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="7 10 12 15 17 10" />
                             <line x1="12" y1="15" x2="12" y2="3" />
                         </svg>
-                        <span>DOWNLOAD PNG LABEL</span>
-                    </a>
+                        <span>{isDownloading ? 'GENERATING...' : 'DOWNLOAD PNG LABEL'}</span>
+                    </button>
 
                     <button
                         onClick={onClose}
