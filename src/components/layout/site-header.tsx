@@ -24,25 +24,25 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUr
     };
 
     return (
-        <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-neutral-900 bg-black/90 backdrop-blur px-6">
+        <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-border bg-card/80 backdrop-blur px-6 shadow-sm">
             {/* Header Left */}
             <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold tracking-widest text-white uppercase">
-                    OBD-CORTEX // DASHBOARD
+                <span className="font-serif text-sm font-bold tracking-tight text-foreground uppercase">
+                    OBD-CORTEX // ADMIN
                 </span>
             </div>
 
             {/* Header Right */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                 {/* Test App Link */}
                 <a
                     href={`${adminServiceUrl ? adminServiceUrl.replace(/\/$/, '') : ''}/test-app`}
                     target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex h-8 items-center gap-1.5 border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-mono font-medium uppercase text-white transition-colors cursor-pointer select-none"
+                    relative="noopener noreferrer"
+                    className="inline-flex h-8 items-center gap-1.5 border border-border bg-background hover:bg-muted px-3 text-[10px] font-sans font-bold uppercase text-foreground transition-colors cursor-pointer select-none rounded-lg"
                     title="Open Test App"
                 >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                     <span>TEST APP</span>
@@ -54,11 +54,11 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUr
                     onClick={onRefreshHealth}
                     disabled={adminServiceStatus === 'loading'}
                     className={cn(
-                        "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-mono font-medium uppercase select-none transition-colors hover:opacity-80",
+                        "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold uppercase select-none transition-colors hover:opacity-90 rounded-lg",
                         adminServiceStatus === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer",
-                        adminServiceStatus === 'connected' ? "border-emerald-950 bg-emerald-950/10 text-emerald-400" :
-                        adminServiceStatus === 'disconnected' ? "border-rose-950 bg-rose-950/10 text-rose-400" :
-                        "border-blue-950 bg-blue-950/10 text-blue-400"
+                        adminServiceStatus === 'connected' ? "border-emerald-600/20 bg-emerald-500/10 text-emerald-800" :
+                        adminServiceStatus === 'disconnected' ? "border-rose-600/20 bg-rose-500/10 text-rose-800" :
+                        "border-blue-600/20 bg-blue-500/10 text-blue-800"
                     )}
                     title={
                         adminServiceStatus === 'connected' ? 'Connected - Click to refresh' :
@@ -74,9 +74,9 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUr
                     ) : (
                         <span className={cn(
                             "h-1.5 w-1.5 rounded-full shrink-0",
-                            adminServiceStatus === 'connected' ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" :
-                            adminServiceStatus === 'disconnected' ? "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]" :
-                            "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]"
+                            adminServiceStatus === 'connected' ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]" :
+                            adminServiceStatus === 'disconnected' ? "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.5)]" :
+                            "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]"
                         )} />
                     )}
                     <span>
@@ -92,10 +92,10 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUr
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="inline-flex h-8 items-center gap-1.5 border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-mono font-medium uppercase text-white transition-colors cursor-pointer select-none"
+                    className="inline-flex h-8 items-center gap-1.5 bg-primary hover:opacity-90 px-3 text-[10px] font-sans font-bold uppercase text-primary-foreground transition-all cursor-pointer select-none rounded-lg"
                     title="Sign Out"
                 >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="h-3.5 w-3.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     <span>LOGOUT</span>

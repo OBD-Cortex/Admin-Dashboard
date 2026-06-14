@@ -33,12 +33,10 @@ export default function DeviceTable({
 
     const toggleExpand = (token: string) => {
         setExpandedTokens((prev) => ({ ...prev, [token]: !prev[token] }));
-    };
-
-    if (loading) {
+    };    if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-neutral-500 gap-3 font-mono">
-                <svg className="h-6 w-6 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3 font-sans">
+                <svg className="h-6 w-6 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
@@ -49,14 +47,14 @@ export default function DeviceTable({
 
     if (!devices || devices.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center border border-neutral-900 bg-neutral-950/20 py-16 text-center font-mono">
-                <svg className="h-8 w-8 text-neutral-700 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="flex flex-col items-center justify-center border border-border bg-card/50 py-16 text-center font-sans rounded-2xl">
+                <svg className="h-8 w-8 text-muted-foreground/60 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                     <line x1="12" y1="9" x2="12" y2="13" />
                     <line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
-                <h3 className="font-bold text-xs text-white uppercase tracking-wider">No nodes registered</h3>
-                <p className="text-[10px] text-neutral-500 mt-1 uppercase max-w-xs leading-relaxed">
+                <h3 className="font-bold text-xs text-foreground uppercase tracking-wider">No nodes registered</h3>
+                <p className="text-[10px] text-muted-foreground mt-1 uppercase max-w-xs leading-relaxed">
                     Check search arguments or register a new cohort of tokens.
                 </p>
             </div>
@@ -64,47 +62,47 @@ export default function DeviceTable({
     }
 
     return (
-        <div className="border border-neutral-900 bg-black overflow-x-auto font-mono">
+        <div className="border border-border bg-card overflow-x-auto font-sans rounded-2xl shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr className="border-b border-neutral-900 text-neutral-400 font-bold uppercase tracking-wider text-[10px] bg-neutral-950/40">
-                        <th className="p-3">Device Token</th>
-                        <th className="p-3">ID</th>
-                        <th className="p-3">Vehicle Link</th>
-                        <th className="p-3">Status</th>
-                        <th className="p-3">Timestamp</th>
-                        <th className="p-3 text-right">Actions</th>
+                    <tr className="border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[10px] bg-muted/60">
+                        <th className="p-3.5">Device Token</th>
+                        <th className="p-3.5">ID</th>
+                        <th className="p-3.5">Vehicle Link</th>
+                        <th className="p-3.5">Status</th>
+                        <th className="p-3.5">Timestamp</th>
+                        <th className="p-3.5 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-neutral-900">
+                <tbody className="divide-y divide-border">
                     {devices.map((device) => {
                         const hasHistory = device.vehicles && device.vehicles.length > 1;
                         const isExpanded = !!expandedTokens[device.device_token];
                         return (
                             <React.Fragment key={device.device_token}>
-                                <tr className="hover:bg-neutral-950/40 transition-colors">
-                                    <td className="p-3 font-semibold select-all text-white">
+                                <tr className="hover:bg-muted/30 transition-colors">
+                                    <td className="p-3.5 font-mono font-semibold select-all text-foreground">
                                         {device.device_token}
                                     </td>
-                                    <td className="p-3 text-neutral-400">
+                                    <td className="p-3.5 text-muted-foreground">
                                         {device.device_id ? (
-                                            <span className="font-bold text-white">
+                                            <span className="font-bold text-foreground">
                                                 #{device.device_id}
                                             </span>
                                         ) : (
-                                            <span className="text-neutral-600 italic text-[10px]">UNASSIGNED</span>
+                                            <span className="text-muted-foreground/60 italic text-[10px]">UNASSIGNED</span>
                                         )}
                                     </td>
-                                    <td className="p-3">
+                                    <td className="p-3.5">
                                         <div className="flex flex-col gap-0.5">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-semibold select-all text-neutral-200">
+                                                <span className="font-semibold select-all text-foreground">
                                                     {device.vin || '—————'}
                                                 </span>
                                                 {hasHistory && (
                                                     <button
                                                         onClick={() => toggleExpand(device.device_token)}
-                                                        className="h-5 px-1.5 border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 text-[9px] font-bold uppercase text-neutral-400 transition-colors flex items-center gap-1 cursor-pointer"
+                                                        className="h-5 px-2 border border-border bg-background hover:bg-muted text-[9px] font-bold uppercase text-foreground transition-colors flex items-center gap-1 cursor-pointer rounded-lg"
                                                     >
                                                         <span>{device.vehicles.length} COHORTS</span>
                                                         {isExpanded ? (
@@ -120,27 +118,27 @@ export default function DeviceTable({
                                                 )}
                                             </div>
                                             {device.brand && (
-                                                <span className="text-[10px] text-neutral-500 uppercase tracking-tight">
+                                                <span className="text-[10px] text-muted-foreground uppercase tracking-tight">
                                                     {device.brand} {device.model} ({device.year})
                                                 </span>
                                             )}
                                         </div>
                                     </td>
-                                    <td className="p-3">
+                                    <td className="p-3.5">
                                         <div className={cn(
-                                            "inline-flex items-center gap-1.5 border px-2 py-0.5 text-[9px] font-bold select-none uppercase transition-colors",
-                                            device.status === 'paired' && "border-emerald-950 bg-emerald-950/10 text-emerald-400",
-                                            device.status === 'registered' && "border-blue-950 bg-blue-950/10 text-blue-400",
-                                            device.status === 'manufactured' && "border-neutral-800 bg-neutral-950 text-neutral-300",
-                                            device.status === 'failed' && "border-rose-950 bg-rose-950/10 text-rose-400"
+                                            "inline-flex items-center gap-1.5 border px-2.5 py-0.5 text-[9px] font-bold select-none uppercase transition-colors rounded-lg",
+                                            device.status === 'paired' && "border-emerald-600/20 bg-emerald-500/10 text-emerald-800",
+                                            device.status === 'registered' && "border-blue-600/20 bg-blue-500/10 text-blue-800",
+                                            device.status === 'manufactured' && "border-border bg-background text-foreground",
+                                            device.status === 'failed' && "border-rose-600/20 bg-rose-500/10 text-rose-800"
                                         )}>
                                             <span
                                                 className={cn(
                                                     "h-1.5 w-1.5 rounded-full shrink-0",
-                                                    device.status === 'paired' && "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]",
-                                                    device.status === 'registered' && "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]",
-                                                    device.status === 'manufactured' && "bg-white shadow-[0_0_6px_rgba(255,255,255,0.4)]",
-                                                    device.status === 'failed' && "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]"
+                                                    device.status === 'paired' && "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]",
+                                                    device.status === 'registered' && "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.4)]",
+                                                    device.status === 'manufactured' && "bg-muted-foreground/60",
+                                                    device.status === 'failed' && "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.4)]"
                                                 )}
                                             />
                                             <span>
@@ -148,15 +146,15 @@ export default function DeviceTable({
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="p-3 text-neutral-500">
+                                    <td className="p-3.5 text-muted-foreground">
                                         {formatDate(device.created_at)}
                                     </td>
-                                    <td className="p-3 text-right">
+                                    <td className="p-3.5 text-right">
                                         <div className="flex justify-end items-center gap-1.5">
                                             {/* QR Code trigger */}
                                             <button
                                                 onClick={() => onShowQR(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg"
                                                 title="VIEW QR"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -171,7 +169,7 @@ export default function DeviceTable({
                                             {device.status === 'paired' && (
                                                 <button
                                                     onClick={() => onUnpair(device.device_token)}
-                                                    className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                                                    className="inline-flex h-7 w-7 items-center justify-center border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg"
                                                     title="UNPAIR VEHICLE"
                                                 >
                                                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -185,7 +183,7 @@ export default function DeviceTable({
                                             {/* Delete Trigger */}
                                             <button
                                                 onClick={() => onDelete(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-destructive/20 bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors cursor-pointer rounded-lg"
                                                 title="DECOMMISSION NODE"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -201,27 +199,27 @@ export default function DeviceTable({
 
                                 {/* Nested Vehicles History View */}
                                 {isExpanded && hasHistory && (
-                                    <tr className="bg-neutral-950/40">
-                                        <td colSpan={6} className="p-0 border-t border-b border-neutral-900">
+                                    <tr className="bg-muted/35">
+                                        <td colSpan={6} className="p-0 border-t border-b border-border">
                                             <div className="px-6 py-4">
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-neutral-400 uppercase mb-3">
-                                                    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase mb-3">
+                                                    <svg className="h-3.5 w-3.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 1 13v3c0 .6.4 1 1 1h2" />
                                                         <circle cx="7" cy="17" r="2" />
                                                         <circle cx="17" cy="17" r="2" />
                                                     </svg>
                                                     <span>COHORT ASSOCIATION LOGS</span>
                                                 </div>
-                                                <div className="space-y-2 max-w-2xl divide-y divide-neutral-900/40">
+                                                <div className="space-y-2 max-w-2xl divide-y divide-border/50">
                                                     {device.vehicles.map((v, i) => (
                                                         <div key={i} className="flex items-center justify-between text-[10px] py-2">
                                                             <div className="flex items-center gap-3">
-                                                                <span className="font-semibold text-white">{v.vin}</span>
-                                                                <span className="text-neutral-500 uppercase">
+                                                                <span className="font-semibold text-foreground">{v.vin}</span>
+                                                                <span className="text-muted-foreground uppercase">
                                                                     {v.brand} {v.model} ({v.year})
                                                                 </span>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 text-neutral-500">
+                                                            <div className="flex items-center gap-1.5 text-muted-foreground">
                                                                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                                                                     <line x1="16" y1="2" x2="16" y2="6" />

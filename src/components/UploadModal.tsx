@@ -212,11 +212,11 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-mono">
-            <div className="w-full max-w-[480px] border border-neutral-900 bg-black p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm font-sans">
+            <div className="w-full max-w-[480px] border border-border bg-card p-6 shadow-2xl rounded-2xl">
                 <div className="mb-4">
-                    <h3 className="text-xs font-bold tracking-widest text-white uppercase mb-1">INGEST RAG KNOWLEDGE</h3>
-                    <p className="text-[10px] text-neutral-500 uppercase leading-relaxed">
+                    <h3 className="text-base font-bold font-serif tracking-tight text-foreground uppercase mb-1">INGEST RAG KNOWLEDGE</h3>
+                    <p className="text-[10px] text-muted-foreground uppercase leading-relaxed">
                         Upload repair manuals, catalogs, or notes. Chunking and indexing run automatically.
                     </p>
                 </div>
@@ -230,8 +230,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
                             className={cn(
-                                "flex flex-col items-center justify-center border border-dashed rounded p-8 text-center cursor-pointer transition-colors",
-                                dragging ? "border-white bg-neutral-900/40" : "border-neutral-800 bg-neutral-950/20 hover:bg-neutral-900/20"
+                                "flex flex-col items-center justify-center border border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors",
+                                dragging ? "border-primary bg-muted" : "border-border bg-background hover:bg-muted/40"
                             )}
                         >
                             <input
@@ -241,22 +241,22 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                 accept=".pdf,.csv,.md,.txt"
                                 className="hidden"
                             />
-                            <div className="flex h-10 w-10 items-center justify-center border border-neutral-800 bg-neutral-950 rounded mb-3">
-                                <svg className="h-5 w-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <div className="flex h-10 w-10 items-center justify-center border border-border bg-card rounded-lg mb-3">
+                                <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
                             </div>
-                            <p className="text-[10px] font-bold text-white uppercase tracking-wider">Drag file or click to browse</p>
-                            <p className="text-[9px] text-neutral-500 uppercase mt-0.5">Supports PDF, CSV, MD, TXT up to 10MB</p>
+                            <p className="text-[10px] font-bold text-foreground uppercase tracking-wider">Drag file or click to browse</p>
+                            <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Supports PDF, CSV, MD, TXT up to 10MB</p>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-3 border border-neutral-900 p-4 bg-neutral-950/40 relative group">
-                            <svg className="h-8 w-8 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <div className="flex items-center gap-3 border border-border p-4 bg-background rounded-xl relative group">
+                            <svg className="h-8 w-8 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold text-white truncate pr-6 select-all">{file.name}</p>
-                                <p className="text-[9px] text-neutral-500 uppercase tracking-tight">
+                                <p className="text-xs font-bold text-foreground truncate pr-6 select-all">{file.name}</p>
+                                <p className="text-[9px] text-muted-foreground uppercase tracking-tight">
                                     {(file.size / 1024).toFixed(1)} KB — {
                                         file.name.endsWith('.pdf') ? 'PDF MANUAL' : 
                                         file.name.endsWith('.csv') ? 'CSV CATALOG' : 
@@ -267,7 +267,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             {!uploading && (
                                 <button
                                     onClick={handleRemoveFile}
-                                    className="absolute right-4 top-4 text-neutral-500 hover:text-white rounded p-0.5 transition-colors cursor-pointer"
+                                    className="absolute right-4 top-4 text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors cursor-pointer"
                                     title="REMOVE FILE"
                                 >
                                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -284,26 +284,26 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             <div className="flex justify-between text-[10px] font-bold uppercase">
                                 <span className={cn(
                                     "truncate max-w-[80%]",
-                                    jobStatus === 'completed' && "text-emerald-400",
-                                    jobStatus === 'failed' && "text-rose-400",
-                                    jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-400"
+                                    jobStatus === 'completed' && "text-emerald-800",
+                                    jobStatus === 'failed' && "text-rose-800",
+                                    jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-800"
                                 )}>
                                     {progressText || 'INGESTION QUEUED...'}
                                 </span>
                                 <span className={cn(
                                     "font-mono",
-                                    jobStatus === 'completed' && "text-emerald-400",
-                                    jobStatus === 'failed' && "text-rose-400",
-                                    jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-400"
+                                    jobStatus === 'completed' && "text-emerald-800",
+                                    jobStatus === 'failed' && "text-rose-800",
+                                    jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-800"
                                 )}>{progressPercent}%</span>
                             </div>
-                            <div className="h-1.5 w-full bg-neutral-950 border border-neutral-900 overflow-hidden">
+                            <div className="h-2 w-full bg-background border border-border overflow-hidden rounded-full">
                                 <div
                                     className={cn(
-                                        "h-full transition-all duration-300",
-                                        jobStatus === 'completed' && "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]",
-                                        jobStatus === 'failed' && "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.5)]",
-                                        jobStatus !== 'completed' && jobStatus !== 'failed' && "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]"
+                                        "h-full transition-all duration-300 rounded-full",
+                                        jobStatus === 'completed' && "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]",
+                                        jobStatus === 'failed' && "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.4)]",
+                                        jobStatus !== 'completed' && jobStatus !== 'failed' && "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.4)]"
                                     )}
                                     style={{ width: `${progressPercent}%` }}
                                 />
@@ -311,13 +311,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
                             {/* Logs console */}
                             {logs.length > 0 && (
-                                <div className="border border-neutral-900 bg-neutral-950/60 p-3 font-mono text-[10px] leading-relaxed text-neutral-400 max-h-[140px] overflow-y-auto space-y-1">
+                                <div className="border border-border bg-background p-3 font-mono text-[10px] leading-relaxed text-muted-foreground max-h-[140px] overflow-y-auto space-y-1 rounded-xl">
                                     {logs.map((log, idx) => (
                                         <div key={idx} className="flex gap-2">
-                                            <span className="text-neutral-600">[{log.timestamp}]</span>
+                                            <span className="text-muted-foreground/60">[{log.timestamp}]</span>
                                             <span className={cn(
-                                                log.type === 'error' && "text-rose-500 font-semibold",
-                                                log.type === 'success' && "text-emerald-400 font-bold"
+                                                log.type === 'error' && "text-rose-600 font-semibold",
+                                                log.type === 'success' && "text-emerald-600 font-bold",
+                                                log.type === 'info' && "text-foreground"
                                             )}>
                                                 {log.text}
                                             </span>
@@ -329,11 +330,11 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     )}
                 </div>
 
-                <div className="flex justify-end gap-3 border-t border-neutral-900 pt-4">
+                <div className="flex justify-end gap-3 border-t border-border pt-4">
                     <button
                         onClick={onClose}
                         disabled={uploading}
-                        className="h-8 border border-neutral-850 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-bold uppercase text-neutral-400 transition-colors cursor-pointer select-none"
+                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold uppercase text-foreground transition-colors cursor-pointer select-none rounded-xl"
                     >
                         {jobStatus === 'completed' ? 'CLOSE' : 'CANCEL'}
                     </button>
@@ -341,10 +342,10 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         <button 
                             onClick={handleUpload} 
                             disabled={uploading}
-                            className="h-8 border border-neutral-850 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-bold uppercase text-white transition-colors cursor-pointer select-none flex items-center gap-1.5"
+                            className="h-8 bg-primary hover:opacity-90 disabled:opacity-50 px-4 text-[10px] font-bold uppercase text-primary-foreground transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-xl"
                         >
                             {uploading && (
-                                <svg className="h-3 w-3 animate-spin text-neutral-500" fill="none" viewBox="0 0 24 24">
+                                <svg className="h-3 w-3 animate-spin text-primary-foreground" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                 </svg>

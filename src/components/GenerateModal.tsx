@@ -47,18 +47,18 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-mono">
-            <div className="w-full max-w-sm border border-neutral-900 bg-black p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm font-sans">
+            <div className="w-full max-w-sm border border-border bg-card p-6 shadow-2xl rounded-2xl">
                 <div className="mb-4">
-                    <h3 className="text-xs font-bold tracking-widest text-white uppercase mb-1">PROVISION NEW NODES</h3>
-                    <p className="text-[10px] text-neutral-500 uppercase leading-relaxed">
+                    <h3 className="text-base font-bold font-serif tracking-tight text-foreground uppercase mb-1">PROVISION NEW NODES</h3>
+                    <p className="text-[10px] text-muted-foreground uppercase leading-relaxed">
                         Generate cryptographic identity tokens for onboarding manufacturer hardware.
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                        <label htmlFor="device-count" className="block text-[10px] font-bold text-neutral-400 uppercase">
+                        <label htmlFor="device-count" className="block text-[10px] font-bold text-muted-foreground uppercase">
                             BATCH SIZE (1-50)
                         </label>
                         <input
@@ -68,16 +68,16 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
                             max="50"
                             value={count}
                             onChange={(e) => setCount(Math.min(50, Math.max(1, parseInt(e.target.value) || 1)))}
-                            className="w-full px-3 py-2 text-xs border border-neutral-900 bg-neutral-950 text-white placeholder:text-neutral-600 focus:outline-none focus:border-neutral-700 transition-all font-mono"
+                            className="w-full px-3 py-2 text-xs border border-border bg-background text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all rounded-xl font-sans"
                             required
                         />
-                        <p className="text-[9px] text-neutral-600 uppercase">
+                        <p className="text-[9px] text-muted-foreground/80 uppercase">
                             Generates matching keys (e.g. OBD-AAAA-BBBB) per droplet pipeline rules.
                         </p>
                     </div>
 
                     {error && (
-                        <div className="border border-neutral-900 bg-neutral-950 px-3 py-2 text-[10px] text-neutral-400 uppercase">
+                        <div className="border border-destructive/20 bg-destructive/10 px-3 py-2 text-[10px] text-destructive uppercase rounded-xl font-medium">
                             ERROR: {error}
                         </div>
                     )}
@@ -87,17 +87,17 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
                             type="button"
                             onClick={onClose}
                             disabled={loading}
-                            className="h-8 border border-neutral-850 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-bold uppercase text-neutral-400 transition-colors cursor-pointer select-none"
+                            className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold uppercase text-foreground transition-colors cursor-pointer select-none rounded-xl"
                         >
                             CANCEL
                         </button>
                         <button
                             type="submit"
                             disabled={loading || count < 1 || count > 50}
-                            className="h-8 border border-neutral-850 bg-neutral-950 hover:bg-neutral-900 px-3 text-[10px] font-bold uppercase text-white transition-colors cursor-pointer select-none flex items-center gap-1.5"
+                            className="h-8 bg-primary hover:opacity-90 disabled:opacity-50 px-4 text-[10px] font-bold uppercase text-primary-foreground transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-xl"
                         >
                             {loading && (
-                                <svg className="h-3 w-3 animate-spin text-neutral-500" fill="none" viewBox="0 0 24 24">
+                                <svg className="h-3 w-3 animate-spin text-primary-foreground" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                 </svg>

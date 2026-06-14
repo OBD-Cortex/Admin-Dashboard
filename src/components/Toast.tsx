@@ -65,36 +65,36 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                         <div
                             key={t.id}
                             className={cn(
-                                "flex items-start gap-3 p-4 rounded-lg border bg-black text-white shadow-lg transition-all duration-300 pointer-events-auto",
-                                isSuccess && "border-emerald-950 text-emerald-100",
-                                isError && "border-rose-950 text-rose-100",
-                                !isSuccess && !isError && "border-blue-950 text-blue-100",
+                                "flex items-start gap-3 p-4 rounded-2xl border bg-card text-foreground shadow-xl transition-all duration-300 pointer-events-auto",
+                                isSuccess && "border-emerald-600/25 bg-emerald-500/10 text-emerald-800",
+                                isError && "border-rose-600/25 bg-rose-500/10 text-rose-800",
+                                !isSuccess && !isError && "border-blue-600/25 bg-blue-500/10 text-blue-800",
                                 t.removing ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
                             )}
                         >
                             {isSuccess && (
-                                <svg className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <svg className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             )}
                             {isError && (
-                                <svg className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <svg className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             )}
                             {!isSuccess && !isError && (
-                                <svg className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <svg className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             )}
                             
-                            <div className="flex-1 text-xs font-mono leading-normal">
+                            <div className="flex-1 text-xs font-sans font-semibold leading-normal">
                                 {t.message}
                             </div>
                             
                             <button
                                 onClick={() => removeToast(t.id)}
-                                className="text-neutral-500 hover:text-white shrink-0 rounded p-0.5 transition-colors cursor-pointer"
+                                className="text-muted-foreground hover:text-foreground shrink-0 rounded-lg p-0.5 transition-colors cursor-pointer"
                             >
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

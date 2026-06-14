@@ -22,7 +22,7 @@
   --color-card-foreground: hsl(var(--card-foreground));
 
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-title: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -31,66 +31,68 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --background: 36 25% 97%; /* #FAF8F5 */
+    --foreground: 0 0% 10%; /* #191919 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card: 40 22% 93%; /* #F3EFE7 */
+    --card-foreground: 0 0% 10%; /* #191919 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover: 40 22% 93%; /* #F3EFE7 */
+    --popover-foreground: 0 0% 10%; /* #191919 */
 
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 216 47% 25%; /* #223A5E */
+    --primary-foreground: 36 25% 97%; /* #FAF8F5 */
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 36 5% 38%; /* #66625C */
+    --secondary-foreground: 36 25% 97%; /* #FAF8F5 */
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 40 22% 90%;
+    --muted-foreground: 36 5% 38%; /* #66625C */
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 216 47% 25%; /* #223A5E */
+    --accent-foreground: 36 25% 97%;
 
-    --destructive: 0 0% 30%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 12 55% 52%; /* #C85C40 */
+    --destructive-foreground: 36 25% 97%;
 
-    --border: 0 0% 89%;
-    --input: 0 0% 89%;
-    --ring: 0 0% 0%;
+    --border: 42 18% 87%; /* #E6E1D6 */
+    --input: 42 18% 87%;
+    --ring: 216 47% 25%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
-    /* Pure Black & White Monochromatic Theme */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    /* Define the exact same warm theme variables for dark mode fallback */
+    --background: 36 25% 97%; /* #FAF8F5 */
+    --foreground: 0 0% 10%; /* #191919 */
 
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 100%;
+    --card: 40 22% 93%; /* #F3EFE7 */
+    --card-foreground: 0 0% 10%; /* #191919 */
 
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 40 22% 93%; /* #F3EFE7 */
+    --popover-foreground: 0 0% 10%; /* #191919 */
 
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 216 47% 25%; /* #223A5E */
+    --primary-foreground: 36 25% 97%; /* #FAF8F5 */
 
-    --secondary: 0 0% 8%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 36 5% 38%; /* #66625C */
+    --secondary-foreground: 36 25% 97%; /* #FAF8F5 */
 
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 40 22% 90%;
+    --muted-foreground: 36 5% 38%; /* #66625C */
 
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 216 47% 25%; /* #223A5E */
+    --accent-foreground: 36 25% 97%;
 
-    --destructive: 0 0% 90%;
-    --destructive-foreground: 0 0% 0%;
+    --destructive: 12 55% 52%; /* #C85C40 */
+    --destructive-foreground: 36 25% 97%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 0 0% 100%;
+    --border: 42 18% 87%; /* #E6E1D6 */
+    --input: 42 18% 87%;
+    --ring: 216 47% 25%;
+
+    --radius: 0.75rem;
   }
 }
 
@@ -101,6 +103,10 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    background-image: 
+      radial-gradient(circle at 70% 30%, rgba(238, 158, 136, 0.11) 0%, rgba(250, 248, 245, 0) 70%),
+      radial-gradient(circle at 20% 55%, rgba(142, 216, 199, 0.09) 0%, rgba(250, 248, 245, 0) 80%);
+    background-attachment: fixed;
   }
 
   /* Hide native spin buttons on number inputs */
@@ -112,4 +118,12 @@
   input[type=number] {
     -moz-appearance: textfield;
   }
+}
+
+/* Custom styles for warm theme */
+.warm-bg {
+  background-color: #FAF8F5;
+  background-image: 
+    radial-gradient(circle at 70% 30%, rgba(238, 158, 136, 0.11) 0%, rgba(250, 248, 245, 0) 70%),
+    radial-gradient(circle at 20% 55%, rgba(142, 216, 199, 0.09) 0%, rgba(250, 248, 245, 0) 80%);
 }

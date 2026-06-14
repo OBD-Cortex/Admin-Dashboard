@@ -1,11 +1,16 @@
 import './globals.css';
-import { Lato } from 'next/font/google';
+import { Lora, Plus_Jakarta_Sans } from 'next/font/google';
 import { ToastProvider } from '@/components/Toast';
 
-const lato = Lato({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['100', '300', '400', '700', '900'],
   variable: '--font-sans',
+});
+
+const lora = Lora({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-serif',
 });
 
 export const metadata = {
@@ -15,7 +20,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className={`${lato.variable} dark`}>
+        <html lang="en" className={`${plusJakartaSans.variable} ${lora.variable}`}>
             <body className="min-h-screen bg-background font-sans antialiased">
                 <ToastProvider>{children}</ToastProvider>
             </body>
