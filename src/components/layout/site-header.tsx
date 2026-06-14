@@ -8,10 +8,9 @@ import { cn } from '@/lib/utils';
 interface SiteHeaderProps {
     adminServiceStatus: string;
     onRefreshHealth?: () => void;
-    adminServiceUrl?: string;
 }
 
-export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUrl }: SiteHeaderProps) {
+export function SiteHeader({ adminServiceStatus, onRefreshHealth }: SiteHeaderProps) {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -34,19 +33,6 @@ export function SiteHeader({ adminServiceStatus, onRefreshHealth, adminServiceUr
 
             {/* Header Right */}
             <div className="flex items-center gap-3">
-                {/* Test App Link */}
-                <a
-                    href={`${adminServiceUrl ? adminServiceUrl.replace(/\/$/, '') : ''}/test-app`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex h-8 items-center gap-1.5 border border-border bg-background hover:bg-muted px-3 text-[10px] font-sans font-bold uppercase text-foreground transition-colors cursor-pointer select-none rounded-lg"
-                    title="Open Test App"
-                >
-                    <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    <span>TEST APP</span>
-                </a>
 
                 {/* Health Status badge (Clickable to refresh) */}
                 <button 

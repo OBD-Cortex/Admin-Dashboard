@@ -17,10 +17,9 @@ import { Stats, Device } from '@/types';
 interface ClientDashboardProps {
     initialStats: Stats | null;
     initialDevices: Device[];
-    adminServiceUrl: string;
 }
 
-export default function ClientDashboard({ initialStats, initialDevices, adminServiceUrl }: ClientDashboardProps) {
+export default function ClientDashboard({ initialStats, initialDevices }: ClientDashboardProps) {
     const { toast } = useToast();
 
     // Modals states
@@ -106,7 +105,6 @@ export default function ClientDashboard({ initialStats, initialDevices, adminSer
             <SiteHeader 
                 adminServiceStatus={adminServiceStatus} 
                 onRefreshHealth={fetchHealth} 
-                adminServiceUrl={adminServiceUrl}
             />
 
             <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">

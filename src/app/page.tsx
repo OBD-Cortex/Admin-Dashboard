@@ -42,5 +42,5 @@ export default async function HomePage({ searchParams }: PageProps) {
         console.error('Failed to fetch devices:', devicesResult.reason);
     }
 
-    return <ClientDashboard initialStats={stats} initialDevices={devices} adminServiceUrl={process.env.ADMIN_SERVICE_URL || ''} />;
+    return <ClientDashboard initialStats={stats} initialDevices={devices} />;
 }
