@@ -15,6 +15,46 @@ import { deleteDevice, unpairDevice } from '@/app/actions';
 
 import { Stats, Device } from '@/types';
 
+// Helper to check health of specific service subdomains or use local fallback
+const checkHealthFor = async (service: 'admin' | 'edge' | 'app') => {
+    if (typeof window === 'undefined') return 'disconnected';
+    try {
+        const host = window.location.host;
+        const protocol = window.location.protocol;
+        
+        let url = '';
+        if (host.startsWith('admin.')) {
+            const subdomain = service === 'admin' ? 'admin' : service === 'edge' ? 'edge' : 'app';
+            url = `${protocol}//${host.replace(/^admin\./, `${subdomain}.`)}/api/health`;
+        } else {
+            // Local dev fallback proxy URL
+            url = `/api/health?service=${service}`;
+        }
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        
+        const res = await fetch(url, {
+            signal: controller.signal,
+            headers: { 'Accept': 'application/json' }
+        });
+        clearTimeout(timeoutId);
+        
+        if (res.ok) {
+            if (url.startsWith('/api/health')) {
+                const data = await res.json();
+                if (service === 'admin') return data.adminService || 'disconnected';
+                if (service === 'edge') return data.edgeService || 'disconnected';
+                if (service === 'app') return data.appService || 'disconnected';
+            }
+            return 'connected';
+        }
+        return 'disconnected';
+    } catch {
+        return 'disconnected';
+    }
+};
+
 interface ClientDashboardProps {
     initialStats: Stats | null;
     initialDevices: Device[];
@@ -63,28 +103,17 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         setTableLoading(false);
     }, [initialDevices]);
 
-    const fetchHealth = useCallback(async () => {
-        setServicesStatus({ admin: 'loading', edge: 'loading', app: 'loading' });
-        try {
-            const res = await fetch('/api/health');
-            const data = await res.json();
-            setServicesStatus({
-                admin: data.adminService || 'disconnected',
-                edge: data.edgeService || 'disconnected',
-                app: data.appService || 'disconnected',
-            });
-        } catch {
-            setServicesStatus({
-                admin: 'disconnected',
-                edge: 'disconnected',
-                app: 'disconnected',
-            });
-        }
+    const refreshServiceHealth = useCallback(async (service: 'admin' | 'edge' | 'app') => {
+        setServicesStatus((prev) => ({ ...prev, [service]: 'loading' }));
+        const status = await checkHealthFor(service);
+        setServicesStatus((prev) => ({ ...prev, [service]: status }));
     }, []);
 
     useEffect(() => {
-        fetchHealth();
-    }, [fetchHealth]);
+        refreshServiceHealth('admin');
+        refreshServiceHealth('edge');
+        refreshServiceHealth('app');
+    }, [refreshServiceHealth]);
 
     const handleGenerated = (data: any) => {
         toast(`Successfully generated ${data.generated} device${data.generated > 1 ? 's' : ''}`, 'success');
@@ -157,7 +186,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         <div className="flex flex-col min-h-screen w-full bg-background">
             <SiteHeader 
                 servicesStatus={servicesStatus} 
-                onRefreshHealth={fetchHealth} 
+                onRefreshServiceHealth={refreshServiceHealth} 
             />
 
             <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">

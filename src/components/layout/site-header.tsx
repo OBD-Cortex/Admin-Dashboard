@@ -11,10 +11,10 @@ interface SiteHeaderProps {
         edge: string;
         app: string;
     };
-    onRefreshHealth?: () => void;
+    onRefreshServiceHealth?: (service: 'admin' | 'edge' | 'app') => void;
 }
 
-export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps) {
+export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeaderProps) {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -40,11 +40,6 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
         return `${label}: Unconfigured`;
     };
 
-    const isAnyLoading = 
-        servicesStatus.admin === 'loading' || 
-        servicesStatus.edge === 'loading' || 
-        servicesStatus.app === 'loading';
-
     return (
         <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-border bg-card/80 backdrop-blur px-6 shadow-sm">
             {/* Header Left */}
@@ -61,11 +56,11 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                     {/* Admin Service */}
                     <button
                         type="button"
-                        onClick={onRefreshHealth}
-                        disabled={isAnyLoading}
+                        onClick={() => onRefreshServiceHealth?.('admin')}
+                        disabled={servicesStatus.admin === 'loading'}
                         className={cn(
                             "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
-                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
+                            servicesStatus.admin === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: Admin-Service"
                     >
@@ -76,11 +71,11 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                     {/* Edge Service */}
                     <button
                         type="button"
-                        onClick={onRefreshHealth}
-                        disabled={isAnyLoading}
+                        onClick={() => onRefreshServiceHealth?.('edge')}
+                        disabled={servicesStatus.edge === 'loading'}
                         className={cn(
                             "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
-                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
+                            servicesStatus.edge === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: Edge-Service"
                     >
@@ -91,11 +86,11 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                     {/* MobileApp Service */}
                     <button
                         type="button"
-                        onClick={onRefreshHealth}
-                        disabled={isAnyLoading}
+                        onClick={() => onRefreshServiceHealth?.('app')}
+                        disabled={servicesStatus.app === 'loading'}
                         className={cn(
                             "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
-                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
+                            servicesStatus.app === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: MobileApp-Service"
                     >

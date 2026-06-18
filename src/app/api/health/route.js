@@ -64,12 +64,28 @@ async function checkServiceHealth(url) {
  * Queries the health states of Admin-Service, Edge-Service, and MobileApp-Service in parallel.
  * Returns a JSON payload containing the aggregate and individual service statuses.
  */
-export async function GET() {
+export async function GET(request) {
+    const { searchParams } = new URL(request.url);
+    const service = searchParams.get('service');
+
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
     
     // Check if distinct environment variables are defined, otherwise derive from admin url
     const edgeServiceUrl = process.env.EDGE_SERVICE_URL || getSubdomainUrl(adminServiceUrl, 'edge');
     const appServiceUrl = process.env.MOBILEAPP_SERVICE_URL || process.env.APP_SERVICE_URL || getSubdomainUrl(adminServiceUrl, 'app');
+
+    if (service === 'admin') {
+        const adminStatus = await checkServiceHealth(adminServiceUrl);
+        return NextResponse.json({ adminService: adminStatus });
+    }
+    if (service === 'edge') {
+        const edgeStatus = await checkServiceHealth(edgeServiceUrl);
+        return NextResponse.json({ edgeService: edgeStatus });
+    }
+    if (service === 'app') {
+        const appStatus = await checkServiceHealth(appServiceUrl);
+        return NextResponse.json({ appService: appStatus });
+    }
 
     // Run health checks in parallel
     const [adminStatus, edgeStatus, appStatus] = await Promise.all([
