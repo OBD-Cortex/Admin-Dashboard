@@ -215,8 +215,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm font-sans">
             <div className="w-full max-w-[480px] border border-border bg-card p-6 shadow-2xl rounded-2xl">
                 <div className="mb-4">
-                    <h3 className="text-base font-bold font-serif tracking-tight text-foreground uppercase mb-1">INGEST RAG KNOWLEDGE</h3>
-                    <p className="text-[10px] text-muted-foreground uppercase leading-relaxed">
+                    <h3 className="text-base font-bold font-serif tracking-tight text-foreground mb-1">Ingest RAG Knowledge</h3>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">
                         Upload repair manuals, catalogs, or notes. Chunking and indexing run automatically.
                     </p>
                 </div>
@@ -246,8 +246,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
                             </div>
-                            <p className="text-[10px] font-bold text-foreground uppercase tracking-wider">Drag file or click to browse</p>
-                            <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Supports PDF, CSV, MD, TXT up to 10MB</p>
+                            <p className="text-[10px] font-bold text-foreground tracking-wider">Drag file or click to browse</p>
+                            <p className="text-[9px] text-muted-foreground mt-0.5">Supports PDF, CSV, MD, TXT up to 10MB</p>
                         </div>
                     ) : (
                         <div className="flex items-center gap-3 border border-border p-4 bg-background rounded-xl relative group">
@@ -256,11 +256,11 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             </svg>
                             <div className="flex-1 min-w-0">
                                 <p className="text-xs font-bold text-foreground truncate pr-6 select-all">{file.name}</p>
-                                <p className="text-[9px] text-muted-foreground uppercase tracking-tight">
+                                <p className="text-[9px] text-muted-foreground tracking-tight">
                                     {(file.size / 1024).toFixed(1)} KB — {
-                                        file.name.endsWith('.pdf') ? 'PDF MANUAL' : 
-                                        file.name.endsWith('.csv') ? 'CSV CATALOG' : 
-                                        file.name.endsWith('.md') ? 'MARKDOWN DOC' : 'TEXT DOC'
+                                        file.name.endsWith('.pdf') ? 'PDF Manual' : 
+                                        file.name.endsWith('.csv') ? 'CSV Catalog' : 
+                                        file.name.endsWith('.md') ? 'Markdown Doc' : 'Text Doc'
                                     }
                                 </p>
                             </div>
@@ -268,7 +268,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                 <button
                                     onClick={handleRemoveFile}
                                     className="absolute right-4 top-4 text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors cursor-pointer"
-                                    title="REMOVE FILE"
+                                    title="Remove file"
                                 >
                                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -281,14 +281,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     {/* Progress indicators & Logs */}
                     {jobStatus && (
                         <div className="space-y-3">
-                            <div className="flex justify-between text-[10px] font-bold uppercase">
+                            <div className="flex justify-between text-[10px] font-bold">
                                 <span className={cn(
                                     "truncate max-w-[80%]",
                                     jobStatus === 'completed' && "text-emerald-800",
                                     jobStatus === 'failed' && "text-rose-800",
                                     jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-800"
                                 )}>
-                                    {progressText || 'INGESTION QUEUED...'}
+                                    {progressText || 'Ingestion queued...'}
                                 </span>
                                 <span className={cn(
                                     "font-mono",
@@ -334,15 +334,15 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     <button
                         onClick={onClose}
                         disabled={uploading}
-                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold uppercase text-foreground transition-colors cursor-pointer select-none rounded-xl"
+                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-xl"
                     >
-                        {jobStatus === 'completed' ? 'CLOSE' : 'CANCEL'}
+                        {jobStatus === 'completed' ? 'Close' : 'Cancel'}
                     </button>
                     {!jobStatus && file && (
                         <button 
                             onClick={handleUpload} 
                             disabled={uploading}
-                            className="h-8 bg-primary hover:opacity-90 disabled:opacity-50 px-4 text-[10px] font-bold uppercase text-primary-foreground transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-xl"
+                            className="h-8 bg-primary hover:opacity-90 disabled:opacity-50 px-4 text-[10px] font-bold text-primary-foreground transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-xl"
                         >
                             {uploading && (
                                 <svg className="h-3 w-3 animate-spin text-primary-foreground" fill="none" viewBox="0 0 24 24">
@@ -350,7 +350,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                 </svg>
                             )}
-                            <span>START INGESTION</span>
+                            <span>Start Ingestion</span>
                         </button>
                     )}
                 </div>

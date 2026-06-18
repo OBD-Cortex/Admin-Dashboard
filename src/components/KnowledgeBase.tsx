@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getKnowledgeBase, deleteKnowledgeDocument } from '@/app/actions';
 import { useToast } from '@/components/Toast';
+import ConfirmModal from '@/components/ConfirmModal';
 
 interface Document {
     source: string;
@@ -19,6 +20,15 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
+
+    // Confirm Modal state
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        source: string | null;
+    }>({
+        isOpen: false,
+        source: null,
+    });
 
     const fetchKnowledge = async () => {
         try {
@@ -38,8 +48,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
         fetchKnowledge();
     }, [refreshTrigger]);
 
-    const handleDelete = async (source: string) => {
-        if (!confirm(`Are you sure you want to delete ${source}?`)) return;
+    const executeDelete = async (source: string) => {
         setDeleting(source);
         try {
             const res = await deleteKnowledgeDocument(source);
@@ -56,6 +65,13 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
         }
     };
 
+    const handleDeleteClick = (source: string) => {
+        setConfirmModal({
+            isOpen: true,
+            source,
+        });
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3 font-sans">
@@ -63,22 +79,13 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                <span className="text-[10px] font-bold tracking-widest uppercase">LOADING KNOWLEDGE SEGMENTS...</span>
+                <span className="text-[10px] font-bold tracking-widest">Loading knowledge segments...</span>
             </div>
         );
     }
 
     return (
         <div className="space-y-4 font-sans text-xs">
-            <div className="flex items-center gap-2 pb-1 border-b border-border">
-                <svg className="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <ellipse cx="12" cy="5" rx="9" ry="3" />
-                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-                    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-                </svg>
-                <h2 className="text-xs font-bold tracking-widest uppercase text-foreground">KNOWLEDGE REPOSITORY</h2>
-            </div>
-            
             <div className="border border-border bg-card overflow-hidden rounded-2xl shadow-sm">
                 {documents.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center border-dashed border border-border/80 m-4 bg-muted/20 rounded-xl">
@@ -88,15 +95,15 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                             <line x1="16" y1="13" x2="8" y2="13" />
                             <line x1="16" y1="17" x2="8" y2="17" />
                         </svg>
-                        <h3 className="font-bold text-xs text-foreground uppercase tracking-wider">No assets ingested</h3>
-                        <p className="text-[10px] text-muted-foreground mt-1 uppercase max-w-sm leading-relaxed">
+                        <h3 className="font-bold text-xs text-foreground tracking-wider">No assets ingested</h3>
+                        <p className="text-[10px] text-muted-foreground mt-1 max-w-sm leading-relaxed">
                             Upload manuals (PDF), DTC tables (CSV), or diagnostic guidelines using the "Ingest" action.
                         </p>
                     </div>
                 ) : (
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[10px] bg-muted/60">
+                            <tr className="border-b border-border text-muted-foreground font-bold tracking-wider text-[10px] bg-muted/60">
                                 <th className="p-3.5">Source File</th>
                                 <th className="p-3.5">Type</th>
                                 <th className="p-3.5">Ingested Chunks</th>
@@ -110,19 +117,19 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                                         {doc.source}
                                     </td>
                                     <td className="p-3.5">
-                                        <span className="inline-flex items-center border border-border bg-background px-2 py-0.5 text-[9px] font-bold text-foreground uppercase rounded-lg">
+                                        <span className="inline-flex items-center border border-border bg-background px-2 py-0.5 text-[9px] font-bold text-foreground capitalize rounded-lg">
                                             {doc.doc_type}
                                         </span>
                                     </td>
-                                    <td className="p-3.5 text-muted-foreground">
-                                        {doc.chunks} VECTOR SEGMENTS
+                                    <td className="p-3.5 text-muted-foreground lowercase">
+                                        {doc.chunks} segments
                                     </td>
                                     <td className="p-3.5 text-right">
                                         <button
-                                            onClick={() => handleDelete(doc.source)}
+                                            onClick={() => handleDeleteClick(doc.source)}
                                             disabled={deleting === doc.source}
-                                            className="inline-flex h-7 w-7 items-center justify-center border border-destructive/20 bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors cursor-pointer disabled:opacity-50 rounded-lg"
-                                            title="DELETE DOCUMENT"
+                                            className="inline-flex h-7 w-7 items-center justify-center border border-destructive/30 bg-black hover:bg-neutral-900 text-destructive transition-colors cursor-pointer disabled:opacity-50 rounded-lg"
+                                            title="Delete document"
                                         >
                                             {deleting === doc.source ? (
                                                 <svg className="h-3 w-3 animate-spin text-destructive" fill="none" viewBox="0 0 24 24">
@@ -133,6 +140,8 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     <polyline points="3 6 5 6 21 6" />
                                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                    <line x1="10" y1="11" x2="10" y2="17" />
+                                                    <line x1="14" y1="11" x2="14" y2="17" />
                                                 </svg>
                                             )}
                                         </button>
@@ -143,6 +152,21 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                     </table>
                 )}
             </div>
+
+            {/* Ingestion Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ isOpen: false, source: null })}
+                onConfirm={() => {
+                    if (confirmModal.source) {
+                        executeDelete(confirmModal.source);
+                    }
+                }}
+                title="Delete Document"
+                message={`Are you sure you want to delete ${confirmModal.source}?`}
+                confirmText="Delete"
+                variant="danger"
+            />
         </div>
     );
 }

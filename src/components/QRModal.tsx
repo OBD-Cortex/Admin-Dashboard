@@ -85,8 +85,8 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm font-sans">
             <div className="w-full max-w-[340px] border border-border bg-card p-6 shadow-2xl rounded-2xl">
                 <div className="text-center mb-4">
-                    <h3 className="text-base font-bold font-serif tracking-tight text-foreground uppercase mb-1">PAIRING GATEWAY</h3>
-                    <p className="text-[10px] text-muted-foreground uppercase leading-relaxed">
+                    <h3 className="text-base font-bold font-serif tracking-tight text-foreground mb-1">Pairing Gateway</h3>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">
                         Scan the label code via the mobile pairing configuration panel.
                     </p>
                 </div>
@@ -107,12 +107,12 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
                         <div className="font-mono text-xs font-bold border border-border bg-background px-3 py-2 text-foreground select-all w-full truncate text-center rounded-xl">
                             {uppercaseToken}
                         </div>
-                        <p className="flex items-center justify-center gap-1 text-[9px] text-muted-foreground uppercase">
+                        <p className="flex items-center justify-center gap-1 text-[9px] text-muted-foreground">
                             <svg className="h-3.5 w-3.5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
                                 <line x1="12" y1="18" x2="12.01" y2="18" />
                             </svg>
-                            <span>SCAN USING CELL SCANNER</span>
+                            <span>Scan using cell scanner</span>
                         </p>
                     </div>
 
@@ -120,21 +120,21 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
                     <button 
                         onClick={handleDownload}
                         disabled={isDownloading}
-                        className="inline-flex h-9 items-center justify-center gap-1.5 bg-primary hover:opacity-90 disabled:opacity-50 px-3 text-[10px] font-sans font-bold uppercase text-primary-foreground transition-all cursor-pointer select-none w-full rounded-xl"
+                        className="inline-flex h-9 items-center justify-center gap-1.5 bg-secondary hover:bg-secondary/90 text-secondary-foreground disabled:opacity-50 px-3 text-[10px] font-sans font-bold transition-all cursor-pointer select-none w-full rounded-xl"
                     >
-                        <svg className="h-3.5 w-3.5 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg className="h-3.5 w-3.5 text-secondary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="7 10 12 15 17 10" />
                             <line x1="12" y1="15" x2="12" y2="3" />
                         </svg>
-                        <span>{isDownloading ? 'GENERATING...' : 'DOWNLOAD PNG LABEL'}</span>
+                        <span>{isDownloading ? 'Generating...' : 'Download PNG Label'}</span>
                     </button>
 
                     <button
                         onClick={onClose}
-                        className="h-9 border border-border bg-background hover:bg-muted px-3 text-[10px] font-sans font-bold uppercase text-foreground transition-colors cursor-pointer select-none w-full rounded-xl"
+                        className="h-9 border border-border bg-background hover:bg-muted px-3 text-[10px] font-sans font-bold text-foreground transition-colors cursor-pointer select-none w-full rounded-xl"
                     >
-                        CLOSE WINDOW
+                        Close Window
                     </button>
                 </div>
             </div>

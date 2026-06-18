@@ -9,6 +9,7 @@ import KnowledgeBase from '@/components/KnowledgeBase';
 import GenerateModal from '@/components/GenerateModal';
 import QRModal from '@/components/QRModal';
 import UploadModal from '@/components/UploadModal';
+import ConfirmModal from '@/components/ConfirmModal';
 import { useToast } from '@/components/Toast';
 import { deleteDevice, unpairDevice } from '@/app/actions';
 
@@ -28,8 +29,34 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
     const [ingestModalOpen, setIngestModalOpen] = useState(false);
 
-    // Dynamic states
-    const [adminServiceStatus, setAdminServiceStatus] = useState('loading');
+    // Confirmation Modal state
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        confirmText: string;
+        variant: 'danger' | 'warning' | 'primary';
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        confirmText: '',
+        variant: 'primary',
+        onConfirm: () => {},
+    });
+
+    // Dynamic states for services health checks
+    const [servicesStatus, setServicesStatus] = useState<{
+        admin: string;
+        edge: string;
+        app: string;
+    }>({
+        admin: 'loading',
+        edge: 'loading',
+        app: 'loading',
+    });
+
     const [tableLoading, setTableLoading] = useState(false);
 
     useEffect(() => {
@@ -37,13 +64,21 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     }, [initialDevices]);
 
     const fetchHealth = useCallback(async () => {
-        setAdminServiceStatus('loading');
+        setServicesStatus({ admin: 'loading', edge: 'loading', app: 'loading' });
         try {
             const res = await fetch('/api/health');
             const data = await res.json();
-            setAdminServiceStatus(data.adminService || 'disconnected');
+            setServicesStatus({
+                admin: data.adminService || 'disconnected',
+                edge: data.edgeService || 'disconnected',
+                app: data.appService || 'disconnected',
+            });
         } catch {
-            setAdminServiceStatus('disconnected');
+            setServicesStatus({
+                admin: 'disconnected',
+                edge: 'disconnected',
+                app: 'disconnected',
+            });
         }
     }, []);
 
@@ -64,21 +99,19 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         setQrModalOpen(true);
     };
 
-    const handleDelete = async (token: string) => {
-        if (!confirm(`Delete device ${token}? This action cannot be undone.`)) return;
-
-        const res = await deleteDevice(token, false);
+    const executeDelete = async (token: string, force: boolean) => {
+        const res = await deleteDevice(token, force);
         if (res.error) {
-            if (res.error.includes("paired")) {
-                if (confirm(`${res.error}\n\nDo you want to FORCE delete this device? This will unlink the device from the owner's account.`)) {
-                    const forceRes = await deleteDevice(token, true);
-                    if (forceRes.error) {
-                        toast(forceRes.error || 'Force delete failed', 'error');
-                        return;
-                    }
-                    toast(`Device ${token} force decommissioned`, 'success');
-                    return;
-                }
+            if (res.error.includes("paired") && !force) {
+                // Trigger confirmation for force delete if device is paired
+                setConfirmModal({
+                    isOpen: true,
+                    title: 'Force Decommission Device',
+                    message: `${res.error}\n\nDo you want to FORCE delete this device? This will unlink the device from the owner's account.`,
+                    confirmText: 'Force Delete',
+                    variant: 'danger',
+                    onConfirm: () => executeDelete(token, true),
+                });
             } else {
                 toast(res.error || 'Delete failed', 'error');
             }
@@ -88,9 +121,18 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         toast(`Device ${token} decommissioned`, 'success');
     };
 
-    const handleUnpair = async (token: string) => {
-        if (!confirm(`Are you sure you want to unpair device ${token} from its owner?`)) return;
+    const handleDeleteClick = (token: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Decommission Device',
+            message: `Delete device ${token}? This action cannot be undone.`,
+            confirmText: 'Delete',
+            variant: 'danger',
+            onConfirm: () => executeDelete(token, false),
+        });
+    };
 
+    const executeUnpair = async (token: string) => {
         const res = await unpairDevice(token);
         if (res.error) {
             toast(res.error || 'Unpair failed', 'error');
@@ -100,10 +142,21 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         toast(`Device ${token} successfully unpaired`, 'success');
     };
 
+    const handleUnpairClick = (token: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Unpair Device',
+            message: `Are you sure you want to unpair device ${token} from its owner?`,
+            confirmText: 'Unpair',
+            variant: 'danger',
+            onConfirm: () => executeUnpair(token),
+        });
+    };
+
     return (
         <div className="flex flex-col min-h-screen w-full bg-background">
             <SiteHeader 
-                adminServiceStatus={adminServiceStatus} 
+                servicesStatus={servicesStatus} 
                 onRefreshHealth={fetchHealth} 
             />
 
@@ -124,8 +177,8 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                     <DeviceTable
                         devices={initialDevices}
                         onShowQR={handleShowQR}
-                        onDelete={handleDelete}
-                        onUnpair={handleUnpair}
+                        onDelete={handleDeleteClick}
+                        onUnpair={handleUnpairClick}
                         loading={tableLoading}
                     />
                 </div>
@@ -153,6 +206,17 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             <UploadModal
                 isOpen={ingestModalOpen}
                 onClose={() => setIngestModalOpen(false)}
+            />
+            
+            {/* Confirmation Modal */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                confirmText={confirmModal.confirmText}
+                variant={confirmModal.variant}
             />
         </div>
     );
