@@ -156,7 +156,7 @@ export default function DeviceTable({
                                             {/* QR Code trigger */}
                                             <button
                                                 onClick={() => onShowQR(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-black hover:bg-neutral-900 text-neutral-400 hover:text-neutral-200 transition-colors cursor-pointer rounded-lg"
                                                 title="View QR"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -171,7 +171,7 @@ export default function DeviceTable({
                                             {device.status === 'paired' && (
                                                 <button
                                                     onClick={() => onUnpair(device.device_token)}
-                                                    className="inline-flex h-7 w-7 items-center justify-center border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg"
+                                                    className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-black hover:bg-neutral-900 text-neutral-400 hover:text-neutral-200 transition-colors cursor-pointer rounded-lg"
                                                     title="Unpair vehicle"
                                                 >
                                                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

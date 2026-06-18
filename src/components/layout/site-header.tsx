@@ -56,52 +56,62 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
 
             {/* Header Right */}
             <div className="flex items-center gap-3">
-                {/* Unified Health Status badge */}
-                <button 
-                    type="button"
-                    onClick={onRefreshHealth}
-                    disabled={isAnyLoading}
-                    className={cn(
-                        "inline-flex h-8 items-center bg-black border border-border px-2.5 py-1 text-[10px] font-sans font-bold select-none hover:bg-neutral-900 transition-colors rounded-lg",
-                        isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
-                    )}
-                    title="Click to refresh service health status"
-                >
-                    <div className="flex items-center gap-2">
-                        {/* Admin Service */}
-                        <div className={cn(
-                            "flex items-center gap-1.5 border px-2 py-0.5 rounded-md",
-                            servicesStatus.admin === 'connected' ? "border-emerald-500/20 text-emerald-400" :
-                            servicesStatus.admin === 'disconnected' ? "border-rose-500/20 text-rose-400" :
-                            "border-blue-500/20 text-blue-400"
-                        )}>
-                            <span className={cn("h-1 w-1 rounded-full shrink-0", getStatusColorClass(servicesStatus.admin))} />
-                            <span>{getStatusText(servicesStatus.admin, 'Adm')}</span>
-                        </div>
+                {/* Unified Health Status badges */}
+                <div className="flex items-center gap-2">
+                    {/* Admin Service */}
+                    <button
+                        type="button"
+                        onClick={onRefreshHealth}
+                        disabled={isAnyLoading}
+                        className={cn(
+                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-black hover:bg-neutral-900 transition-colors rounded-lg",
+                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer",
+                            servicesStatus.admin === 'connected' ? "border-emerald-500/25 text-emerald-400" :
+                            servicesStatus.admin === 'disconnected' ? "border-rose-500/25 text-rose-400" :
+                            "border-blue-500/25 text-blue-400"
+                        )}
+                        title="Click to refresh health: Admin-Service"
+                    >
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.admin))} />
+                        <span>{getStatusText(servicesStatus.admin, 'Adm')}</span>
+                    </button>
 
-                        {/* Edge Service */}
-                        <div className={cn(
-                            "flex items-center gap-1.5 border px-2 py-0.5 rounded-md",
-                            servicesStatus.edge === 'connected' ? "border-emerald-500/20 text-emerald-400" :
-                            servicesStatus.edge === 'disconnected' ? "border-rose-500/20 text-rose-400" :
-                            "border-blue-500/20 text-blue-400"
-                        )}>
-                            <span className={cn("h-1 w-1 rounded-full shrink-0", getStatusColorClass(servicesStatus.edge))} />
-                            <span>{getStatusText(servicesStatus.edge, 'Edg')}</span>
-                        </div>
+                    {/* Edge Service */}
+                    <button
+                        type="button"
+                        onClick={onRefreshHealth}
+                        disabled={isAnyLoading}
+                        className={cn(
+                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-black hover:bg-neutral-900 transition-colors rounded-lg",
+                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer",
+                            servicesStatus.edge === 'connected' ? "border-emerald-500/25 text-emerald-400" :
+                            servicesStatus.edge === 'disconnected' ? "border-rose-500/25 text-rose-400" :
+                            "border-blue-500/25 text-blue-400"
+                        )}
+                        title="Click to refresh health: Edge-Service"
+                    >
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.edge))} />
+                        <span>{getStatusText(servicesStatus.edge, 'Edg')}</span>
+                    </button>
 
-                        {/* MobileApp Service */}
-                        <div className={cn(
-                            "flex items-center gap-1.5 border px-2 py-0.5 rounded-md",
-                            servicesStatus.app === 'connected' ? "border-emerald-500/20 text-emerald-400" :
-                            servicesStatus.app === 'disconnected' ? "border-rose-500/20 text-rose-400" :
-                            "border-blue-500/20 text-blue-400"
-                        )}>
-                            <span className={cn("h-1 w-1 rounded-full shrink-0", getStatusColorClass(servicesStatus.app))} />
-                            <span>{getStatusText(servicesStatus.app, 'App')}</span>
-                        </div>
-                    </div>
-                </button>
+                    {/* MobileApp Service */}
+                    <button
+                        type="button"
+                        onClick={onRefreshHealth}
+                        disabled={isAnyLoading}
+                        className={cn(
+                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-black hover:bg-neutral-900 transition-colors rounded-lg",
+                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer",
+                            servicesStatus.app === 'connected' ? "border-emerald-500/25 text-emerald-400" :
+                            servicesStatus.app === 'disconnected' ? "border-rose-500/25 text-rose-400" :
+                            "border-blue-500/25 text-blue-400"
+                        )}
+                        title="Click to refresh health: MobileApp-Service"
+                    >
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.app))} />
+                        <span>{getStatusText(servicesStatus.app, 'App')}</span>
+                    </button>
+                </div>
 
                 {/* Log Out Button */}
                 <button
