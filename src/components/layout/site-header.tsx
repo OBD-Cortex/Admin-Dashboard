@@ -64,7 +64,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         onClick={onRefreshHealth}
                         disabled={isAnyLoading}
                         className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-md",
+                            "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
                             isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: Admin-Service"
@@ -79,7 +79,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         onClick={onRefreshHealth}
                         disabled={isAnyLoading}
                         className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-md",
+                            "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
                             isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: Edge-Service"
@@ -94,7 +94,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         onClick={onRefreshHealth}
                         disabled={isAnyLoading}
                         className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-md",
+                            "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
                             isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: MobileApp-Service"
@@ -108,7 +108,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="inline-flex h-8 items-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer select-none rounded-md"
+                    className="inline-flex h-8 items-center gap-1.5 bg-[#191919] hover:bg-[#191919]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer select-none rounded-md"
                     title="Sign Out"
                 >
                     <svg className="h-3.5 w-3.5 text-[#FAF8F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

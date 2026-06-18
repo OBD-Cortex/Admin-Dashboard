@@ -150,7 +150,7 @@ export default function DeviceTable({
                                             {/* QR Code trigger */}
                                             <button
                                                 onClick={() => onShowQR(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors cursor-pointer rounded-lg"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-border bg-transparent text-muted-foreground hover:text-foreground hover:bg-[#F3EFE7] transition-colors cursor-pointer rounded-md"
                                                 title="View QR"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -165,7 +165,7 @@ export default function DeviceTable({
                                             {device.status === 'paired' && (
                                                 <button
                                                     onClick={() => onUnpair(device.device_token)}
-                                                    className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors cursor-pointer rounded-lg"
+                                                    className="inline-flex h-7 w-7 items-center justify-center border border-border bg-transparent text-muted-foreground hover:text-foreground hover:bg-[#F3EFE7] transition-colors cursor-pointer rounded-md"
                                                     title="Unpair vehicle"
                                                 >
                                                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -179,7 +179,7 @@ export default function DeviceTable({
                                             {/* Delete Trigger */}
                                             <button
                                                 onClick={() => onDelete(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-destructive/35 bg-[#191919] text-[#FAF8F5] hover:bg-[#191919]/80 hover:border-destructive/60 transition-colors cursor-pointer rounded-lg"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-border bg-transparent text-muted-foreground hover:text-destructive hover:border-destructive/40 hover:bg-[#F3EFE7] transition-colors cursor-pointer rounded-md"
                                                 title="Decommission node"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
