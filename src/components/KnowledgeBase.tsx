@@ -103,7 +103,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                 ) : (
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-border text-muted-foreground font-bold tracking-wider text-[10px] bg-muted/60">
+                            <tr className="border-b border-border text-muted-foreground font-bold tracking-wider text-[10px] bg-[#F3EFE7]">
                                 <th className="p-3.5">Source File</th>
                                 <th className="p-3.5">Type</th>
                                 <th className="p-3.5">Ingested Chunks</th>
@@ -128,7 +128,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                                         <button
                                             onClick={() => handleDeleteClick(doc.source)}
                                             disabled={deleting === doc.source}
-                                            className="inline-flex h-7 w-7 items-center justify-center border border-destructive/30 bg-black hover:bg-neutral-900 text-destructive transition-colors cursor-pointer disabled:opacity-50 rounded-lg"
+                                            className="inline-flex h-7 w-7 items-center justify-center border border-destructive/35 bg-[#191919] text-[#FAF8F5] hover:bg-[#191919]/80 hover:border-destructive/60 transition-colors cursor-pointer disabled:opacity-50 rounded-lg"
                                             title="Delete document"
                                         >
                                             {deleting === doc.source ? (

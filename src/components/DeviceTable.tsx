@@ -67,7 +67,7 @@ export default function DeviceTable({
         <div className="border border-border bg-card overflow-x-auto font-sans rounded-2xl shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr className="border-b border-border text-muted-foreground font-bold tracking-wider text-[10px] bg-muted/60">
+                    <tr className="border-b border-border text-muted-foreground font-bold tracking-wider text-[10px] bg-[#F3EFE7]">
                         <th className="p-3.5">Device Token</th>
                         <th className="p-3.5">ID</th>
                         <th className="p-3.5">Vehicle Link</th>
@@ -128,11 +128,11 @@ export default function DeviceTable({
                                     </td>
                                     <td className="p-3.5">
                                         <div className={cn(
-                                            "inline-flex items-center gap-1.5 border px-2.5 py-0.5 text-[9px] font-bold select-none transition-colors rounded-lg bg-black",
-                                            device.status === 'paired' && "border-emerald-500/30 text-emerald-400",
-                                            device.status === 'registered' && "border-blue-500/30 text-blue-400",
-                                            device.status === 'manufactured' && "border-neutral-800 text-neutral-400",
-                                            device.status === 'failed' && "border-rose-500/30 text-rose-400"
+                                            "inline-flex items-center gap-1.5 border px-2.5 py-0.5 text-[9px] font-bold select-none transition-colors rounded-lg bg-[#191919] text-[#FAF8F5]",
+                                            device.status === 'paired' && "border-emerald-500/30",
+                                            device.status === 'registered' && "border-blue-500/30",
+                                            device.status === 'manufactured' && "border-neutral-800",
+                                            device.status === 'failed' && "border-rose-500/30"
                                         )}>
                                             <span
                                                 className={cn(
@@ -156,7 +156,7 @@ export default function DeviceTable({
                                             {/* QR Code trigger */}
                                             <button
                                                 onClick={() => onShowQR(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-black hover:bg-neutral-900 text-neutral-400 hover:text-neutral-200 transition-colors cursor-pointer rounded-lg"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors cursor-pointer rounded-lg"
                                                 title="View QR"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -171,7 +171,7 @@ export default function DeviceTable({
                                             {device.status === 'paired' && (
                                                 <button
                                                     onClick={() => onUnpair(device.device_token)}
-                                                    className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-black hover:bg-neutral-900 text-neutral-400 hover:text-neutral-200 transition-colors cursor-pointer rounded-lg"
+                                                    className="inline-flex h-7 w-7 items-center justify-center border border-neutral-800 bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors cursor-pointer rounded-lg"
                                                     title="Unpair vehicle"
                                                 >
                                                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -185,7 +185,7 @@ export default function DeviceTable({
                                             {/* Delete Trigger */}
                                             <button
                                                 onClick={() => onDelete(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-destructive/30 bg-black hover:bg-neutral-900 text-destructive transition-colors cursor-pointer rounded-lg"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-destructive/35 bg-[#191919] text-[#FAF8F5] hover:bg-[#191919]/80 hover:border-destructive/60 transition-colors cursor-pointer rounded-lg"
                                                 title="Decommission node"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

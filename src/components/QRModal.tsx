@@ -120,9 +120,9 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
                     <button 
                         onClick={handleDownload}
                         disabled={isDownloading}
-                        className="inline-flex h-9 items-center justify-center gap-1.5 bg-secondary hover:bg-secondary/90 text-secondary-foreground disabled:opacity-50 px-3 text-[10px] font-sans font-bold transition-all cursor-pointer select-none w-full rounded-xl"
+                        className="inline-flex h-9 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 text-[#FAF8F5] disabled:opacity-50 px-3 text-[10px] font-sans font-bold transition-all cursor-pointer select-none w-full rounded-xl"
                     >
-                        <svg className="h-3.5 w-3.5 text-secondary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg className="h-3.5 w-3.5 text-[#FAF8F5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="7 10 12 15 17 10" />
                             <line x1="12" y1="15" x2="12" y2="3" />

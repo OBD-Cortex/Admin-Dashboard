@@ -80,7 +80,7 @@ export default function ActionBar({
                     placeholder="Search hardware nodes..."
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    className="w-full pl-9 pr-8 h-9 text-xs tracking-wider rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all font-sans"
+                    className="w-full pl-9 pr-8 h-9 text-xs tracking-wider rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-[#223A5E] focus:border-[#223A5E] transition-all font-sans"
                 />
                 {isPending && (
                     <svg className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted-foreground" fill="none" viewBox="0 0 24 24">
@@ -126,9 +126,9 @@ export default function ActionBar({
                 
                 <button 
                     onClick={onGenerateClick} 
-                    className="inline-flex h-9 items-center justify-center gap-1.5 bg-secondary hover:bg-secondary/90 px-3.5 text-[10px] font-bold text-secondary-foreground transition-all cursor-pointer rounded-xl select-none"
+                    className="inline-flex h-9 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3.5 text-[10px] font-bold text-[#FAF8F5] transition-all cursor-pointer rounded-xl select-none"
                 >
-                    <svg className="h-3.5 w-3.5 text-secondary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="h-3.5 w-3.5 text-[#FAF8F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
                     <span>Generate</span>

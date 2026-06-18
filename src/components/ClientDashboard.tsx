@@ -106,7 +106,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                 // Trigger confirmation for force delete if device is paired
                 setConfirmModal({
                     isOpen: true,
-                    title: 'Force Decommission Device',
+                    title: 'Force Delete Device',
                     message: `${res.error}\n\nDo you want to FORCE delete this device? This will unlink the device from the owner's account.`,
                     confirmText: 'Force Delete',
                     variant: 'danger',
@@ -118,13 +118,13 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             return;
         }
 
-        toast(`Device ${token} decommissioned`, 'success');
+        toast(`Device ${token} deleted`, 'success');
     };
 
     const handleDeleteClick = (token: string) => {
         setConfirmModal({
             isOpen: true,
-            title: 'Decommission Device',
+            title: 'Delete Device',
             message: `Delete device ${token}? This action cannot be undone.`,
             confirmText: 'Delete',
             variant: 'danger',
