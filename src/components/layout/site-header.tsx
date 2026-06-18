@@ -70,7 +70,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         title="Click to refresh health: Admin-Service"
                     >
                         <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.admin))} />
-                        <span>{getStatusText(servicesStatus.admin, 'Adm')}</span>
+                        <span>{getStatusText(servicesStatus.admin, 'Admin-Service')}</span>
                     </button>
 
                     {/* Edge Service */}
@@ -85,7 +85,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         title="Click to refresh health: Edge-Service"
                     >
                         <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.edge))} />
-                        <span>{getStatusText(servicesStatus.edge, 'Edg')}</span>
+                        <span>{getStatusText(servicesStatus.edge, 'Edge-Service')}</span>
                     </button>
 
                     {/* MobileApp Service */}
@@ -100,7 +100,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         title="Click to refresh health: MobileApp-Service"
                     >
                         <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.app))} />
-                        <span>{getStatusText(servicesStatus.app, 'App')}</span>
+                        <span>{getStatusText(servicesStatus.app, 'MobileApp-Service')}</span>
                     </button>
                 </div>
 
