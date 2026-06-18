@@ -68,7 +68,7 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
                             max="50"
                             value={count}
                             onChange={(e) => setCount(Math.min(50, Math.max(1, parseInt(e.target.value) || 1)))}
-                            className="w-full px-3 py-2 text-xs border border-border bg-background text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#223A5E] focus:border-[#223A5E] transition-all rounded-xl font-sans"
+                            className="w-full px-3 py-2 text-xs border border-border bg-background text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#223A5E] focus:border-[#223A5E] transition-all rounded-md font-sans"
                             required
                         />
                         <p className="text-[9px] text-muted-foreground/80">
@@ -77,7 +77,7 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
                     </div>
 
                     {error && (
-                        <div className="border border-destructive/20 bg-destructive/10 px-3 py-2 text-[10px] text-destructive rounded-xl font-medium">
+                        <div className="border border-destructive/40 bg-[#191919] px-3 py-2 text-[10px] text-[#FAF8F5] rounded-md font-medium">
                             Error: {error}
                         </div>
                     )}
@@ -87,14 +87,14 @@ export default function GenerateModal({ isOpen, onClose, onGenerated }: Generate
                             type="button"
                             onClick={onClose}
                             disabled={loading}
-                            className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-xl"
+                            className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading || count < 1 || count > 50}
-                            className="h-8 bg-[#223A5E] hover:bg-[#223A5E]/90 text-[#FAF8F5] disabled:opacity-50 px-4 text-[10px] font-bold transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-xl"
+                            className="h-8 bg-[#223A5E] hover:bg-[#223A5E]/90 text-[#FAF8F5] disabled:opacity-50 px-4 text-[10px] font-bold transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-md"
                         >
                             {loading && (
                                 <svg className="h-3 w-3 animate-spin text-[#FAF8F5]" fill="none" viewBox="0 0 24 24">

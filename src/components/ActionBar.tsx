@@ -80,7 +80,7 @@ export default function ActionBar({
                     placeholder="Search hardware nodes..."
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    className="w-full pl-9 pr-8 h-9 text-xs tracking-wider rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-[#223A5E] focus:border-[#223A5E] transition-all font-sans"
+                    className="w-full pl-9 pr-8 h-9 text-xs tracking-wider rounded-md border border-border bg-card text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-[#223A5E] focus:border-[#223A5E] transition-all font-sans"
                 />
                 {isPending && (
                     <svg className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted-foreground" fill="none" viewBox="0 0 24 24">
@@ -93,7 +93,7 @@ export default function ActionBar({
             {/* Filter Group and Buttons */}
             <div className="flex flex-wrap items-center gap-3">
                 {/* Filter segments */}
-                <div className="inline-flex h-9 items-center justify-center border border-border bg-card p-1 text-muted-foreground text-[10px] font-bold rounded-xl">
+                <div className="inline-flex h-9 items-center justify-center border border-border bg-card p-1 text-muted-foreground text-[10px] font-bold rounded-md">
                     {FILTERS.map((f) => {
                         const isActive = optimisticFilter === f.value;
                         return (
@@ -101,7 +101,7 @@ export default function ActionBar({
                                 key={f.value}
                                 onClick={() => handleFilterChange(f.value)}
                                 className={cn(
-                                    "rounded-lg px-2.5 py-1.5 text-[9px] font-bold tracking-wider transition-all cursor-pointer",
+                                    "rounded-sm px-2.5 py-1.5 text-[9px] font-bold tracking-wider transition-all cursor-pointer",
                                     isActive 
                                         ? "bg-accent text-accent-foreground font-extrabold shadow-sm" 
                                         : "text-muted-foreground hover:text-foreground"
@@ -116,7 +116,7 @@ export default function ActionBar({
                 {/* Actions */}
                 <button 
                     onClick={onIngestClick} 
-                    className="inline-flex h-9 items-center justify-center gap-1.5 border border-border bg-card hover:bg-muted px-3.5 text-[10px] font-bold text-foreground transition-colors cursor-pointer rounded-xl select-none"
+                    className="inline-flex h-9 items-center justify-center gap-1.5 border border-border bg-card hover:bg-muted px-3.5 text-[10px] font-bold text-foreground transition-colors cursor-pointer rounded-md select-none"
                 >
                     <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -126,7 +126,7 @@ export default function ActionBar({
                 
                 <button 
                     onClick={onGenerateClick} 
-                    className="inline-flex h-9 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3.5 text-[10px] font-bold text-[#FAF8F5] transition-all cursor-pointer rounded-xl select-none"
+                    className="inline-flex h-9 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3.5 text-[10px] font-bold text-[#FAF8F5] transition-all cursor-pointer rounded-md select-none"
                 >
                     <svg className="h-3.5 w-3.5 text-[#FAF8F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

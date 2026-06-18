@@ -127,20 +127,14 @@ export default function DeviceTable({
                                         </div>
                                     </td>
                                     <td className="p-3.5">
-                                        <div className={cn(
-                                            "inline-flex items-center gap-1.5 border px-2.5 py-0.5 text-[9px] font-bold select-none transition-colors rounded-lg bg-[#191919] text-[#FAF8F5]",
-                                            device.status === 'paired' && "border-emerald-500/30",
-                                            device.status === 'registered' && "border-blue-500/30",
-                                            device.status === 'manufactured' && "border-neutral-800",
-                                            device.status === 'failed' && "border-rose-500/30"
-                                        )}>
+                                        <div className="inline-flex items-center gap-1.5 border border-border px-2.5 py-0.5 text-[9px] font-bold select-none bg-[#191919] text-[#FAF8F5] rounded-md">
                                             <span
                                                 className={cn(
                                                     "h-1.5 w-1.5 rounded-full shrink-0",
-                                                    device.status === 'paired' && "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]",
-                                                    device.status === 'registered' && "bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.4)]",
+                                                    device.status === 'paired' && "bg-emerald-600 shadow-[0_0_6px_rgba(5,150,105,0.4)]",
+                                                    device.status === 'registered' && "bg-blue-600 shadow-[0_0_6px_rgba(37,99,235,0.4)]",
                                                     device.status === 'manufactured' && "bg-neutral-500",
-                                                    device.status === 'failed' && "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.4)]"
+                                                    device.status === 'failed' && "bg-rose-600 shadow-[0_0_6px_rgba(225,29,72,0.4)]"
                                                 )}
                                             />
                                             <span>

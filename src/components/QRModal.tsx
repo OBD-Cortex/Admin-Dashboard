@@ -93,7 +93,7 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
 
                 <div className="flex flex-col items-center justify-center p-2 space-y-4">
                     {/* QR Frame */}
-                    <div className="border border-border bg-background p-3 shadow-inner rounded-xl">
+                    <div className="border border-border bg-background p-3 shadow-inner rounded-md">
                         <img
                             src={pngUrl}
                             alt={`QR code for ${uppercaseToken}`}
@@ -104,7 +104,7 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
                     </div>
 
                     <div className="flex flex-col items-center gap-1.5 w-full text-center">
-                        <div className="font-mono text-xs font-bold border border-border bg-background px-3 py-2 text-foreground select-all w-full truncate text-center rounded-xl">
+                        <div className="font-mono text-xs font-bold border border-border bg-background px-3 py-2 text-foreground select-all w-full truncate text-center rounded-md">
                             {uppercaseToken}
                         </div>
                         <p className="flex items-center justify-center gap-1 text-[9px] text-muted-foreground">
@@ -120,7 +120,7 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
                     <button 
                         onClick={handleDownload}
                         disabled={isDownloading}
-                        className="inline-flex h-9 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 text-[#FAF8F5] disabled:opacity-50 px-3 text-[10px] font-sans font-bold transition-all cursor-pointer select-none w-full rounded-xl"
+                        className="inline-flex h-9 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 text-[#FAF8F5] disabled:opacity-50 px-3 text-[10px] font-sans font-bold transition-all cursor-pointer select-none w-full rounded-md"
                     >
                         <svg className="h-3.5 w-3.5 text-[#FAF8F5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -132,7 +132,7 @@ export default function QRModal({ isOpen, onClose, token }: QRModalProps) {
 
                     <button
                         onClick={onClose}
-                        className="h-9 border border-border bg-background hover:bg-muted px-3 text-[10px] font-sans font-bold text-foreground transition-colors cursor-pointer select-none w-full rounded-xl"
+                        className="h-9 border border-border bg-background hover:bg-muted px-3 text-[10px] font-sans font-bold text-foreground transition-colors cursor-pointer select-none w-full rounded-md"
                     >
                         Close Window
                     </button>

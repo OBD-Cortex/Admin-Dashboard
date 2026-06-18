@@ -27,10 +27,10 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
     };
 
     const getStatusColorClass = (status: string) => {
-        if (status === 'loading') return 'bg-blue-500 animate-pulse';
-        if (status === 'connected') return 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]';
-        if (status === 'disconnected') return 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.5)]';
-        return 'bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]';
+        if (status === 'loading') return 'bg-blue-600 animate-pulse';
+        if (status === 'connected') return 'bg-emerald-600 shadow-[0_0_6px_rgba(5,150,105,0.4)]';
+        if (status === 'disconnected') return 'bg-rose-600 shadow-[0_0_6px_rgba(225,29,72,0.4)]';
+        return 'bg-blue-600 shadow-[0_0_6px_rgba(37,99,235,0.4)]';
     };
 
     const getStatusText = (status: string, label: string) => {
@@ -64,11 +64,8 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         onClick={onRefreshHealth}
                         disabled={isAnyLoading}
                         className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-lg",
-                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer",
-                            servicesStatus.admin === 'connected' ? "border-emerald-500/25" :
-                            servicesStatus.admin === 'disconnected' ? "border-rose-500/25" :
-                            "border-blue-500/25"
+                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-md",
+                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: Admin-Service"
                     >
@@ -82,11 +79,8 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         onClick={onRefreshHealth}
                         disabled={isAnyLoading}
                         className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-lg",
-                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer",
-                            servicesStatus.edge === 'connected' ? "border-emerald-500/25" :
-                            servicesStatus.edge === 'disconnected' ? "border-rose-500/25" :
-                            "border-blue-500/25"
+                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-md",
+                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: Edge-Service"
                     >
@@ -100,11 +94,8 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                         onClick={onRefreshHealth}
                         disabled={isAnyLoading}
                         className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-lg",
-                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer",
-                            servicesStatus.app === 'connected' ? "border-emerald-500/25" :
-                            servicesStatus.app === 'disconnected' ? "border-rose-500/25" :
-                            "border-blue-500/25"
+                            "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#191919] text-[#FAF8F5] hover:bg-neutral-800 transition-colors rounded-md",
+                            isAnyLoading ? "cursor-wait opacity-80" : "cursor-pointer"
                         )}
                         title="Click to refresh health: MobileApp-Service"
                     >
@@ -117,7 +108,7 @@ export function SiteHeader({ servicesStatus, onRefreshHealth }: SiteHeaderProps)
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="inline-flex h-8 items-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer select-none rounded-lg"
+                    className="inline-flex h-8 items-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer select-none rounded-md"
                     title="Sign Out"
                 >
                     <svg className="h-3.5 w-3.5 text-[#FAF8F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

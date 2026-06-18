@@ -42,7 +42,7 @@ export default function ConfirmModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-xl"
+                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
                     >
                         {cancelText}
                     </button>
@@ -53,7 +53,7 @@ export default function ConfirmModal({
                             onClose();
                         }}
                         className={cn(
-                            "h-8 px-4 text-[10px] font-bold transition-all cursor-pointer select-none rounded-xl",
+                            "h-8 px-4 text-[10px] font-bold transition-all cursor-pointer select-none rounded-md",
                             variant === 'danger' && "bg-[#191919] border border-destructive/35 text-[#FAF8F5] hover:bg-[#191919]/80 hover:border-destructive/60",
                             variant === 'warning' && "bg-amber-600 hover:opacity-90 text-white",
                             variant === 'primary' && "bg-[#223A5E] hover:bg-[#223A5E]/90 text-[#FAF8F5]"

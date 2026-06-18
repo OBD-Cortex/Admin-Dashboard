@@ -230,7 +230,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
                             className={cn(
-                                "flex flex-col items-center justify-center border border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors",
+                                "flex flex-col items-center justify-center border border-dashed rounded-md p-8 text-center cursor-pointer transition-colors",
                                 dragging ? "border-primary bg-muted" : "border-border bg-background hover:bg-muted/40"
                             )}
                         >
@@ -250,7 +250,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             <p className="text-[9px] text-muted-foreground mt-0.5">Supports PDF, CSV, MD, TXT up to 10MB</p>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-3 border border-border p-4 bg-background rounded-xl relative group">
+                        <div className="flex items-center gap-3 border border-border p-4 bg-background rounded-md relative group">
                             <svg className="h-8 w-8 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
@@ -311,7 +311,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
                             {/* Logs console */}
                             {logs.length > 0 && (
-                                <div className="border border-border bg-background p-3 font-mono text-[10px] leading-relaxed text-muted-foreground max-h-[140px] overflow-y-auto space-y-1 rounded-xl">
+                                <div className="border border-border bg-background p-3 font-mono text-[10px] leading-relaxed text-muted-foreground max-h-[140px] overflow-y-auto space-y-1 rounded-md">
                                     {logs.map((log, idx) => (
                                         <div key={idx} className="flex gap-2">
                                             <span className="text-muted-foreground/60">[{log.timestamp}]</span>
@@ -334,7 +334,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     <button
                         onClick={onClose}
                         disabled={uploading}
-                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-xl"
+                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
                     >
                         {jobStatus === 'completed' ? 'Close' : 'Cancel'}
                     </button>
@@ -342,7 +342,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         <button 
                             onClick={handleUpload} 
                             disabled={uploading}
-                            className="h-8 bg-[#223A5E] hover:bg-[#223A5E]/90 disabled:opacity-50 px-4 text-[10px] font-bold text-[#FAF8F5] transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-xl"
+                            className="h-8 bg-[#223A5E] hover:bg-[#223A5E]/90 disabled:opacity-50 px-4 text-[10px] font-bold text-[#FAF8F5] transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-md"
                         >
                             {uploading && (
                                 <svg className="h-3 w-3 animate-spin text-[#FAF8F5]" fill="none" viewBox="0 0 24 24">

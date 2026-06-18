@@ -40,7 +40,7 @@ export default function LoginPage() {
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="border border-destructive/20 bg-destructive/10 px-4 py-3 text-xs text-destructive rounded-xl text-center font-medium">
+                        <div className="border border-destructive/40 bg-[#191919] px-4 py-3 text-xs text-[#FAF8F5] rounded-md text-center font-medium">
                             {error}
                         </div>
                     )}
@@ -51,7 +51,7 @@ export default function LoginPage() {
                         </label>
                         <input
                             id="auth-pass"
-                            className="w-full h-11 px-4 py-2 text-center text-sm border border-border bg-background placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#223A5E] focus:border-[#223A5E] transition-all rounded-xl tracking-widest text-foreground font-sans"
+                            className="w-full h-11 px-4 py-2 text-center text-sm border border-border bg-background placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#223A5E] focus:border-[#223A5E] transition-all rounded-md tracking-widest text-foreground font-sans"
                             type="password"
                             placeholder="••••••••"
                             value={password}
@@ -62,7 +62,7 @@ export default function LoginPage() {
                     </div>
 
                     <button
-                        className="w-full h-11 text-xs font-bold cursor-pointer bg-[#223A5E] hover:bg-[#223A5E]/90 disabled:opacity-50 text-[#FAF8F5] transition-all rounded-xl tracking-widest select-none flex items-center justify-center gap-1.5 font-sans"
+                        className="w-full h-11 text-xs font-bold cursor-pointer bg-[#223A5E] hover:bg-[#223A5E]/90 disabled:opacity-50 text-[#FAF8F5] transition-all rounded-md tracking-widest select-none flex items-center justify-center gap-1.5 font-sans"
                         type="submit"
                         disabled={loading || !password}
                     >

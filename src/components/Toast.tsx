@@ -57,7 +57,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     return (
         <ToastContext.Provider value={{ toast }}>
             {children}
-            <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-full max-w-sm pointer-events-none">
+            <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 w-full max-w-sm pointer-events-none">
                 {toasts.map((t) => {
                     const isSuccess = t.type === 'success';
                     const isError = t.type === 'error';
@@ -65,10 +65,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                         <div
                             key={t.id}
                             className={cn(
-                                "flex items-start gap-3 p-4 rounded-2xl border bg-card text-foreground shadow-xl transition-all duration-300 pointer-events-auto",
-                                isSuccess && "border-emerald-600/25 bg-emerald-500/10 text-emerald-800",
-                                isError && "border-rose-600/25 bg-rose-500/10 text-rose-800",
-                                !isSuccess && !isError && "border-blue-600/25 bg-blue-500/10 text-blue-800",
+                                "flex items-start gap-3 p-4 rounded-2xl border bg-[#191919] text-[#FAF8F5] shadow-xl transition-all duration-300 pointer-events-auto",
+                                isSuccess && "border-emerald-600/35",
+                                isError && "border-rose-600/35",
+                                !isSuccess && !isError && "border-blue-600/35",
                                 t.removing ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
                             )}
                         >
@@ -94,7 +94,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                             
                             <button
                                 onClick={() => removeToast(t.id)}
-                                className="text-muted-foreground hover:text-foreground shrink-0 rounded-lg p-0.5 transition-colors cursor-pointer"
+                                className="text-muted-foreground hover:text-[#FAF8F5] shrink-0 rounded-lg p-0.5 transition-colors cursor-pointer"
                             >
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

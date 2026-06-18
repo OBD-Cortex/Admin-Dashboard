@@ -88,7 +88,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
         <div className="space-y-4 font-sans text-xs">
             <div className="border border-border bg-card overflow-hidden rounded-2xl shadow-sm">
                 {documents.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-center border-dashed border border-border/80 m-4 bg-muted/20 rounded-xl">
+                    <div className="flex flex-col items-center justify-center py-16 text-center border-dashed border border-border/80 m-4 bg-muted/20 rounded-md">
                         <svg className="h-8 w-8 text-muted-foreground/60 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                             <polyline points="14 2 14 8 20 8" />
