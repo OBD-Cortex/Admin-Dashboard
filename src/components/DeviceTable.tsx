@@ -127,7 +127,7 @@ export default function DeviceTable({
                                         </div>
                                     </td>
                                     <td className="p-3.5">
-                                        <div className="inline-flex items-center gap-1.5 border border-border px-2.5 py-0.5 text-[9px] font-bold select-none bg-[#191919] text-[#FAF8F5] rounded-md">
+                                        <div className="inline-flex items-center gap-1.5 border border-border px-2.5 py-0.5 text-[9px] font-bold select-none bg-[#F3EFE7] text-[#191919] rounded-md">
                                             <span
                                                 className={cn(
                                                     "h-1.5 w-1.5 rounded-full shrink-0",

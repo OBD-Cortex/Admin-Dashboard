@@ -12,17 +12,17 @@ export default function StatsGrid({ stats }: StatsGridProps) {
         {
             label: 'Total Devices',
             key: 'total',
-            desc: 'All Cryptographic Hardware Keys',
             icon: (
-                <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m-5 8a5 5 0 1110 0a5 5 0 01-10 0zM12 11l-3 3m-3 3h3v-2h2v-2h2" />
+                <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="7.5" cy="15.5" r="5.5" />
+                    <path d="m21 2-9.6 9.6" />
+                    <path d="m15.5 7.5 3 3L22 7l-3-3" />
                 </svg>
             )
         },
         {
             label: 'Manufactured',
             key: 'manufactured',
-            desc: 'Keys Generated but Unassigned',
             icon: (
                 <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
@@ -32,7 +32,6 @@ export default function StatsGrid({ stats }: StatsGridProps) {
         {
             label: 'Registered',
             key: 'registered',
-            desc: 'Provisioned in Cognito Userpool',
             icon: (
                 <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -42,7 +41,6 @@ export default function StatsGrid({ stats }: StatsGridProps) {
         {
             label: 'Paired',
             key: 'paired',
-            desc: 'Connected to an Owner Vehicle',
             icon: (
                 <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                     <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 1 13v3c0 .6.4 1 1 1h2" />
@@ -58,19 +56,16 @@ export default function StatsGrid({ stats }: StatsGridProps) {
             {cards.map((card) => {
                 const value = stats ? stats[card.key] : null;
                 return (
-                    <div key={card.key} className="border border-border bg-card p-5 rounded-2xl flex flex-col justify-between min-h-[120px] shadow-sm">
+                    <div key={card.key} className="border border-border bg-card p-5 rounded-2xl flex flex-col justify-between min-h-[100px] shadow-sm">
                         <div className="flex items-center justify-between">
                             <span className="text-[10px] font-bold tracking-widest text-muted-foreground">
                                 {card.label}
                             </span>
                             {card.icon}
                         </div>
-                        <div className="mt-4 flex flex-col gap-1">
+                        <div className="mt-4">
                             <span className="text-3xl font-bold font-serif tracking-tight text-foreground">
                                 {value !== null ? String(value).padStart(2, '0') : '——'}
-                            </span>
-                            <span className="text-[9px] font-bold tracking-wider text-muted-foreground/80">
-                                {card.desc}
                             </span>
                         </div>
                     </div>
