@@ -3,8 +3,10 @@ const nextConfig = {
     // Hostinger handles the build & serve natively — no standalone needed.
     // The .next/ output directory is auto-detected by Hostinger's Next.js runtime.
     reactStrictMode: true,
-    serverActions: {
-        bodySizeLimit: '10mb',
+    experimental: {
+        serverActions: {
+            bodySizeLimit: '10mb',
+        },
     },
 };
 
