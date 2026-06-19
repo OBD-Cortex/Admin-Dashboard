@@ -50,7 +50,7 @@ export async function fetchFromAdminService(path: string, options: RequestInit =
     headers.set('Authorization', `Bearer ${generateAdminJwt(secret)}`);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds for large uploads
 
     // Merge headers back into options. Do not explicitly set 'Content-Type' for FormData 
     // to allow the browser/runtime to automatically compute the boundary string.
