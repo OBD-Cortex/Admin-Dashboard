@@ -1,14 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * GET /api/qr — Stream QR code from external API
  * Query params: token, format (png|svg), download
  */
-export async function GET(request) {
-    const sessionCookie = request.cookies.get('obd_session');
-    if (!sessionCookie || !sessionCookie.value) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
     const format = searchParams.get('format');
@@ -34,7 +30,11 @@ export async function GET(request) {
     }
 
     try {
-        const upstream = await fetch(qrUrl);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        const upstream = await fetch(qrUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
 
         if (!upstream.ok) {
             return NextResponse.json({ error: 'QR code service returned an error' }, { status: 502 });
@@ -52,7 +52,7 @@ export async function GET(request) {
             status: 200,
             headers,
         });
-    } catch (err) {
+    } catch (err: any) {
         return NextResponse.json({ error: 'Failed to reach QR code service: ' + err.message }, { status: 502 });
     }
 }

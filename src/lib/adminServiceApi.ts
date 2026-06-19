@@ -1,8 +1,4 @@
-import { loadEnvSecrets } from './env';
 import crypto from 'crypto';
-
-// Ensure environment variables are registered
-loadEnvSecrets();
 
 /**
  * Generates a native HS256 JWT using native Node crypto.
