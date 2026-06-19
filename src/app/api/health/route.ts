@@ -47,22 +47,22 @@ export async function GET(request: NextRequest) {
     const appServiceUrl = process.env.MOBILEAPP_SERVICE_URL;
 
     // Individual health check routes
-    if (service === 'admin') {
+    if (service === 'admin-service') {
         const adminStatus = await checkServiceHealth(adminServiceUrl);
         return NextResponse.json({ adminService: adminStatus });
     }
-    if (service === 'edge') {
+    if (service === 'edge-service') {
         const edgeStatus = await checkServiceHealth(edgeServiceUrl);
         return NextResponse.json({ edgeService: edgeStatus });
     }
-    if (service === 'app') {
+    if (service === 'mobileapp-service') {
         const appStatus = await checkServiceHealth(appServiceUrl);
         return NextResponse.json({ appService: appStatus });
     }
 
     // If no valid service parameter is provided, return a 400 error
     return NextResponse.json(
-        { error: 'Valid service parameter (admin, edge, app) is required' },
+        { error: 'Valid service parameter (admin-service, edge-service, mobileapp-service) is required' },
         { status: 400 }
     );
 }

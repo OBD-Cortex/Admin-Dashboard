@@ -15,6 +15,7 @@ export async function deleteDevice(token: string, force: boolean = false) {
         revalidatePath('/');
         return { success: true };
     } catch (error: any) {
+        console.error('[Actions] deleteDevice error:', error.stack || error);
         return { error: error.message || 'Failed to delete device' };
     }
 }
@@ -27,6 +28,7 @@ export async function unpairDevice(token: string) {
         revalidatePath('/');
         return { success: true };
     } catch (error: any) {
+        console.error('[Actions] unpairDevice error:', error.stack || error);
         return { error: error.message || 'Failed to unpair device' };
     }
 }
@@ -41,6 +43,7 @@ export async function generateDevices(count: number | string) {
         revalidatePath('/');
         return { success: true, data };
     } catch (error: any) {
+        console.error('[Actions] generateDevices error:', error.stack || error);
         return { error: error.message || 'Failed to generate devices' };
     }
 }
@@ -50,6 +53,7 @@ export async function getKnowledgeBase() {
         const data = await fetchFromAdminService('/api/admin/knowledge', { method: 'GET' });
         return { documents: data.documents };
     } catch (error: any) {
+        console.error('[Actions] getKnowledgeBase error:', error.stack || error);
         return { error: error.message || 'Failed to fetch knowledge base' };
     }
 }
@@ -60,6 +64,7 @@ export async function deleteKnowledgeDocument(source: string) {
         revalidatePath('/');
         return { success: true };
     } catch (error: any) {
+        console.error('[Actions] deleteKnowledgeDocument error:', error.stack || error);
         return { error: error.message || 'Failed to delete document' };
     }
 }
@@ -84,6 +89,7 @@ export async function ingestDocument(formData: FormData) {
         });
         return { success: true, ...data };
     } catch (error: any) {
+        console.error('[Actions] ingestDocument error:', error.stack || error);
         return { error: error.message || 'Upload to gateway failed' };
     }
 }
@@ -93,6 +99,7 @@ export async function getIngestStatus(jobId: string) {
         const data = await fetchFromAdminService(`/api/ingest/status/${jobId}`, { method: 'GET' });
         return { success: true, ...data };
     } catch (error: any) {
+        console.error('[Actions] getIngestStatus error:', error.stack || error);
         return { error: error.message || 'Failed to check status' };
     }
 }
@@ -128,8 +135,8 @@ export async function login(password: string) {
         });
 
         return { success: true };
-    } catch (error) {
-        console.error('[Actions] Login exception:', error);
+    } catch (error: any) {
+        console.error('[Actions] Login exception:', error.stack || error);
         return { error: 'Authentication failed' };
     }
 }
@@ -139,7 +146,8 @@ export async function logout() {
         const cookieStore = await cookies();
         cookieStore.delete('obd_session');
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
+        console.error('[Actions] Logout exception:', error.stack || error);
         return { error: 'Logout failed' };
     }
 }

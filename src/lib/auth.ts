@@ -21,3 +21,37 @@ export function validatePassword(password: string): boolean {
     }
     return crypto.timingSafeEqual(expectedBuffer, inputBuffer);
 }
+
+/**
+ * Generates a native HS256 JWT using native Node crypto.
+ */
+export function generateAdminJwt(secret: string): string {
+    const header = { alg: "HS256", typ: "JWT" };
+    const payload = {
+        iss: "obd-cortex-admin",
+        aud: "obd-cortex-admin-api",
+        exp: Math.floor(Date.now() / 1000) + 60 // 60 seconds
+    };
+    
+    const encodeBase64Url = (obj: object) => {
+        return Buffer.from(JSON.stringify(obj))
+            .toString('base64')
+            .replace(/=/g, '')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_');
+    };
+    
+    const encodedHeader = encodeBase64Url(header);
+    const encodedPayload = encodeBase64Url(payload);
+    
+    const signatureInput = `${encodedHeader}.${encodedPayload}`;
+    
+    const signature = crypto.createHmac('sha256', secret)
+        .update(signatureInput)
+        .digest('base64')
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+        
+    return `${signatureInput}.${signature}`;
+}

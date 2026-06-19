@@ -14,31 +14,10 @@ import { useToast } from '@/components/Toast';
 import { deleteDevice, unpairDevice } from '@/app/actions';
 
 import { Stats, Device } from '@/types';
+import { useServiceHealth } from '@/hooks/useServiceHealth';
+import { useConfirm } from '@/hooks/useConfirm';
 
-// Helper to check health of specific services via dashboard server-side proxy
-const checkHealthFor = async (service: 'admin' | 'edge' | 'app') => {
-    try {
-        const url = `/api/health?service=${service}`;
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
-        
-        const res = await fetch(url, {
-            signal: controller.signal,
-            headers: { 'Accept': 'application/json' }
-        });
-        clearTimeout(timeoutId);
-        
-        if (res.ok) {
-            const data = await res.json();
-            if (service === 'admin') return data.adminService || 'disconnected';
-            if (service === 'edge') return data.edgeService || 'disconnected';
-            if (service === 'app') return data.appService || 'disconnected';
-        }
-        return 'disconnected';
-    } catch {
-        return 'disconnected';
-    }
-};
+
 
 interface ClientDashboardProps {
     initialStats: Stats | null;
@@ -54,33 +33,8 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
     const [ingestModalOpen, setIngestModalOpen] = useState(false);
 
-    // Confirmation Modal state
-    const [confirmModal, setConfirmModal] = useState<{
-        isOpen: boolean;
-        title: string;
-        message: string;
-        confirmText: string;
-        variant: 'danger' | 'warning' | 'primary';
-        onConfirm: () => void;
-    }>({
-        isOpen: false,
-        title: '',
-        message: '',
-        confirmText: '',
-        variant: 'primary',
-        onConfirm: () => {},
-    });
-
-    // Dynamic states for services health checks
-    const [servicesStatus, setServicesStatus] = useState<{
-        admin: string;
-        edge: string;
-        app: string;
-    }>({
-        admin: 'loading',
-        edge: 'loading',
-        app: 'loading',
-    });
+    const { servicesStatus, refreshServiceHealth } = useServiceHealth();
+    const { confirmModal, requestConfirm, closeConfirm } = useConfirm();
 
     const [tableLoading, setTableLoading] = useState(false);
 
@@ -88,17 +42,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         setTableLoading(false);
     }, [initialDevices]);
 
-    const refreshServiceHealth = useCallback(async (service: 'admin' | 'edge' | 'app') => {
-        setServicesStatus((prev) => ({ ...prev, [service]: 'loading' }));
-        const status = await checkHealthFor(service);
-        setServicesStatus((prev) => ({ ...prev, [service]: status }));
-    }, []);
 
-    useEffect(() => {
-        refreshServiceHealth('admin');
-        refreshServiceHealth('edge');
-        refreshServiceHealth('app');
-    }, [refreshServiceHealth]);
 
     const handleGenerated = (data: any) => {
         toast(`Successfully generated ${data.generated} device${data.generated > 1 ? 's' : ''}`, 'success');
@@ -118,8 +62,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         if (res.error) {
             if (res.error.includes("paired") && !force) {
                 // Trigger confirmation for force delete if device is paired
-                setConfirmModal({
-                    isOpen: true,
+                requestConfirm({
                     title: 'Force Delete Device',
                     message: `${res.error}\n\nDo you want to FORCE delete this device? This will unlink the device from the owner's account.`,
                     confirmText: 'Force Delete',
@@ -136,8 +79,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     };
 
     const handleDeleteClick = (token: string) => {
-        setConfirmModal({
-            isOpen: true,
+        requestConfirm({
             title: 'Delete Device',
             message: `Delete device ${token}? This action cannot be undone.`,
             confirmText: 'Delete',
@@ -157,8 +99,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     };
 
     const handleUnpairClick = (token: string) => {
-        setConfirmModal({
-            isOpen: true,
+        requestConfirm({
             title: 'Unpair Device',
             message: `Are you sure you want to unpair device ${token} from its owner?`,
             confirmText: 'Unpair',
@@ -225,7 +166,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             {/* Confirmation Modal */}
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
-                onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+                onClose={closeConfirm}
                 onConfirm={confirmModal.onConfirm}
                 title={confirmModal.title}
                 message={confirmModal.message}

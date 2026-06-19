@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils';
 
 interface SiteHeaderProps {
     servicesStatus: {
-        admin: string;
-        edge: string;
-        app: string;
+        'admin-service': string;
+        'edge-service': string;
+        'mobileapp-service': string;
     };
-    onRefreshServiceHealth?: (service: 'admin' | 'edge' | 'app') => void;
+    onRefreshServiceHealth?: (service: 'admin-service' | 'edge-service' | 'mobileapp-service') => void;
 }
 
 export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeaderProps) {
@@ -64,37 +64,37 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
                     {/* Admin Service */}
                     <button
                         type="button"
-                        onClick={() => onRefreshServiceHealth?.('admin')}
-                        disabled={servicesStatus.admin === 'loading'}
-                        className={getStatusBadgeClass(servicesStatus.admin)}
+                        onClick={() => onRefreshServiceHealth?.('admin-service')}
+                        disabled={servicesStatus['admin-service'] === 'loading'}
+                        className={getStatusBadgeClass(servicesStatus['admin-service'])}
                         title="Click to refresh health: Admin-Service"
                     >
-                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.admin))} />
-                        <span>{getStatusText(servicesStatus.admin, 'Admin-Service')}</span>
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus['admin-service']))} />
+                        <span>{getStatusText(servicesStatus['admin-service'], 'Admin-Service')}</span>
                     </button>
 
                     {/* Edge Service */}
                     <button
                         type="button"
-                        onClick={() => onRefreshServiceHealth?.('edge')}
-                        disabled={servicesStatus.edge === 'loading'}
-                        className={getStatusBadgeClass(servicesStatus.edge)}
+                        onClick={() => onRefreshServiceHealth?.('edge-service')}
+                        disabled={servicesStatus['edge-service'] === 'loading'}
+                        className={getStatusBadgeClass(servicesStatus['edge-service'])}
                         title="Click to refresh health: Edge-Service"
                     >
-                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.edge))} />
-                        <span>{getStatusText(servicesStatus.edge, 'Edge-Service')}</span>
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus['edge-service']))} />
+                        <span>{getStatusText(servicesStatus['edge-service'], 'Edge-Service')}</span>
                     </button>
 
                     {/* MobileApp Service */}
                     <button
                         type="button"
-                        onClick={() => onRefreshServiceHealth?.('app')}
-                        disabled={servicesStatus.app === 'loading'}
-                        className={getStatusBadgeClass(servicesStatus.app)}
+                        onClick={() => onRefreshServiceHealth?.('mobileapp-service')}
+                        disabled={servicesStatus['mobileapp-service'] === 'loading'}
+                        className={getStatusBadgeClass(servicesStatus['mobileapp-service'])}
                         title="Click to refresh health: MobileApp-Service"
                     >
-                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.app))} />
-                        <span>{getStatusText(servicesStatus.app, 'MobileApp-Service')}</span>
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus['mobileapp-service']))} />
+                        <span>{getStatusText(servicesStatus['mobileapp-service'], 'MobileApp-Service')}</span>
                     </button>
                 </div>
 
