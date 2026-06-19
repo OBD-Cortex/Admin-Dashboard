@@ -126,7 +126,7 @@ export default function ActionBar({
                 
                 <button 
                     onClick={onGenerateClick} 
-                    className="inline-flex h-8 items-center justify-center gap-1.5 bg-[#191919] hover:bg-[#191919]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer rounded-md select-none"
+                    className="inline-flex h-8 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer rounded-md select-none"
                 >
                     <svg className="h-3.5 w-3.5 text-[#FAF8F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

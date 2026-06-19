@@ -2,10 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-// @ts-ignore
 import { fetchFromAdminService } from '@/lib/adminServiceApi';
-// @ts-ignore
 import { validatePassword } from '@/lib/auth';
+import { signSession } from '@/lib/session';
 
 export async function deleteDevice(token: string, force: boolean = false) {
     try {
@@ -96,8 +95,19 @@ export async function login(password: string) {
             return { error: 'Invalid password' };
         }
 
+        const secret = process.env.ADMIN_JWT_SECRET;
+        if (!secret) {
+            console.error('[Actions] ADMIN_JWT_SECRET is not configured.');
+            return { error: 'Server configuration error' };
+        }
+
+        const sessionToken = await signSession(
+            { exp: Date.now() + 24 * 60 * 60 * 1000 },
+            secret
+        );
+
         const cookieStore = await cookies();
-        cookieStore.set('obd_session', 'authenticated', {
+        cookieStore.set('obd_session', sessionToken, {
             path: '/',
             httpOnly: true,
             sameSite: 'lax',
@@ -107,6 +117,7 @@ export async function login(password: string) {
 
         return { success: true };
     } catch (error) {
+        console.error('[Actions] Login exception:', error);
         return { error: 'Authentication failed' };
     }
 }

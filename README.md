@@ -7,7 +7,7 @@ The **Admin Dashboard** is a secure Next.js App Router application hosted on Hos
 ## Service Architecture
 
 This Next.js control plane leverages Server-First rendering principles:
-1.  **Server Actions Core:** All database mutators and backend service integrations use Server Actions (`src/app/actions.js`). This completely shields endpoints and sensitive tokens from exposure to the user's browser.
+1.  **Server Actions Core:** All database mutators and backend service integrations use Server Actions (`src/app/actions.ts`). This completely shields endpoints and sensitive tokens from exposure to the user's browser.
 2.  **Edge Runtime Guard:** Secure cookies auth runs inside the V8 Edge Runtime (using `middleware.js`). Browser-native `atob()` handles JWT parsing instead of Node-specific `Buffer` module to prevent crashes in the V8 Edge runtime environment.
 3.  **Encapsulated Credentials Forwarding:** Outgoing backend API requests are proxied via `fetchFromAdminService()` inside `src/lib/adminServiceApi.js`. The browser client never handles the `ADMIN_JWT_SECRET`.
 4.  **Static Security Baseline:** The application utilizes standard HTTPS (SSL auto-provisioned by Hostinger) and injects strict security headers (CSP, HSTS, X-Frame-Options Deny) on every page.

@@ -17,12 +17,13 @@
  */
 
 import { NextResponse } from 'next/server';
+import { verifySession } from './lib/session';
 
 // Session cookie identifier
 const COOKIE_NAME = 'obd_session';
 
 // Paths that bypass all authentication checks
-const PUBLIC_PATHS = ['/login', '/api/auth', '/api/health'];
+const PUBLIC_PATHS = ['/login', '/api/health'];
 
 // File extensions to skip middleware processing for static assets
 const STATIC_EXTENSIONS = ['.ico', '.png', '.jpg', '.svg', '.css', '.js', '.woff', '.woff2', '.ttf'];
@@ -58,7 +59,7 @@ function applySecurityHeaders(response) {
  * @param {NextRequest} request Incoming request context.
  * @returns {NextResponse} Proceed to next, JSON error, or redirect response.
  */
-export function middleware(request) {
+export async function middleware(request) {
     const { pathname } = request.nextUrl;
 
     // 1. PERFORMANCE: Skip processing for Next.js internal files and favicon
@@ -111,7 +112,16 @@ export function middleware(request) {
         return returnUnauthorized('Unauthorized');
     }
 
+    const secret = process.env.ADMIN_JWT_SECRET;
+    if (!secret) {
+        console.error('[Middleware] Server configuration error: ADMIN_JWT_SECRET is missing.');
+        return returnUnauthorized('Server configuration error', 500);
+    }
 
+    const session = await verifySession(sessionCookie.value, secret);
+    if (!session) {
+        return returnUnauthorized('Unauthorized');
+    }
 
     return applySecurityHeaders(NextResponse.next());
 }

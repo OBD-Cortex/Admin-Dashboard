@@ -27,10 +27,24 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
     };
 
     const getStatusColorClass = (status: string) => {
-        if (status === 'loading') return 'bg-blue-600 animate-pulse';
-        if (status === 'connected') return 'bg-emerald-600 shadow-[0_0_6px_rgba(5,150,105,0.4)]';
-        if (status === 'disconnected') return 'bg-rose-600 shadow-[0_0_6px_rgba(225,29,72,0.4)]';
-        return 'bg-blue-600 shadow-[0_0_6px_rgba(37,99,235,0.4)]';
+        if (status === 'loading') return 'bg-blue-500 animate-pulse';
+        if (status === 'connected') return 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]';
+        if (status === 'disconnected') return 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.5)]';
+        return 'bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]';
+    };
+
+    const getStatusBadgeClass = (status: string) => {
+        const base = "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-black transition-colors rounded-md";
+        if (status === 'loading') {
+            return cn(base, "text-blue-500 border-blue-900/50 cursor-wait opacity-80");
+        }
+        if (status === 'connected') {
+            return cn(base, "text-emerald-500 border-emerald-900/50 hover:bg-neutral-950 cursor-pointer");
+        }
+        if (status === 'disconnected') {
+            return cn(base, "text-rose-500 border-rose-900/50 hover:bg-neutral-950 cursor-pointer");
+        }
+        return cn(base, "text-neutral-400 border-neutral-800 hover:bg-neutral-950 cursor-pointer");
     };
 
     const getStatusText = (status: string, label: string) => {
@@ -58,10 +72,7 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
                         type="button"
                         onClick={() => onRefreshServiceHealth?.('admin')}
                         disabled={servicesStatus.admin === 'loading'}
-                        className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
-                            servicesStatus.admin === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer"
-                        )}
+                        className={getStatusBadgeClass(servicesStatus.admin)}
                         title="Click to refresh health: Admin-Service"
                     >
                         <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.admin))} />
@@ -73,10 +84,7 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
                         type="button"
                         onClick={() => onRefreshServiceHealth?.('edge')}
                         disabled={servicesStatus.edge === 'loading'}
-                        className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
-                            servicesStatus.edge === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer"
-                        )}
+                        className={getStatusBadgeClass(servicesStatus.edge)}
                         title="Click to refresh health: Edge-Service"
                     >
                         <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.edge))} />
@@ -88,10 +96,7 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
                         type="button"
                         onClick={() => onRefreshServiceHealth?.('app')}
                         disabled={servicesStatus.app === 'loading'}
-                        className={cn(
-                            "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md",
-                            servicesStatus.app === 'loading' ? "cursor-wait opacity-80" : "cursor-pointer"
-                        )}
+                        className={getStatusBadgeClass(servicesStatus.app)}
                         title="Click to refresh health: MobileApp-Service"
                     >
                         <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", getStatusColorClass(servicesStatus.app))} />
@@ -103,7 +108,7 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="inline-flex h-8 items-center gap-1.5 bg-[#191919] hover:bg-[#191919]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer select-none rounded-md"
+                    className="inline-flex h-8 items-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer select-none rounded-md"
                     title="Sign Out"
                 >
                     <svg className="h-3.5 w-3.5 text-[#FAF8F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

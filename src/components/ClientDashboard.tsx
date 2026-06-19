@@ -15,22 +15,10 @@ import { deleteDevice, unpairDevice } from '@/app/actions';
 
 import { Stats, Device } from '@/types';
 
-// Helper to check health of specific service subdomains or use local fallback
+// Helper to check health of specific services via dashboard server-side proxy
 const checkHealthFor = async (service: 'admin' | 'edge' | 'app') => {
-    if (typeof window === 'undefined') return 'disconnected';
     try {
-        const host = window.location.host;
-        const protocol = window.location.protocol;
-        
-        let url = '';
-        if (host.startsWith('admin.')) {
-            const subdomain = service === 'admin' ? 'admin' : service === 'edge' ? 'edge' : 'app';
-            url = `${protocol}//${host.replace(/^admin\./, `${subdomain}.`)}/api/health`;
-        } else {
-            // Local dev fallback proxy URL
-            url = `/api/health?service=${service}`;
-        }
-        
+        const url = `/api/health?service=${service}`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000);
         
@@ -41,13 +29,10 @@ const checkHealthFor = async (service: 'admin' | 'edge' | 'app') => {
         clearTimeout(timeoutId);
         
         if (res.ok) {
-            if (url.startsWith('/api/health')) {
-                const data = await res.json();
-                if (service === 'admin') return data.adminService || 'disconnected';
-                if (service === 'edge') return data.edgeService || 'disconnected';
-                if (service === 'app') return data.appService || 'disconnected';
-            }
-            return 'connected';
+            const data = await res.json();
+            if (service === 'admin') return data.adminService || 'disconnected';
+            if (service === 'edge') return data.edgeService || 'disconnected';
+            if (service === 'app') return data.appService || 'disconnected';
         }
         return 'disconnected';
     } catch {

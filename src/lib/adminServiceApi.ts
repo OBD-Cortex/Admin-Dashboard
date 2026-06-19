@@ -5,15 +5,9 @@ import crypto from 'crypto';
 loadEnvSecrets();
 
 /**
- * Standard utility to communicate with the FastAPI Admin Service backend.
- * Provides unified request proxying, environment verification, header handling,
- * and robust error mapping.
- *
- * @param {string} path API endpoint path (e.g., '/api/admin/devices')
- * @param {object} options Fetch options (method, body, headers, cache, etc.)
- * @returns {Promise<any>} Parsed JSON response from the backend.
+ * Generates a native HS256 JWT using native Node crypto.
  */
-function generateAdminJwt(secret) {
+function generateAdminJwt(secret: string): string {
     const header = { alg: "HS256", typ: "JWT" };
     const payload = {
         iss: "obd-cortex-admin",
@@ -21,7 +15,7 @@ function generateAdminJwt(secret) {
         exp: Math.floor(Date.now() / 1000) + 60 // 60 seconds
     };
     
-    const encodeBase64Url = (obj) => {
+    const encodeBase64Url = (obj: object) => {
         return Buffer.from(JSON.stringify(obj))
             .toString('base64')
             .replace(/=/g, '')
@@ -44,7 +38,7 @@ function generateAdminJwt(secret) {
     return `${signatureInput}.${signature}`;
 }
 
-export async function fetchFromAdminService(path, options = {}) {
+export async function fetchFromAdminService(path: string, options: RequestInit = {}): Promise<any> {
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
     const secret = process.env.ADMIN_JWT_SECRET;
 
@@ -73,7 +67,7 @@ export async function fetchFromAdminService(path, options = {}) {
     let response;
     try {
         response = await fetch(url, fetchOptions);
-    } catch (networkError) {
+    } catch (networkError: any) {
         if (networkError.name === 'AbortError') {
             console.error(`[Admin Service API Client] Connection timed out to ${url}`);
             throw { status: 504, message: 'Connection timed out while reaching Admin Service backend' };

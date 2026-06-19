@@ -24,11 +24,10 @@ export function useToast() {
     return context;
 }
 
-let toastIdCounter = 0;
-
 export function ToastProvider({ children }: { children: React.ReactNode }) {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const timersRef = useRef<{ [key: number]: NodeJS.Timeout }>({});
+    const toastIdRef = useRef(0);
 
     const removeToast = useCallback((id: number) => {
         setToasts((prev) =>
@@ -41,7 +40,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
     const toast = useCallback(
         (message: string, type: 'success' | 'error' | 'info' = 'success') => {
-            const id = ++toastIdCounter;
+            const id = ++toastIdRef.current;
             setToasts((prev) => [...prev, { id, message, type, removing: false }]);
 
             timersRef.current[id] = setTimeout(() => {

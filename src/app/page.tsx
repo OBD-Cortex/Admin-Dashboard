@@ -1,4 +1,3 @@
-// @ts-ignore
 import { fetchFromAdminService } from '@/lib/adminServiceApi';
 import ClientDashboard from '@/components/ClientDashboard';
 

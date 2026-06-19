@@ -5,7 +5,7 @@
  * injected by the host environment.
  */
 
-export function loadEnvSecrets() {
+export function loadEnvSecrets(): void {
     if (!process.env.ADMIN_SERVICE_URL) {
         console.warn("[!] Warning: ADMIN_SERVICE_URL is missing in environment.");
     }

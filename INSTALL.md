@@ -24,13 +24,17 @@ Before deploying, configure your environment variables. Create a `.env` file at 
 
 ```env
 # The URL pointing to your local or deployed Admin-Service backend
-ADMIN_SERVICE_URL=https://admin.yourdomain.com
+ADMIN_SERVICE_URL=https://admin-service.yourdomain.com
 
 # The SHA-256 hash of your desired administrator login password
 ADMIN_PASSWORD_HASH=your_sha256_hashed_password_here
 
 # The internal HS256 secret to authenticate requests against the Admin-Service backend
 ADMIN_JWT_SECRET=your_32_byte_hex_secret_here
+
+# Optional: Overrides for service health checks (derived from ADMIN_SERVICE_URL if not specified)
+# EDGE_SERVICE_URL=https://edge-service.yourdomain.com
+# MOBILEAPP_SERVICE_URL=https://app-service.yourdomain.com
 ```
 
 ---
