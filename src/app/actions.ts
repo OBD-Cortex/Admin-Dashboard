@@ -86,6 +86,7 @@ export async function ingestDocument(formData: FormData) {
         const data = await fetchFromAdminService('/api/ingest', {
             method: 'POST',
             body: newFormData,
+            timeout: 30000, // 30 seconds for large uploads
         });
         return { success: true, ...data };
     } catch (error: any) {

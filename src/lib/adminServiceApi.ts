@@ -1,7 +1,7 @@
 import { generateAdminJwt } from './auth';
 
 
-export async function fetchFromAdminService(path: string, options: RequestInit = {}): Promise<any> {
+export async function fetchFromAdminService(path: string, options: RequestInit & { timeout?: number } = {}): Promise<any> {
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
     const secret = process.env.ADMIN_JWT_SECRET;
 
@@ -17,7 +17,8 @@ export async function fetchFromAdminService(path: string, options: RequestInit =
     headers.set('Authorization', `Bearer ${generateAdminJwt(secret)}`);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds for large uploads
+    const timeoutValue = options.timeout ?? 5000; // Default 5 seconds
+    const timeoutId = setTimeout(() => controller.abort(), timeoutValue);
 
     // Merge headers back into options. Do not explicitly set 'Content-Type' for FormData 
     // to allow the browser/runtime to automatically compute the boundary string.
