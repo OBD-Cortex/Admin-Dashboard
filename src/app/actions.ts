@@ -66,9 +66,21 @@ export async function deleteKnowledgeDocument(source: string) {
 
 export async function ingestDocument(formData: FormData) {
     try {
+        const file = formData.get('file') as File;
+        if (!file) throw new Error("No file found in request");
+
+        // WORKAROUND: Next.js consumes the FormData stream. We must read it into
+        // a fresh buffer and recreate the FormData before forwarding to FastAPI, 
+        // otherwise Node.js fetch() will hang forever waiting for an empty stream.
+        const buffer = await file.arrayBuffer();
+        const blob = new Blob([buffer], { type: file.type });
+        
+        const newFormData = new FormData();
+        newFormData.append('file', blob, file.name);
+
         const data = await fetchFromAdminService('/api/ingest', {
             method: 'POST',
-            body: formData,
+            body: newFormData,
         });
         return { success: true, ...data };
     } catch (error: any) {

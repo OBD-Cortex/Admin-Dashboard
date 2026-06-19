@@ -2,30 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-/**
- * Dynamically derives a subdomain URL from a base URL.
- * Replaces the first subdomain segment with the target subdomain.
- *
- * @param baseUrl The base URL to transform.
- * @param targetSubdomain The target subdomain (e.g. 'edge', 'app').
- * @returns The transformed URL.
- */
-function getSubdomainUrl(baseUrl: string | undefined, targetSubdomain: string): string | null {
-    if (!baseUrl) return null;
-    try {
-        const url = new URL(baseUrl);
-        const parts = url.hostname.split('.');
-        if (parts.length > 1) {
-            parts[0] = targetSubdomain;
-            url.hostname = parts.join('.');
-        } else {
-            url.hostname = `${targetSubdomain}.${url.hostname}`;
-        }
-        return url.toString().replace(/\/$/, '');
-    } catch {
-        return null;
-    }
-}
+
 
 /**
  * Checks the health status of a service endpoint by sending a GET request.
@@ -66,9 +43,8 @@ export async function GET(request: NextRequest) {
     const service = searchParams.get('service');
 
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
-    
-    const edgeServiceUrl = getSubdomainUrl(adminServiceUrl, 'edge');
-    const appServiceUrl = getSubdomainUrl(adminServiceUrl, 'app');
+    const edgeServiceUrl = process.env.EDGE_SERVICE_URL;
+    const appServiceUrl = process.env.MOBILEAPP_SERVICE_URL;
 
     // Individual health check routes
     if (service === 'admin') {
