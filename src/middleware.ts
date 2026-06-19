@@ -17,6 +17,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { verifySession } from './lib/session';
 
 // Session cookie identifier
@@ -47,7 +48,7 @@ const SECURITY_HEADERS = {
  * @param {NextResponse} response The response to augment.
  * @returns {NextResponse} The same response with security headers applied.
  */
-function applySecurityHeaders(response) {
+function applySecurityHeaders(response: NextResponse) {
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
         response.headers.set(key, value);
     }
@@ -59,7 +60,7 @@ function applySecurityHeaders(response) {
  * @param {NextRequest} request Incoming request context.
  * @returns {NextResponse} Proceed to next, JSON error, or redirect response.
  */
-export async function middleware(request) {
+export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // 1. PERFORMANCE: Skip processing for Next.js internal files and favicon
