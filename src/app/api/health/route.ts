@@ -50,6 +50,7 @@ async function checkServiceHealth(url: string | null | undefined): Promise<'conn
             headers: {
                 'Accept': 'application/json',
             },
+            cache: 'no-store',
         });
         clearTimeout(timeoutId);
 

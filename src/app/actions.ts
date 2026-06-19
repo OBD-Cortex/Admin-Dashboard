@@ -52,7 +52,10 @@ export async function generateDevices(count: number | string) {
 
 export async function getKnowledgeBase() {
     try {
-        const knowledgeBaseData = await fetchFromAdminService('/api/admin/knowledge', { method: 'GET' });
+        const knowledgeBaseData = await fetchFromAdminService('/api/admin/knowledge', { 
+            method: 'GET',
+            cache: 'no-store'
+        });
         return { documents: knowledgeBaseData.documents };
     } catch (error: any) {
         console.error('[Actions] getKnowledgeBase error:', error.stack || error);
@@ -99,7 +102,10 @@ export async function ingestDocument(formData: FormData) {
 
 export async function getIngestStatus(jobId: string) {
     try {
-        const jobStatus = await fetchFromAdminService(`/api/ingest/status/${jobId}`, { method: 'GET' });
+        const jobStatus = await fetchFromAdminService(`/api/ingest/status/${jobId}`, { 
+            method: 'GET',
+            cache: 'no-store'
+        });
         return { success: true, ...jobStatus };
     } catch (error: any) {
         console.error('[Actions] getIngestStatus error:', error.stack || error);
