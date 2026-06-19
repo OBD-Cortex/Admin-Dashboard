@@ -39,7 +39,7 @@ async function checkServiceHealth(url: string | null | undefined): Promise<'conn
  * Returns a JSON payload containing the aggregate and individual service statuses.
  */
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const service = searchParams.get('service');
 
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;

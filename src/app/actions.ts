@@ -8,8 +8,8 @@ import { signSession } from '@/lib/session';
 
 export async function deleteDevice(token: string, force: boolean = false) {
     try {
-        const query = force ? `?token=${encodeURIComponent(token)}&force=true` : `?token=${encodeURIComponent(token)}`;
-        await fetchFromAdminService(`/api/admin/devices/${token}${query}`, {
+        const query = force ? '?force=true' : '';
+        await fetchFromAdminService(`/api/admin/devices/${encodeURIComponent(token)}${query}`, {
             method: 'DELETE',
         });
         revalidatePath('/');
@@ -35,13 +35,15 @@ export async function unpairDevice(token: string) {
 
 export async function generateDevices(count: number | string) {
     try {
-        const data = await fetchFromAdminService('/api/admin/devices/generate', {
+        const parsedCount = parseInt(count as string, 10);
+        const sanitizedCount = isNaN(parsedCount) ? 1 : Math.min(100, Math.max(1, parsedCount));
+        const generatedDevices = await fetchFromAdminService('/api/admin/devices/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ count: parseInt(count as string, 10) }),
+            body: JSON.stringify({ count: sanitizedCount }),
         });
         revalidatePath('/');
-        return { success: true, data };
+        return { success: true, data: generatedDevices };
     } catch (error: any) {
         console.error('[Actions] generateDevices error:', error.stack || error);
         return { error: error.message || 'Failed to generate devices' };
@@ -50,8 +52,8 @@ export async function generateDevices(count: number | string) {
 
 export async function getKnowledgeBase() {
     try {
-        const data = await fetchFromAdminService('/api/admin/knowledge', { method: 'GET' });
-        return { documents: data.documents };
+        const knowledgeBaseData = await fetchFromAdminService('/api/admin/knowledge', { method: 'GET' });
+        return { documents: knowledgeBaseData.documents };
     } catch (error: any) {
         console.error('[Actions] getKnowledgeBase error:', error.stack || error);
         return { error: error.message || 'Failed to fetch knowledge base' };
@@ -83,12 +85,12 @@ export async function ingestDocument(formData: FormData) {
         const newFormData = new FormData();
         newFormData.append('file', blob, file.name);
 
-        const data = await fetchFromAdminService('/api/ingest', {
+        const ingestJob = await fetchFromAdminService('/api/ingest', {
             method: 'POST',
             body: newFormData,
             timeout: 30000, // 30 seconds for large uploads
         });
-        return { success: true, ...data };
+        return { success: true, ...ingestJob };
     } catch (error: any) {
         console.error('[Actions] ingestDocument error:', error.stack || error);
         return { error: error.message || 'Upload to gateway failed' };
@@ -97,8 +99,8 @@ export async function ingestDocument(formData: FormData) {
 
 export async function getIngestStatus(jobId: string) {
     try {
-        const data = await fetchFromAdminService(`/api/ingest/status/${jobId}`, { method: 'GET' });
-        return { success: true, ...data };
+        const jobStatus = await fetchFromAdminService(`/api/ingest/status/${jobId}`, { method: 'GET' });
+        return { success: true, ...jobStatus };
     } catch (error: any) {
         console.error('[Actions] getIngestStatus error:', error.stack || error);
         return { error: error.message || 'Failed to check status' };

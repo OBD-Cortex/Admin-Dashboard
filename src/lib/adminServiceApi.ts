@@ -1,13 +1,22 @@
 import { generateAdminJwt } from './auth';
 
 
+export class AdminServiceError extends Error {
+    status: number;
+    constructor(status: number, message: string) {
+        super(message);
+        this.name = 'AdminServiceError';
+        this.status = status;
+    }
+}
+
 export async function fetchFromAdminService(path: string, options: RequestInit & { timeout?: number } = {}): Promise<any> {
     const adminServiceUrl = process.env.ADMIN_SERVICE_URL;
     const secret = process.env.ADMIN_JWT_SECRET;
 
     if (!adminServiceUrl || !secret) {
         console.error('[Admin Service API Client] Server configuration error: ADMIN_SERVICE_URL or ADMIN_JWT_SECRET is missing.');
-        throw { status: 500, message: 'Server configuration error: Backend credentials are not configured.' };
+        throw new AdminServiceError(500, 'Server configuration error: Backend credentials are not configured.');
     }
 
     const url = `${adminServiceUrl.replace(/\/$/, '')}${path}`;
@@ -34,10 +43,10 @@ export async function fetchFromAdminService(path: string, options: RequestInit &
     } catch (networkError: any) {
         if (networkError.name === 'AbortError') {
             console.error(`[Admin Service API Client] Connection timed out to ${url}`);
-            throw { status: 504, message: 'Connection timed out while reaching Admin Service backend' };
+            throw new AdminServiceError(504, 'Connection timed out while reaching Admin Service backend');
         }
         console.error(`[Admin Service API Client] Connection failed to ${url}:`, networkError);
-        throw { status: 502, message: 'Failed to reach Admin Service API backend server' };
+        throw new AdminServiceError(502, 'Failed to reach Admin Service API backend server');
     } finally {
         clearTimeout(timeoutId);
     }
@@ -56,13 +65,13 @@ export async function fetchFromAdminService(path: string, options: RequestInit &
             }
         }
         console.error(`[Admin Service API Client] Backend returned status ${response.status}: ${errorMessage}`);
-        throw { status: response.status, message: errorMessage };
+        throw new AdminServiceError(response.status, errorMessage);
     }
 
     try {
         return await response.json();
     } catch (parseError) {
         console.error('[Admin Service API Client] Failed to parse backend JSON response:', parseError);
-        throw { status: 502, message: 'Invalid response format received from Admin Service API' };
+        throw new AdminServiceError(502, 'Invalid response format received from Admin Service API');
     }
 }

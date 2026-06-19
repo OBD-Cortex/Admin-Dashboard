@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { getKnowledgeBase, deleteKnowledgeDocument } from '@/app/actions';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
+import { useConfirm } from '@/hooks/useConfirm';
 
 interface Document {
     source: string;
@@ -20,15 +21,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
-
-    // Confirm Modal state
-    const [confirmModal, setConfirmModal] = useState<{
-        isOpen: boolean;
-        source: string | null;
-    }>({
-        isOpen: false,
-        source: null,
-    });
+    const { confirmModal, requestConfirm, closeConfirm } = useConfirm();
 
     const fetchKnowledge = async () => {
         try {
@@ -66,9 +59,12 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
     };
 
     const handleDeleteClick = (source: string) => {
-        setConfirmModal({
-            isOpen: true,
-            source,
+        requestConfirm({
+            title: 'Delete Document',
+            message: `Are you sure you want to delete ${source}?`,
+            confirmText: 'Delete',
+            variant: 'danger',
+            onConfirm: () => executeDelete(source),
         });
     };
 
@@ -156,16 +152,12 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
             {/* Ingestion Confirmation Modal */}
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
-                onClose={() => setConfirmModal({ isOpen: false, source: null })}
-                onConfirm={() => {
-                    if (confirmModal.source) {
-                        executeDelete(confirmModal.source);
-                    }
-                }}
-                title="Delete Document"
-                message={`Are you sure you want to delete ${confirmModal.source}?`}
-                confirmText="Delete"
-                variant="danger"
+                onClose={closeConfirm}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                confirmText={confirmModal.confirmText}
+                variant={confirmModal.variant}
             />
         </div>
     );

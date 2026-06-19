@@ -138,7 +138,7 @@ export default function DeviceTable({
                                                 )}
                                             />
                                             <span>
-                                                {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
+                                                {device.status ? (device.status.charAt(0).toUpperCase() + device.status.slice(1)) : 'Unknown'}
                                             </span>
                                         </div>
                                     </td>

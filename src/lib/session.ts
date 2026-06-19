@@ -1,4 +1,21 @@
 const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+function base64urlEncode(str: string): string {
+    const bytes = encoder.encode(str);
+    const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
+    return btoa(binString)
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+}
+
+function base64urlDecode(str: string): string {
+    const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    const binString = atob(base64);
+    const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
+    return decoder.decode(bytes);
+}
 
 async function getHmacKey(secret: string): Promise<CryptoKey> {
     const keyData = encoder.encode(secret);
@@ -16,10 +33,7 @@ async function getHmacKey(secret: string): Promise<CryptoKey> {
  */
 export async function signSession(payload: any, secret: string): Promise<string> {
     const payloadStr = JSON.stringify(payload);
-    const encodedPayload = btoa(payloadStr)
-        .replace(/=/g, '')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_');
+    const encodedPayload = base64urlEncode(payloadStr);
 
     const key = await getHmacKey(secret);
     const signatureBuffer = await crypto.subtle.sign(
@@ -70,7 +84,7 @@ export async function verifySession(token: string, secret: string): Promise<any 
 
         if (!isValid) return null;
 
-        const payloadStr = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        const payloadStr = base64urlDecode(encodedPayload);
         const payload = JSON.parse(payloadStr);
 
         // Check expiration

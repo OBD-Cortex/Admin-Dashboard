@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SiteHeader } from '@/components/layout/site-header';
 import StatsGrid from '@/components/StatsGrid';
 import ActionBar from '@/components/ActionBar';

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * Query params: token, format (png|svg), download
  */
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const token = searchParams.get('token');
     const format = searchParams.get('format');
     const download = searchParams.get('download');
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
         headers.set('Content-Type', contentType);
         headers.set('Cache-Control', 'public, max-age=86400'); // Cache 24h
 
-        if (download !== null && download !== undefined) {
+        if (download !== null) {
             headers.set('Content-Disposition', `attachment; filename="${targetToken}.${ext}"`);
         }
 
