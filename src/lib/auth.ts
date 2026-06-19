@@ -1,8 +1,4 @@
 import crypto from 'crypto';
-import { loadEnvSecrets } from './env';
-
-// Ensure environment secrets are mapped before reading credentials
-loadEnvSecrets();
 
 /**
  * Validates user-supplied passwords against the SHA-256 hash in the environment.
