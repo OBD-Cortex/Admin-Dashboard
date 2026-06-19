@@ -14,12 +14,14 @@ const FILTERS = [
 interface ActionBarProps {
     onGenerateClick: () => void;
     onIngestClick: () => void;
+    onPerformanceClick: () => void;
     onTransitionStart?: () => void;
 }
 
 export default function ActionBar({
     onGenerateClick,
     onIngestClick,
+    onPerformanceClick,
     onTransitionStart,
 }: ActionBarProps) {
     const router = useRouter();
@@ -114,6 +116,16 @@ export default function ActionBar({
                 </div>
 
                 {/* Actions */}
+                <button 
+                    onClick={onPerformanceClick} 
+                    className="inline-flex h-8 items-center justify-center gap-1.5 border border-border bg-card hover:bg-muted px-3 text-[10px] font-sans font-bold text-foreground transition-colors cursor-pointer rounded-md select-none"
+                >
+                    <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>Performance Tests</span>
+                </button>
+                
                 <button 
                     onClick={onIngestClick} 
                     className="inline-flex h-8 items-center justify-center gap-1.5 border border-border bg-card hover:bg-muted px-3 text-[10px] font-sans font-bold text-foreground transition-colors cursor-pointer rounded-md select-none"

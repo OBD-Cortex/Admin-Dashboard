@@ -10,6 +10,7 @@ import GenerateModal from '@/components/GenerateModal';
 import QRModal from '@/components/QRModal';
 import UploadModal from '@/components/UploadModal';
 import ConfirmModal from '@/components/ConfirmModal';
+import PerformanceModal from '@/components/PerformanceModal';
 import { useToast } from '@/components/Toast';
 import { deleteDevice, unpairDevice } from '@/app/actions';
 
@@ -32,6 +33,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     const [qrModalOpen, setQrModalOpen] = useState(false);
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
     const [ingestModalOpen, setIngestModalOpen] = useState(false);
+    const [performanceModalOpen, setPerformanceModalOpen] = useState(false);
 
     const { servicesStatus, refreshServiceHealth } = useServiceHealth();
     const { confirmModal, requestConfirm, closeConfirm } = useConfirm();
@@ -127,6 +129,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                     <ActionBar
                         onGenerateClick={() => setGenerateModalOpen(true)}
                         onIngestClick={() => setIngestModalOpen(true)}
+                        onPerformanceClick={() => setPerformanceModalOpen(true)}
                         onTransitionStart={() => setTableLoading(true)}
                     />
                     <DeviceTable
@@ -161,6 +164,10 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             <UploadModal
                 isOpen={ingestModalOpen}
                 onClose={() => setIngestModalOpen(false)}
+            />
+            <PerformanceModal
+                isOpen={performanceModalOpen}
+                onClose={() => setPerformanceModalOpen(false)}
             />
             
             {/* Confirmation Modal */}
