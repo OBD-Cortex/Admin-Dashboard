@@ -35,7 +35,7 @@ function getSubdomainUrl(baseUrl: string | undefined, targetSubdomain: string): 
  * @param url The service endpoint URL to check.
  * @returns The resolved health state.
  */
-async function checkServiceHealth(url: string | null): Promise<'connected' | 'disconnected' | 'not_configured'> {
+async function checkServiceHealth(url: string | null | undefined): Promise<'connected' | 'disconnected' | 'not_configured'> {
     if (!url) return 'not_configured';
     try {
         const controller = new AbortController();
