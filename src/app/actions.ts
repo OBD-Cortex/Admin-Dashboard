@@ -78,7 +78,7 @@ export async function ingestDocument(formData: FormData) {
 
 export async function getIngestStatus(jobId: string) {
     try {
-        const data = await fetchFromAdminService(`/api/ingest/status?jobId=${jobId}`, { method: 'GET' });
+        const data = await fetchFromAdminService(`/api/ingest/status/${jobId}`, { method: 'GET' });
         return { success: true, ...data };
     } catch (error: any) {
         return { error: error.message || 'Failed to check status' };
