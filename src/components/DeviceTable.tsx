@@ -127,13 +127,7 @@ export default function DeviceTable({
                                         </div>
                                     </td>
                                     <td className="p-3.5">
-                                        <div className={cn(
-                                            "inline-flex items-center gap-1.5 border px-2.5 py-0.5 text-[9px] font-bold select-none bg-black rounded-md",
-                                            device.status === 'paired' && "text-emerald-500 border-emerald-950",
-                                            device.status === 'registered' && "text-blue-500 border-blue-950",
-                                            device.status === 'manufactured' && "text-neutral-400 border-neutral-800/80",
-                                            device.status === 'failed' && "text-rose-500 border-rose-950"
-                                        )}>
+                                        <div className="inline-flex items-center gap-1.5 border border-border px-2.5 py-0.5 text-[9px] font-bold select-none bg-[#F3EFE7] text-[#191919] rounded-md">
                                             <span
                                                 className={cn(
                                                     "h-1.5 w-1.5 rounded-full shrink-0",
@@ -185,7 +179,7 @@ export default function DeviceTable({
                                             {/* Delete Trigger */}
                                             <button
                                                 onClick={() => onDelete(device.device_token)}
-                                                className="inline-flex h-7 w-7 items-center justify-center border border-border bg-[#191919] text-[#FAF8F5]/80 hover:text-rose-500 hover:bg-[#191919]/80 transition-colors cursor-pointer rounded-md"
+                                                className="inline-flex h-7 w-7 items-center justify-center border border-border bg-transparent text-muted-foreground hover:text-destructive hover:border-destructive/40 hover:bg-[#F3EFE7] transition-colors cursor-pointer rounded-md"
                                                 title="Decommission node"
                                             >
                                                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">

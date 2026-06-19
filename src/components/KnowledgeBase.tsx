@@ -128,7 +128,7 @@ export default function KnowledgeBase({ refreshTrigger }: KnowledgeBaseProps) {
                                         <button
                                             onClick={() => handleDeleteClick(doc.source)}
                                             disabled={deleting === doc.source}
-                                            className="inline-flex h-7 w-7 items-center justify-center border border-border bg-[#191919] text-[#FAF8F5]/80 hover:text-rose-500 hover:bg-[#191919]/80 transition-colors cursor-pointer disabled:opacity-50 rounded-md"
+                                            className="inline-flex h-7 w-7 items-center justify-center border border-border bg-transparent text-muted-foreground hover:text-destructive hover:border-destructive/40 hover:bg-[#F3EFE7] transition-colors cursor-pointer disabled:opacity-50 rounded-md"
                                             title="Delete document"
                                         >
                                             {deleting === doc.source ? (

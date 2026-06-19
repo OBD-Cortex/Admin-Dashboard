@@ -34,17 +34,11 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
     };
 
     const getStatusBadgeClass = (status: string) => {
-        const base = "inline-flex h-8 items-center gap-1.5 border px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-black transition-colors rounded-md";
+        const base = "inline-flex h-8 items-center gap-1.5 border border-border/80 px-2.5 py-1 text-[10px] font-sans font-bold select-none bg-[#F3EFE7] text-[#191919] hover:bg-[#E6E1D6] transition-colors rounded-md";
         if (status === 'loading') {
-            return cn(base, "text-blue-500 border-blue-900/50 cursor-wait opacity-80");
+            return cn(base, "cursor-wait opacity-80");
         }
-        if (status === 'connected') {
-            return cn(base, "text-emerald-500 border-emerald-900/50 hover:bg-neutral-950 cursor-pointer");
-        }
-        if (status === 'disconnected') {
-            return cn(base, "text-rose-500 border-rose-900/50 hover:bg-neutral-950 cursor-pointer");
-        }
-        return cn(base, "text-neutral-400 border-neutral-800 hover:bg-neutral-950 cursor-pointer");
+        return cn(base, "cursor-pointer");
     };
 
     const getStatusText = (status: string, label: string) => {
