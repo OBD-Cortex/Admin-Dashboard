@@ -23,26 +23,6 @@ This Next.js control plane leverages Server-First rendering principles:
 
 ---
 
-## Local Development Setup
-
-To evaluate this dashboard locally:
-1.  Verify **Node.js 18+** is installed.
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Copy environment variables:
-    ```bash
-    cp .env.example .env
-    ```
-4.  Configure `ADMIN_SERVICE_URL` and `ADMIN_JWT_SECRET` inside `.env`.
-5.  Start the local dev server:
-    ```bash
-    npm run dev
-    ```
-
----
-
 ## Deployment Guide
 
 *   Refer to [INSTALL.md](file:///home/bodz/OBD-Cortex/Admin-Dashboard/INSTALL.md) for Hostinger setup and runtime version parameters.
