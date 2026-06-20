@@ -16,6 +16,10 @@ interface ActionBarProps {
     onIngestClick: () => void;
     onPerformanceClick: () => void;
     onTransitionStart?: () => void;
+    // Ingestion progress props -- passed from ClientDashboard
+    ingestActive?: boolean;
+    ingestProgressPercent?: number;
+    ingestJobStatus?: string | null;
 }
 
 export default function ActionBar({
@@ -23,16 +27,19 @@ export default function ActionBar({
     onIngestClick,
     onPerformanceClick,
     onTransitionStart,
+    ingestActive = false,
+    ingestProgressPercent = 0,
+    ingestJobStatus = null,
 }: ActionBarProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    
+
     const [searchValue, setSearchValue] = useState(searchParams.get('search') || '');
     const currentFilter = searchParams.get('status') || 'all';
-    
+
     const [isPending, startTransition] = useTransition();
     const [optimisticFilter, setOptimisticFilter] = useState(currentFilter);
-    
+
     // Sync state with URL params
     useEffect(() => {
         setOptimisticFilter(currentFilter);
@@ -42,10 +49,10 @@ export default function ActionBar({
         const params = new URLSearchParams(searchParams.toString());
         if (search) params.set('search', search);
         else params.delete('search');
-        
+
         if (status !== 'all') params.set('status', status);
         else params.delete('status');
-        
+
         router.push(`/?${params.toString()}`);
     }, [router, searchParams]);
 
@@ -69,6 +76,10 @@ export default function ActionBar({
             updateUrl(searchValue, filter);
         });
     };
+
+    const ingestCompleted = ingestJobStatus === 'completed';
+    const ingestFailed = ingestJobStatus === 'failed';
+    const showIngestStatus = ingestActive || ingestCompleted || ingestFailed;
 
     return (
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between py-2 font-sans">
@@ -104,8 +115,8 @@ export default function ActionBar({
                                 onClick={() => handleFilterChange(f.value)}
                                 className={cn(
                                     "rounded-sm px-2.5 py-1.5 text-[9px] font-bold tracking-wider transition-all cursor-pointer",
-                                    isActive 
-                                        ? "bg-accent text-accent-foreground font-extrabold shadow-sm" 
+                                    isActive
+                                        ? "bg-accent text-accent-foreground font-extrabold shadow-sm"
                                         : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -116,8 +127,8 @@ export default function ActionBar({
                 </div>
 
                 {/* Actions */}
-                <button 
-                    onClick={onPerformanceClick} 
+                <button
+                    onClick={onPerformanceClick}
                     className="inline-flex h-8 items-center justify-center gap-1.5 border border-border bg-card hover:bg-muted px-3 text-[10px] font-sans font-bold text-foreground transition-colors cursor-pointer rounded-md select-none"
                 >
                     <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -125,19 +136,68 @@ export default function ActionBar({
                     </svg>
                     <span>Performance Tests</span>
                 </button>
-                
-                <button 
-                    onClick={onIngestClick} 
-                    className="inline-flex h-8 items-center justify-center gap-1.5 border border-border bg-card hover:bg-muted px-3 text-[10px] font-sans font-bold text-foreground transition-colors cursor-pointer rounded-md select-none"
+
+                {/* Ingest button with live progress indicator */}
+                <button
+                    onClick={onIngestClick}
+                    className={cn(
+                        "inline-flex h-8 items-center justify-center gap-1.5 border px-3 text-[10px] font-sans font-bold transition-colors cursor-pointer rounded-md select-none relative overflow-hidden",
+                        ingestActive
+                            ? "border-blue-300 bg-blue-50 text-blue-800 hover:bg-blue-100"
+                            : ingestCompleted
+                            ? "border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                            : ingestFailed
+                            ? "border-rose-300 bg-rose-50 text-rose-800 hover:bg-rose-100"
+                            : "border-border bg-card hover:bg-muted text-foreground"
+                    )}
                 >
-                    <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                    <span>Ingest</span>
+                    {/* Background progress fill bar */}
+                    {showIngestStatus && (
+                        <span
+                            className={cn(
+                                "absolute inset-0 origin-left transition-all duration-500",
+                                ingestActive && "bg-blue-200/50",
+                                ingestCompleted && "bg-emerald-200/50",
+                                ingestFailed && "bg-rose-200/50"
+                            )}
+                            style={{ width: `${ingestProgressPercent}%` }}
+                        />
+                    )}
+
+                    {/* Icon */}
+                    <span className="relative z-10 flex items-center gap-1.5">
+                        {ingestActive ? (
+                            <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                        ) : ingestCompleted ? (
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        ) : ingestFailed ? (
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        ) : (
+                            <svg className="h-3.5 w-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                        )}
+                        <span>
+                            {ingestActive
+                                ? `Ingesting ${ingestProgressPercent}%`
+                                : ingestCompleted
+                                ? 'Ingestion Done'
+                                : ingestFailed
+                                ? 'Ingestion Failed'
+                                : 'Ingest'}
+                        </span>
+                    </span>
                 </button>
-                
-                <button 
-                    onClick={onGenerateClick} 
+
+                <button
+                    onClick={onGenerateClick}
                     className="inline-flex h-8 items-center justify-center gap-1.5 bg-[#223A5E] hover:bg-[#223A5E]/90 px-3 text-[10px] font-sans font-bold text-[#FAF8F5] transition-all cursor-pointer rounded-md select-none"
                 >
                     <svg className="h-3.5 w-3.5 text-[#FAF8F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

@@ -30,6 +30,7 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
         if (status === 'loading') return 'bg-blue-500 animate-pulse';
         if (status === 'connected') return 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]';
         if (status === 'disconnected') return 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.5)]';
+        if (status === 'ingesting') return 'bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.5)] animate-pulse';
         return 'bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)]';
     };
 
@@ -45,6 +46,7 @@ export function SiteHeader({ servicesStatus, onRefreshServiceHealth }: SiteHeade
         if (status === 'loading') return `${label}: ...`;
         if (status === 'connected') return `${label}: Online`;
         if (status === 'disconnected') return `${label}: Offline`;
+        if (status === 'ingesting') return `${label}: Ingesting`;
         return `${label}: Unconfigured`;
     };
 

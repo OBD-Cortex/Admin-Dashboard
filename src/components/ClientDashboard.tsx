@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SiteHeader } from '@/components/layout/site-header';
 import StatsGrid from '@/components/StatsGrid';
 import ActionBar from '@/components/ActionBar';
@@ -12,13 +12,16 @@ import UploadModal from '@/components/UploadModal';
 import ConfirmModal from '@/components/ConfirmModal';
 import PerformanceModal from '@/components/PerformanceModal';
 import { useToast } from '@/components/Toast';
-import { deleteDevice, unpairDevice } from '@/app/actions';
+import { ingestDocument, deleteDevice, unpairDevice, getIngestStatus, cancelIngestJob } from '@/app/actions';
 
 import { Stats, Device } from '@/types';
 import { useServiceHealth } from '@/hooks/useServiceHealth';
 import { useConfirm } from '@/hooks/useConfirm';
-
-
+interface Log {
+    timestamp: string;
+    text: string;
+    type: 'info' | 'error' | 'success';
+}
 
 interface ClientDashboardProps {
     initialStats: Stats | null;
@@ -28,7 +31,7 @@ interface ClientDashboardProps {
 export default function ClientDashboard({ initialStats, initialDevices }: ClientDashboardProps) {
     const { toast } = useToast();
 
-    // Modals states
+    // Modal open/close states
     const [generateModalOpen, setGenerateModalOpen] = useState(false);
     const [qrModalOpen, setQrModalOpen] = useState(false);
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
@@ -40,11 +43,333 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
 
     const [tableLoading, setTableLoading] = useState(false);
 
+    // ----------------------------------------------------------------
+    // Ingestion state -- lifted here so it survives modal minimize/reopen
+    // ----------------------------------------------------------------
+    const [ingestFile, setIngestFile] = useState<File | null>(null);
+    const [ingestDragging, setIngestDragging] = useState(false);
+    const [ingestUploading, setIngestUploading] = useState(false);
+    const [ingestJobId, setIngestJobId] = useState<string | null>(null);
+    const [ingestJobStatus, setIngestJobStatus] = useState<string | null>(null);
+    const [ingestProgressText, setIngestProgressText] = useState('');
+    const [ingestProgressPercent, setIngestProgressPercent] = useState(0);
+    const [ingestLogs, setIngestLogs] = useState<Log[]>([]);
+
+    const ingestPollRef = useRef<NodeJS.Timeout | null>(null);
+
+    const getTimestamp = () => {
+        const now = new Date();
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+
+    const addIngestLog = useCallback((text: string, type: 'info' | 'error' | 'success' = 'info') => {
+        setIngestLogs((prev) => [...prev, { timestamp: getTimestamp(), text, type }]);
+    }, []);
+
+    const estimateProgress = (status: string, text: string) => {
+        if (status === 'queued') return 10;
+        if (status === 'failed') return 100;
+        if (status === 'completed') return 100;
+
+        const lowerText = (text || '').toLowerCase();
+
+        const match = text.match(/\((\d+)\/(\d+)\)/);
+        if (match) {
+            const current = parseInt(match[1], 10);
+            const total = parseInt(match[2], 10);
+            if (total > 0) {
+                const ratio = current / total;
+                if (lowerText.includes('vectorizing')) {
+                    return Math.round(80 + ratio * 15);
+                }
+            }
+        }
+
+        if (lowerText.includes('checking duplicates')) return 20;
+        if (lowerText.includes('connecting')) return 30;
+        if (lowerText.includes('uploading')) return 40;
+        if (lowerText.includes('parsing')) return 60;
+        if (lowerText.includes('extracting')) return 75;
+        if (lowerText.includes('vectorizing')) return 80;
+        return 50;
+    };
+
+    const stopIngestPolling = useCallback(() => {
+        if (ingestPollRef.current) {
+            clearInterval(ingestPollRef.current);
+            ingestPollRef.current = null;
+        }
+    }, []);
+
+    const startIngestPolling = useCallback((id: string) => {
+        stopIngestPolling();
+        let lastProgress = '';
+        let consecutiveErrors = 0;
+        const startTime = Date.now();
+        const timeoutMs = 15 * 60 * 1000; // 15 minutes
+
+        ingestPollRef.current = setInterval(async () => {
+            if (Date.now() - startTime > timeoutMs) {
+                stopIngestPolling();
+                setIngestUploading(false);
+                setIngestJobStatus('failed');
+                setIngestProgressPercent(100);
+                setIngestProgressText('Ingestion timed out');
+                setIngestLogs((prev) => [...prev, {
+                    timestamp: getTimestamp(),
+                    text: 'Error: Ingestion process timed out (server unresponsive or process terminated)',
+                    type: 'error'
+                }]);
+                toast('Ingestion timed out', 'error');
+                return;
+            }
+
+            try {
+                const data = await getIngestStatus(id);
+                if (data.error) {
+                    consecutiveErrors++;
+                    if (consecutiveErrors >= 3) {
+                        setIngestLogs((prev) => [...prev, {
+                            timestamp: getTimestamp(),
+                            text: `Warning: Status polling degraded (${data.error}, retrying...)`,
+                            type: 'error'
+                        }]);
+                    }
+                    return;
+                }
+
+                consecutiveErrors = 0;
+
+                setIngestJobStatus(data.status);
+                const progressMsg = data.progress || '';
+                setIngestProgressText(progressMsg);
+
+                if (progressMsg && progressMsg !== lastProgress) {
+                    const logType = data.status === 'failed' ? 'error' : data.status === 'completed' ? 'success' : 'info';
+                    setIngestLogs((prev) => [...prev, {
+                        timestamp: getTimestamp(),
+                        text: progressMsg,
+                        type: logType
+                    }]);
+                    lastProgress = progressMsg;
+                }
+
+                const calculatedPercent = estimateProgress(data.status, progressMsg);
+                setIngestProgressPercent(calculatedPercent);
+
+                if (data.status === 'completed') {
+                    stopIngestPolling();
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('active_ingest_job_id');
+                        localStorage.removeItem('active_ingest_filename');
+                    }
+                    setIngestUploading(false);
+                    setIngestProgressPercent(100);
+                    toast('Document ingestion completed successfully!', 'success');
+                } else if (data.status === 'failed') {
+                    stopIngestPolling();
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('active_ingest_job_id');
+                        localStorage.removeItem('active_ingest_filename');
+                    }
+                    setIngestUploading(false);
+                    setIngestProgressPercent(100);
+                    const errorDetail = data.error_message || 'An error occurred during embedding generation';
+                    setIngestLogs((prev) => [...prev, {
+                        timestamp: getTimestamp(),
+                        text: `Ingestion Error: ${errorDetail}`,
+                        type: 'error'
+                    }]);
+                    toast('Document Ingestion Failed', 'error');
+                }
+            } catch (err) {
+                consecutiveErrors++;
+                if (consecutiveErrors >= 3) {
+                    setIngestLogs((prev) => [...prev, {
+                        timestamp: getTimestamp(),
+                        text: 'Warning: Status polling degraded (Network failure, retrying...)',
+                        type: 'error'
+                    }]);
+                }
+            }
+        }, 2000);
+    }, [stopIngestPolling, toast]);
+
+    // Resume polling for an active job stored in localStorage on first mount
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedJobId = localStorage.getItem('active_ingest_job_id');
+            const savedFilename = localStorage.getItem('active_ingest_filename');
+            if (savedJobId) {
+                setIngestJobId(savedJobId);
+                setIngestUploading(true);
+                setIngestJobStatus('processing');
+                setIngestProgressPercent(10);
+                setIngestProgressText('Resuming active ingestion monitoring...');
+                setIngestLogs([{
+                    timestamp: getTimestamp(),
+                    text: `Reconnected to job ${savedJobId} (${savedFilename || 'Unknown file'})`,
+                    type: 'info'
+                }]);
+                startIngestPolling(savedJobId);
+            }
+        }
+        return () => stopIngestPolling();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // ----------------------------------------------------------------
+    // File selection handlers
+    // ----------------------------------------------------------------
+    const validateAndSetFile = (selectedFile: File) => {
+        const name = selectedFile.name.toLowerCase();
+        if (!name.endsWith('.pdf') && !name.endsWith('.csv') && !name.endsWith('.md') && !name.endsWith('.txt')) {
+            toast('Unsupported format. Upload PDF, CSV, MD, or TXT.', 'error');
+            return;
+        }
+        if (selectedFile.size > 10 * 1024 * 1024) {
+            toast('File size exceeds 10MB limit.', 'error');
+            return;
+        }
+        setIngestFile(selectedFile);
+    };
+
+    const handleIngestDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIngestDragging(true);
+    };
+
+    const handleIngestDragLeave = () => setIngestDragging(false);
+
+    const handleIngestDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIngestDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            validateAndSetFile(e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleIngestFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            validateAndSetFile(e.target.files[0]);
+        }
+    };
+
+    const handleIngestRemoveFile = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIngestFile(null);
+    };
+
+    // ----------------------------------------------------------------
+    // Upload handler
+    // ----------------------------------------------------------------
+    const handleIngestUpload = async () => {
+        if (!ingestFile) return;
+        setIngestUploading(true);
+        setIngestJobStatus('queued');
+        setIngestProgressPercent(10);
+        setIngestProgressText('Uploading file to gateway...');
+        addIngestLog(`Selected file: ${ingestFile.name} (${(ingestFile.size / 1024 / 1024).toFixed(2)} MB)`);
+        addIngestLog('Initiating secure file transfer...');
+
+        const formData = new FormData();
+        formData.append('file', ingestFile);
+
+        try {
+            const res = await ingestDocument(formData);
+
+            if (res.error) {
+                const errMsg = res.error || 'Upload to gateway failed';
+                setIngestJobStatus('failed');
+                setIngestProgressPercent(100);
+                setIngestProgressText('Upload failed');
+                addIngestLog(`Error: ${errMsg}`, 'error');
+                toast(errMsg, 'error');
+                setIngestUploading(false);
+                return;
+            }
+
+            const jobId = res.job_id;
+            setIngestJobId(jobId);
+            setIngestJobStatus(res.status || 'queued');
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('active_ingest_job_id', jobId);
+                localStorage.setItem('active_ingest_filename', ingestFile.name);
+            }
+            addIngestLog(`Ingestion job registered. Job ID: ${jobId}`);
+            addIngestLog('Asynchronous worker thread started on droplet VM.');
+
+            startIngestPolling(jobId);
+        } catch (err) {
+            const errMsg = 'Network communication failure during upload';
+            setIngestJobStatus('failed');
+            setIngestProgressPercent(100);
+            setIngestProgressText('Upload failed');
+            addIngestLog(`Error: ${errMsg}`, 'error');
+            toast(errMsg, 'error');
+            setIngestUploading(false);
+        }
+    };
+
+    // ----------------------------------------------------------------
+    // Cancel handler
+    // ----------------------------------------------------------------
+    const handleCancelIngestJob = async () => {
+        if (!ingestJobId) return;
+        addIngestLog('Sending cancellation request to Admin Service...', 'info');
+        try {
+            const res = await cancelIngestJob(ingestJobId);
+            if (res.error) {
+                addIngestLog(`Cancellation failed: ${res.error}`, 'error');
+                toast(`Failed to cancel: ${res.error}`, 'error');
+            } else {
+                addIngestLog('Cancellation signal received by backend. Aborting...', 'info');
+                stopIngestPolling();
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('active_ingest_job_id');
+                    localStorage.removeItem('active_ingest_filename');
+                }
+                setIngestUploading(false);
+                setIngestJobStatus('failed');
+                setIngestProgressPercent(100);
+                setIngestProgressText('Ingestion cancelled by user');
+            }
+        } catch (err) {
+            addIngestLog('Network failure sending cancellation signal', 'error');
+        }
+    };
+
+    // Minimize: just close the modal — polling continues at dashboard level
+    const handleIngestMinimize = () => setIngestModalOpen(false);
+
+    // Full close: only called when job is done or user discards a pending upload
+    const handleIngestClose = () => {
+        // If a job is active don't allow closing via the button
+        if (ingestUploading && ingestJobStatus !== 'completed' && ingestJobStatus !== 'failed') {
+            setIngestModalOpen(false);
+            return;
+        }
+        // Reset state after a completed/failed/cancelled job or a no-job cancel
+        setIngestFile(null);
+        setIngestDragging(false);
+        setIngestUploading(false);
+        setIngestJobId(null);
+        setIngestJobStatus(null);
+        setIngestProgressText('');
+        setIngestProgressPercent(0);
+        setIngestLogs([]);
+        stopIngestPolling();
+        setIngestModalOpen(false);
+    };
+
+    // ----------------------------------------------------------------
+    // Re-open modal handler: open the modal; do NOT reset state
+    // ----------------------------------------------------------------
+    const handleIngestClick = () => setIngestModalOpen(true);
+
     useEffect(() => {
         setTableLoading(false);
     }, [initialDevices]);
-
-
 
     const handleGenerated = (data: any) => {
         toast(`Successfully generated ${data.generated} device${data.generated > 1 ? 's' : ''}`, 'success');
@@ -62,8 +387,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     const executeDelete = async (token: string, force: boolean) => {
         const res = await deleteDevice(token, force);
         if (res.error) {
-            if (res.error.includes("paired") && !force) {
-                // Trigger confirmation for force delete if device is paired
+            if (res.error.includes('paired') && !force) {
                 requestConfirm({
                     title: 'Force Delete Device',
                     message: `${res.error}\n\nDo you want to FORCE delete this device? This will unlink the device from the owner's account.`,
@@ -76,7 +400,6 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             }
             return;
         }
-
         toast(`Device ${token} deleted`, 'success');
     };
 
@@ -96,7 +419,6 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             toast(res.error || 'Unpair failed', 'error');
             return;
         }
-
         toast(`Device ${token} successfully unpaired`, 'success');
     };
 
@@ -110,11 +432,16 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
         });
     };
 
+    // Is an ingestion job actively running in the background?
+    const isIngestActive = ingestUploading &&
+        ingestJobStatus !== 'completed' &&
+        ingestJobStatus !== 'failed';
+
     return (
         <div className="flex flex-col min-h-screen w-full bg-background">
-            <SiteHeader 
-                servicesStatus={servicesStatus} 
-                onRefreshServiceHealth={refreshServiceHealth} 
+            <SiteHeader
+                servicesStatus={servicesStatus}
+                onRefreshServiceHealth={refreshServiceHealth}
             />
 
             <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">
@@ -128,9 +455,12 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                     </div>
                     <ActionBar
                         onGenerateClick={() => setGenerateModalOpen(true)}
-                        onIngestClick={() => setIngestModalOpen(true)}
+                        onIngestClick={handleIngestClick}
                         onPerformanceClick={() => setPerformanceModalOpen(true)}
                         onTransitionStart={() => setTableLoading(true)}
+                        ingestActive={isIngestActive}
+                        ingestProgressPercent={ingestProgressPercent}
+                        ingestJobStatus={ingestJobStatus}
                     />
                     <DeviceTable
                         devices={initialDevices}
@@ -161,15 +491,33 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                 onClose={() => setQrModalOpen(false)}
                 token={selectedToken}
             />
+
+            {/* UploadModal receives all state from here -- minimizing does not reset progress */}
             <UploadModal
                 isOpen={ingestModalOpen}
-                onClose={() => setIngestModalOpen(false)}
+                file={ingestFile}
+                dragging={ingestDragging}
+                onDragOver={handleIngestDragOver}
+                onDragLeave={handleIngestDragLeave}
+                onDrop={handleIngestDrop}
+                onFileSelect={handleIngestFileSelect}
+                onRemoveFile={handleIngestRemoveFile}
+                uploading={ingestUploading}
+                jobStatus={ingestJobStatus}
+                progressText={ingestProgressText}
+                progressPercent={ingestProgressPercent}
+                logs={ingestLogs}
+                onUpload={handleIngestUpload}
+                onCancelJob={handleCancelIngestJob}
+                onMinimize={handleIngestMinimize}
+                onClose={handleIngestClose}
             />
+
             <PerformanceModal
                 isOpen={performanceModalOpen}
                 onClose={() => setPerformanceModalOpen(false)}
             />
-            
+
             {/* Confirmation Modal */}
             <ConfirmModal
                 isOpen={confirmModal.isOpen}

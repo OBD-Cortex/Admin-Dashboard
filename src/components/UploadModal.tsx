@@ -1,8 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useToast } from '@/components/Toast';
-import { ingestDocument, getIngestStatus, cancelIngestJob } from '@/app/actions';
+import React, { useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 interface Log {
@@ -13,328 +11,55 @@ interface Log {
 
 interface UploadModalProps {
     isOpen: boolean;
+
+    // File selection (pre-upload)
+    file: File | null;
+    dragging: boolean;
+    onDragOver: (e: React.DragEvent) => void;
+    onDragLeave: () => void;
+    onDrop: (e: React.DragEvent) => void;
+    onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onRemoveFile: (e: React.MouseEvent) => void;
+
+    // Job state (lifted from parent)
+    uploading: boolean;
+    jobStatus: string | null;
+    progressText: string;
+    progressPercent: number;
+    logs: Log[];
+
+    // Actions
+    onUpload: () => void;
+    onCancelJob: () => void;
+    onMinimize: () => void;
     onClose: () => void;
 }
 
-export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
-    const { toast } = useToast();
+export default function UploadModal({
+    isOpen,
+    file,
+    dragging,
+    onDragOver,
+    onDragLeave,
+    onDrop,
+    onFileSelect,
+    onRemoveFile,
+    uploading,
+    jobStatus,
+    progressText,
+    progressPercent,
+    logs,
+    onUpload,
+    onCancelJob,
+    onMinimize,
+    onClose,
+}: UploadModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [file, setFile] = useState<File | null>(null);
-    const [dragging, setDragging] = useState(false);
-    const [uploading, setUploading] = useState(false);
-    const [jobId, setJobId] = useState<string | null>(null);
-    const [jobStatus, setJobStatus] = useState<string | null>(null);
-    const [progressText, setProgressText] = useState('');
-    const [logs, setLogs] = useState<Log[]>([]);
-    const [progressPercent, setProgressPercent] = useState(0);
-
-    const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        if (isOpen) {
-            checkActiveJob();
-        } else {
-            stopPolling();
-        }
-        return () => stopPolling();
-    }, [isOpen]);
-
-    const checkActiveJob = async () => {
-        if (typeof window === 'undefined') return;
-        const savedJobId = localStorage.getItem('active_ingest_job_id');
-        const savedFilename = localStorage.getItem('active_ingest_filename');
-        if (savedJobId) {
-            setJobId(savedJobId);
-            setUploading(true);
-            setJobStatus('processing');
-            setProgressPercent(10);
-            setProgressText('Resuming active ingestion monitoring...');
-            setLogs([
-                {
-                    timestamp: getTimestamp(),
-                    text: `Reconnected to job ${savedJobId} (${savedFilename || 'Unknown file'})`,
-                    type: 'info'
-                }
-            ]);
-            try {
-                const data = await getIngestStatus(savedJobId);
-                if (!data.error) {
-                    setJobStatus(data.status);
-                    const progressMsg = data.progress || '';
-                    setProgressText(progressMsg);
-                    const calculatedPercent = estimateProgress(data.status, progressMsg);
-                    setProgressPercent(calculatedPercent);
-                    addLog(`Current status: ${data.status} — ${progressMsg}`);
-                    
-                    if (data.status === 'completed' || data.status === 'failed') {
-                        localStorage.removeItem('active_ingest_job_id');
-                        localStorage.removeItem('active_ingest_filename');
-                        setUploading(false);
-                        return;
-                    }
-                }
-            } catch (err) {
-                // Ignore initial load error, polling will retry
-            }
-            startPolling(savedJobId);
-        } else {
-            resetState();
-        }
-    };
-
-    const resetState = () => {
-        setFile(null);
-        setDragging(false);
-        setUploading(false);
-        setJobId(null);
-        setJobStatus(null);
-        setProgressText('');
-        setLogs([]);
-        setProgressPercent(0);
-        stopPolling();
-    };
-
-    const stopPolling = () => {
-        if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = null;
-        }
-    };
-
-    const getTimestamp = () => {
-        const now = new Date();
-        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    };
-
-    const addLog = (text: string, type: 'info' | 'error' | 'success' = 'info') => {
-        setLogs((prev) => [...prev, { timestamp: getTimestamp(), text, type }]);
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        setDragging(true);
-    };
-
-    const handleDragLeave = () => {
-        setDragging(false);
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        setDragging(false);
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            validateAndSetFile(e.dataTransfer.files[0]);
-        }
-    };
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            validateAndSetFile(e.target.files[0]);
-        }
-    };
-
-    const validateAndSetFile = (selectedFile: File) => {
-        const name = selectedFile.name.toLowerCase();
-        if (!name.endsWith('.pdf') && !name.endsWith('.csv') && !name.endsWith('.md') && !name.endsWith('.txt')) {
-            toast('Unsupported format. Upload PDF, CSV, MD, or TXT.', 'error');
-            return;
-        }
-        if (selectedFile.size > 10 * 1024 * 1024) {
-            toast('File size exceeds 10MB limit.', 'error');
-            return;
-        }
-        setFile(selectedFile);
-    };
-
-    const handleRemoveFile = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setFile(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
-
-    const estimateProgress = (status: string, text: string) => {
-        if (status === 'queued') return 10;
-        if (status === 'failed') return 100;
-        if (status === 'completed') return 100;
-
-        const lowerText = (text || '').toLowerCase();
-        
-        // Parse fraction (e.g. 16/240) if present to yield smooth progress bar movement
-        const match = text.match(/\((\d+)\/(\d+)\)/);
-        if (match) {
-            const current = parseInt(match[1], 10);
-            const total = parseInt(match[2], 10);
-            if (total > 0) {
-                const ratio = current / total;
-                if (lowerText.includes('vectorizing')) {
-                    return Math.round(80 + ratio * 15);
-                }
-            }
-        }
-
-        if (lowerText.includes('checking duplicates')) return 20;
-        if (lowerText.includes('connecting')) return 30;
-        if (lowerText.includes('uploading')) return 40;
-        if (lowerText.includes('parsing')) return 60;
-        if (lowerText.includes('extracting')) return 75;
-        if (lowerText.includes('vectorizing')) return 80;
-        return 50;
-    };
-
-    const handleUpload = async () => {
-        if (!file) return;
-        setUploading(true);
-        setJobStatus('queued');
-        setProgressPercent(10);
-        setProgressText('Uploading file to gateway...');
-        addLog(`Selected file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
-        addLog('Initiating secure file transfer...');
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const res = await ingestDocument(formData);
-
-            if (res.error) {
-                const errMsg = res.error || 'Upload to gateway failed';
-                setJobStatus('failed');
-                setProgressPercent(100);
-                setProgressText('Upload failed');
-                addLog(`Error: ${errMsg}`, 'error');
-                toast(errMsg, 'error');
-                setUploading(false);
-                return;
-            }
-
-            setJobId(res.job_id);
-            setJobStatus(res.status || 'queued');
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('active_ingest_job_id', res.job_id);
-                localStorage.setItem('active_ingest_filename', file.name);
-            }
-            addLog(`Ingestion job registered. Job ID: ${res.job_id}`);
-            addLog('Asynchronous worker thread started on droplet VM.');
-
-            startPolling(res.job_id);
-        } catch (err) {
-            const errMsg = 'Network communication failure during upload';
-            setJobStatus('failed');
-            setProgressPercent(100);
-            setProgressText('Upload failed');
-            addLog(`Error: ${errMsg}`, 'error');
-            toast(errMsg, 'error');
-            setUploading(false);
-        }
-    };
-
-    const startPolling = (id: string) => {
-        stopPolling();
-        let lastProgress = '';
-        let consecutiveErrors: number = 0;
-        const startTime = Date.now();
-        const timeoutMs = 15 * 60 * 1000; // 15 minutes -- large PDFs may take 10+ min for LlamaCloud + vectorization
-
-        pollIntervalRef.current = setInterval(async () => {
-            if (Date.now() - startTime > timeoutMs) {
-                stopPolling();
-                setUploading(false);
-                setJobStatus('failed');
-                setProgressPercent(100);
-                setProgressText('Ingestion timed out');
-                addLog('Error: Ingestion process timed out (server unresponsive or process terminated)', 'error');
-                toast('Ingestion timed out', 'error');
-                return;
-            }
-
-            try {
-                const data = await getIngestStatus(id);
-                if (data.error) {
-                    consecutiveErrors++;
-                    if (consecutiveErrors >= 3) {
-                        addLog(`Warning: Status polling degraded (${data.error}, retrying...)`, 'error');
-                    }
-                    return;
-                }
-                
-                consecutiveErrors = 0; // Reset consecutive errors on successful check
-
-                setJobStatus(data.status);
-                const progressMsg = data.progress || '';
-                setProgressText(progressMsg);
-
-                if (progressMsg && progressMsg !== lastProgress) {
-                    const logType = data.status === 'failed' ? 'error' : data.status === 'completed' ? 'success' : 'info';
-                    addLog(progressMsg, logType);
-                    lastProgress = progressMsg;
-                }
-
-                const calculatedPercent = estimateProgress(data.status, progressMsg);
-                setProgressPercent(calculatedPercent);
-
-                if (data.status === 'completed') {
-                    stopPolling();
-                    if (typeof window !== 'undefined') {
-                        localStorage.removeItem('active_ingest_job_id');
-                        localStorage.removeItem('active_ingest_filename');
-                    }
-                    setUploading(false);
-                    setProgressPercent(100);
-                    toast('Document ingestion completed successfully!', 'success');
-                } else if (data.status === 'failed') {
-                    stopPolling();
-                    if (typeof window !== 'undefined') {
-                        localStorage.removeItem('active_ingest_job_id');
-                        localStorage.removeItem('active_ingest_filename');
-                    }
-                    setUploading(false);
-                    setProgressPercent(100);
-                    const errorDetail = data.error_message || 'An error occurred during embedding generation';
-                    addLog(`Ingestion Error: ${errorDetail}`, 'error');
-                    toast('Document Ingestion Failed', 'error');
-                }
-            } catch (err) {
-                consecutiveErrors++;
-                if (consecutiveErrors >= 3) {
-                    addLog('Warning: Status polling degraded (Network failure, retrying...)', 'error');
-                }
-            }
-        }, 2000);
-    };
-
-    const handleCancelJob = async () => {
-        if (!jobId) return;
-        addLog('Sending cancellation request to Admin Service...', 'info');
-        try {
-            const res = await cancelIngestJob(jobId);
-            if (res.error) {
-                addLog(`Cancellation failed: ${res.error}`, 'error');
-                toast(`Failed to cancel: ${res.error}`, 'error');
-            } else {
-                addLog('Cancellation signal received by backend. Aborting...', 'info');
-                if (typeof window !== 'undefined') {
-                    localStorage.removeItem('active_ingest_job_id');
-                    localStorage.removeItem('active_ingest_filename');
-                }
-            }
-        } catch (err) {
-            addLog('Network failure sending cancellation signal', 'error');
-        }
-    };
-
-    const handleClose = () => {
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('active_ingest_job_id');
-            localStorage.removeItem('active_ingest_filename');
-        }
-        resetState();
-        onClose();
-    };
-
     if (!isOpen) return null;
+
+    const isActive = uploading && jobStatus && jobStatus !== 'completed' && jobStatus !== 'failed';
+    const isDone = jobStatus === 'completed' || jobStatus === 'failed';
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm font-sans">
@@ -350,9 +75,9 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     {/* File Upload Zone */}
                     {!file ? (
                         <div
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
+                            onDragOver={onDragOver}
+                            onDragLeave={onDragLeave}
+                            onDrop={onDrop}
                             onClick={() => fileInputRef.current?.click()}
                             className={cn(
                                 "flex flex-col items-center justify-center border border-dashed rounded-md p-8 text-center cursor-pointer transition-colors",
@@ -362,7 +87,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                             <input
                                 type="file"
                                 ref={fileInputRef}
-                                onChange={handleFileSelect}
+                                onChange={onFileSelect}
                                 accept=".pdf,.csv,.md,.txt"
                                 className="hidden"
                             />
@@ -383,15 +108,15 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                                 <p className="text-xs font-bold text-foreground truncate pr-6 select-all">{file.name}</p>
                                 <p className="text-[9px] text-muted-foreground tracking-tight">
                                     {(file.size / 1024).toFixed(1)} KB — {
-                                        file.name.endsWith('.pdf') ? 'PDF Manual' : 
-                                        file.name.endsWith('.csv') ? 'CSV Catalog' : 
+                                        file.name.endsWith('.pdf') ? 'PDF Manual' :
+                                        file.name.endsWith('.csv') ? 'CSV Catalog' :
                                         file.name.endsWith('.md') ? 'Markdown Doc' : 'Text Doc'
                                     }
                                 </p>
                             </div>
                             {!uploading && (
                                 <button
-                                    onClick={handleRemoveFile}
+                                    onClick={onRemoveFile}
                                     className="absolute right-4 top-4 text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors cursor-pointer"
                                     title="Remove file"
                                 >
@@ -456,16 +181,16 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 </div>
 
                 <div className="flex justify-end gap-3 border-t border-border pt-4">
-                    {uploading && jobStatus && jobStatus !== 'completed' && jobStatus !== 'failed' ? (
+                    {isActive ? (
                         <>
                             <button
-                                onClick={handleCancelJob}
+                                onClick={onCancelJob}
                                 className="h-8 border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 px-4 text-[10px] font-bold transition-colors cursor-pointer select-none rounded-md"
                             >
                                 Stop Ingestion
                             </button>
                             <button
-                                onClick={onClose}
+                                onClick={onMinimize}
                                 className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
                             >
                                 Minimize (Keep Running)
@@ -473,15 +198,15 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         </>
                     ) : (
                         <button
-                            onClick={handleClose}
+                            onClick={isDone ? onClose : onClose}
                             className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
                         >
-                            {jobStatus === 'completed' || jobStatus === 'failed' ? 'Close' : 'Cancel'}
+                            {isDone ? 'Close' : 'Cancel'}
                         </button>
                     )}
                     {!jobStatus && file && (
-                        <button 
-                            onClick={handleUpload} 
+                        <button
+                            onClick={onUpload}
                             disabled={uploading}
                             className="h-8 bg-[#223A5E] hover:bg-[#223A5E]/90 disabled:opacity-50 px-4 text-[10px] font-bold text-[#FAF8F5] transition-all cursor-pointer select-none flex items-center gap-1.5 rounded-md"
                         >
