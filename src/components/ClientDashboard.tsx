@@ -67,31 +67,32 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     }, []);
 
     const estimateProgress = (status: string, text: string) => {
-        if (status === 'queued') return 10;
+        if (status === 'queued') return 5;
         if (status === 'failed') return 100;
         if (status === 'completed') return 100;
 
-        const lowerText = (text || '').toLowerCase();
-
-        const match = text.match(/\((\d+)\/(\d+)\)/);
+        // Primary: extract (current/total) fraction emitted by the backend.
+        // Show the exact ratio so the bar is always in sync with vectorizing progress.
+        const match = text.match(/(\d+)\/(\d+)/);
         if (match) {
             const current = parseInt(match[1], 10);
             const total = parseInt(match[2], 10);
             if (total > 0) {
-                const ratio = current / total;
-                if (lowerText.includes('vectorizing')) {
-                    return Math.round(80 + ratio * 15);
-                }
+                // Clamp to 1-99 so the bar never shows 0% or premature 100%
+                return Math.min(99, Math.max(1, Math.round((current / total) * 100)));
             }
         }
 
-        if (lowerText.includes('checking duplicates')) return 20;
-        if (lowerText.includes('connecting')) return 30;
-        if (lowerText.includes('uploading')) return 40;
-        if (lowerText.includes('parsing')) return 60;
-        if (lowerText.includes('extracting')) return 75;
-        if (lowerText.includes('vectorizing')) return 80;
-        return 50;
+        // Fallback for pre-vectorizing status messages
+        const lowerText = (text || '').toLowerCase();
+        if (lowerText.includes('checking') || lowerText.includes('reading')) return 5;
+        if (lowerText.includes('connecting')) return 10;
+        if (lowerText.includes('uploading')) return 15;
+        if (lowerText.includes('parsing')) return 25;
+        if (lowerText.includes('extracting')) return 40;
+        if (lowerText.includes('resuming')) return 10;
+        if (lowerText.includes('vectorizing')) return 50;
+        return 10;
     };
 
     const stopIngestPolling = useCallback(() => {
