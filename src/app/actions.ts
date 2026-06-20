@@ -104,7 +104,8 @@ export async function getIngestStatus(jobId: string) {
     try {
         const jobStatus = await fetchFromAdminService(`/api/ingest/status/${jobId}`, { 
             method: 'GET',
-            cache: 'no-store'
+            cache: 'no-store',
+            timeout: 15000, // 15 seconds -- backend may be CPU-bound during embedding
         });
         return { success: true, ...jobStatus };
     } catch (error: any) {

@@ -118,12 +118,26 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         if (status === 'completed') return 100;
 
         const lowerText = (text || '').toLowerCase();
+        
+        // Parse fraction (e.g. 16/240) if present to yield smooth progress bar movement
+        const match = text.match(/\((\d+)\/(\d+)\)/);
+        if (match) {
+            const current = parseInt(match[1], 10);
+            const total = parseInt(match[2], 10);
+            if (total > 0) {
+                const ratio = current / total;
+                if (lowerText.includes('vectorizing')) {
+                    return Math.round(80 + ratio * 15);
+                }
+            }
+        }
+
         if (lowerText.includes('checking duplicates')) return 20;
         if (lowerText.includes('connecting')) return 30;
         if (lowerText.includes('uploading')) return 40;
         if (lowerText.includes('parsing')) return 60;
         if (lowerText.includes('extracting')) return 75;
-        if (lowerText.includes('vectorizing')) return 90;
+        if (lowerText.includes('vectorizing')) return 80;
         return 50;
     };
 
@@ -173,11 +187,33 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     const startPolling = (id: string) => {
         stopPolling();
         let lastProgress = '';
+        let consecutiveErrors: number = 0;
+        const startTime = Date.now();
+        const timeoutMs = 15 * 60 * 1000; // 15 minutes -- large PDFs may take 10+ min for LlamaCloud + vectorization
 
         pollIntervalRef.current = setInterval(async () => {
+            if (Date.now() - startTime > timeoutMs) {
+                stopPolling();
+                setUploading(false);
+                setJobStatus('failed');
+                setProgressPercent(100);
+                setProgressText('Ingestion timed out');
+                addLog('Error: Ingestion process timed out (server unresponsive or process terminated)', 'error');
+                toast('Ingestion timed out', 'error');
+                return;
+            }
+
             try {
                 const data = await getIngestStatus(id);
-                if (data.error) return;
+                if (data.error) {
+                    consecutiveErrors++;
+                    if (consecutiveErrors >= 3) {
+                        addLog(`Warning: Status polling degraded (${data.error}, retrying...)`, 'error');
+                    }
+                    return;
+                }
+                
+                consecutiveErrors = 0; // Reset consecutive errors on successful check
 
                 setJobStatus(data.status);
                 const progressMsg = data.progress || '';
@@ -195,16 +231,21 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 if (data.status === 'completed') {
                     stopPolling();
                     setUploading(false);
+                    setProgressPercent(100);
                     toast('Document ingestion completed successfully!', 'success');
                 } else if (data.status === 'failed') {
                     stopPolling();
                     setUploading(false);
+                    setProgressPercent(100);
                     const errorDetail = data.error_message || 'An error occurred during embedding generation';
                     addLog(`Ingestion Error: ${errorDetail}`, 'error');
                     toast('Document Ingestion Failed', 'error');
                 }
             } catch (err) {
-                // Fail silently and retry on next tick
+                consecutiveErrors++;
+                if (consecutiveErrors >= 3) {
+                    addLog('Warning: Status polling degraded (Network failure, retrying...)', 'error');
+                }
             }
         }, 2000);
     };
