@@ -209,6 +209,11 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         }, 2000);
     };
 
+    const handleClose = () => {
+        resetState();
+        onClose();
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -332,8 +337,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
                 <div className="flex justify-end gap-3 border-t border-border pt-4">
                     <button
-                        onClick={onClose}
-                        disabled={uploading}
+                        onClick={handleClose}
                         className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
                     >
                         {jobStatus === 'completed' ? 'Close' : 'Cancel'}
