@@ -26,6 +26,7 @@ interface UploadModalProps {
     jobStatus: string | null;
     progressText: string;
     progressPercent: number;
+    etaText?: string;
     logs: Log[];
 
     // Actions
@@ -48,6 +49,7 @@ export default function UploadModal({
     jobStatus,
     progressText,
     progressPercent,
+    etaText = '',
     logs,
     onUpload,
     onCancelJob,
@@ -133,19 +135,24 @@ export default function UploadModal({
                         <div className="space-y-3">
                             <div className="flex justify-between text-[10px] font-bold">
                                 <span className={cn(
-                                    "truncate max-w-[80%]",
+                                    "truncate max-w-[65%]",
                                     jobStatus === 'completed' && "text-emerald-800",
                                     jobStatus === 'failed' && "text-rose-800",
                                     jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-800"
                                 )}>
                                     {progressText || 'Ingestion queued...'}
                                 </span>
-                                <span className={cn(
-                                    "font-mono",
-                                    jobStatus === 'completed' && "text-emerald-800",
-                                    jobStatus === 'failed' && "text-rose-800",
-                                    jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-800"
-                                )}>{progressPercent}%</span>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    {etaText && isActive && (
+                                        <span className="text-muted-foreground/80 font-normal mr-1">{etaText}</span>
+                                    )}
+                                    <span className={cn(
+                                        "font-mono",
+                                        jobStatus === 'completed' && "text-emerald-800",
+                                        jobStatus === 'failed' && "text-rose-800",
+                                        jobStatus !== 'completed' && jobStatus !== 'failed' && "text-blue-800"
+                                    )}>{progressPercent}%</span>
+                                </div>
                             </div>
                             <div className="h-2 w-full bg-background border border-border overflow-hidden rounded-full">
                                 <div

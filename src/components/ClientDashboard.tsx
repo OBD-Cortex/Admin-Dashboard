@@ -54,8 +54,37 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
     const [ingestProgressText, setIngestProgressText] = useState('');
     const [ingestProgressPercent, setIngestProgressPercent] = useState(0);
     const [ingestLogs, setIngestLogs] = useState<Log[]>([]);
+    const [ingestEta, setIngestEta] = useState<number | 'calculating' | null>(null);
+
+    const vectorizeStartRef = useRef<number | null>(null);
+    const vectorizeInitialRef = useRef<number | null>(null);
+    const vectorizeTotalRef = useRef<number | null>(null);
 
     const ingestPollRef = useRef<NodeJS.Timeout | null>(null);
+
+    const formatEta = (eta: number | 'calculating' | null, short = false): string => {
+        if (eta === null) return '';
+        if (eta === 'calculating') return short ? 'calc...' : 'Calculating ETA...';
+        if (eta <= 0) return 'Almost done';
+
+        const totalSeconds = Math.round(eta);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        if (short) {
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            if (minutes > 0) return `${minutes}m`;
+            return `${seconds}s`;
+        }
+
+        const parts: string[] = [];
+        if (hours > 0) parts.push(`${hours}h`);
+        if (minutes > 0 || hours > 0) parts.push(`${minutes}m`);
+        parts.push(`${seconds}s`);
+
+        return `ETA: ~${parts.join(' ')}`;
+    };
 
     const getTimestamp = () => {
         const now = new Date();
@@ -100,6 +129,10 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
             clearInterval(ingestPollRef.current);
             ingestPollRef.current = null;
         }
+        vectorizeStartRef.current = null;
+        vectorizeInitialRef.current = null;
+        vectorizeTotalRef.current = null;
+        setIngestEta(null);
     }, []);
 
     const startIngestPolling = useCallback((id: string) => {
@@ -158,6 +191,41 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                 const calculatedPercent = estimateProgress(data.status, progressMsg);
                 setIngestProgressPercent(calculatedPercent);
 
+                // ETA calculation
+                const match = progressMsg.match(/(\d+)\/(\d+)/);
+                if (match) {
+                    const current = parseInt(match[1], 10);
+                    const total = parseInt(match[2], 10);
+                    if (total > 0 && current > 0) {
+                        const now = Date.now();
+                        if (
+                            !vectorizeStartRef.current ||
+                            vectorizeTotalRef.current !== total ||
+                            vectorizeInitialRef.current === null ||
+                            vectorizeInitialRef.current > current
+                        ) {
+                            vectorizeStartRef.current = now;
+                            vectorizeInitialRef.current = current;
+                            vectorizeTotalRef.current = total;
+                        }
+
+                        const elapsedSec = (now - vectorizeStartRef.current) / 1000;
+                        const processedSinceStart = current - vectorizeInitialRef.current;
+
+                        if (elapsedSec > 2 && processedSinceStart > 0) {
+                            const rate = processedSinceStart / elapsedSec;
+                            const remaining = total - current;
+                            setIngestEta(remaining / rate);
+                        } else {
+                            setIngestEta('calculating');
+                        }
+                    } else {
+                        setIngestEta(null);
+                    }
+                } else {
+                    setIngestEta(null);
+                }
+
                 if (data.status === 'completed') {
                     stopIngestPolling();
                     if (typeof window !== 'undefined') {
@@ -193,7 +261,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                     }]);
                 }
             }
-        }, 2000);
+        }, 5000);
     }, [stopIngestPolling, toast]);
 
     // Resume polling for an active job stored in localStorage on first mount
@@ -462,6 +530,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                         ingestActive={isIngestActive}
                         ingestProgressPercent={ingestProgressPercent}
                         ingestJobStatus={ingestJobStatus}
+                        ingestEtaText={formatEta(ingestEta, true)}
                     />
                     <DeviceTable
                         devices={initialDevices}
@@ -507,6 +576,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                 jobStatus={ingestJobStatus}
                 progressText={ingestProgressText}
                 progressPercent={ingestProgressPercent}
+                etaText={formatEta(ingestEta, false)}
                 logs={ingestLogs}
                 onUpload={handleIngestUpload}
                 onCancelJob={handleCancelIngestJob}

@@ -20,6 +20,7 @@ interface ActionBarProps {
     ingestActive?: boolean;
     ingestProgressPercent?: number;
     ingestJobStatus?: string | null;
+    ingestEtaText?: string;
 }
 
 export default function ActionBar({
@@ -30,6 +31,7 @@ export default function ActionBar({
     ingestActive = false,
     ingestProgressPercent = 0,
     ingestJobStatus = null,
+    ingestEtaText = '',
 }: ActionBarProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -186,7 +188,7 @@ export default function ActionBar({
                         )}
                         <span>
                             {ingestActive
-                                ? `Ingesting ${ingestProgressPercent}%`
+                                ? `Ingesting ${ingestProgressPercent}%${ingestEtaText ? ` (${ingestEtaText})` : ''}`
                                 : ingestCompleted
                                 ? 'Ingestion Done'
                                 : ingestFailed
