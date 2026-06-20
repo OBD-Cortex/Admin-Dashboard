@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/components/Toast';
-import { ingestDocument, getIngestStatus } from '@/app/actions';
+import { ingestDocument, getIngestStatus, cancelIngestJob } from '@/app/actions';
 import { cn } from '@/lib/utils';
 
 interface Log {
@@ -33,12 +33,55 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
     useEffect(() => {
         if (isOpen) {
-            resetState();
+            checkActiveJob();
         } else {
             stopPolling();
         }
         return () => stopPolling();
     }, [isOpen]);
+
+    const checkActiveJob = async () => {
+        if (typeof window === 'undefined') return;
+        const savedJobId = localStorage.getItem('active_ingest_job_id');
+        const savedFilename = localStorage.getItem('active_ingest_filename');
+        if (savedJobId) {
+            setJobId(savedJobId);
+            setUploading(true);
+            setJobStatus('processing');
+            setProgressPercent(10);
+            setProgressText('Resuming active ingestion monitoring...');
+            setLogs([
+                {
+                    timestamp: getTimestamp(),
+                    text: `Reconnected to job ${savedJobId} (${savedFilename || 'Unknown file'})`,
+                    type: 'info'
+                }
+            ]);
+            try {
+                const data = await getIngestStatus(savedJobId);
+                if (!data.error) {
+                    setJobStatus(data.status);
+                    const progressMsg = data.progress || '';
+                    setProgressText(progressMsg);
+                    const calculatedPercent = estimateProgress(data.status, progressMsg);
+                    setProgressPercent(calculatedPercent);
+                    addLog(`Current status: ${data.status} — ${progressMsg}`);
+                    
+                    if (data.status === 'completed' || data.status === 'failed') {
+                        localStorage.removeItem('active_ingest_job_id');
+                        localStorage.removeItem('active_ingest_filename');
+                        setUploading(false);
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Ignore initial load error, polling will retry
+            }
+            startPolling(savedJobId);
+        } else {
+            resetState();
+        }
+    };
 
     const resetState = () => {
         setFile(null);
@@ -169,6 +212,10 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
             setJobId(res.job_id);
             setJobStatus(res.status || 'queued');
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('active_ingest_job_id', res.job_id);
+                localStorage.setItem('active_ingest_filename', file.name);
+            }
             addLog(`Ingestion job registered. Job ID: ${res.job_id}`);
             addLog('Asynchronous worker thread started on droplet VM.');
 
@@ -230,11 +277,19 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
                 if (data.status === 'completed') {
                     stopPolling();
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('active_ingest_job_id');
+                        localStorage.removeItem('active_ingest_filename');
+                    }
                     setUploading(false);
                     setProgressPercent(100);
                     toast('Document ingestion completed successfully!', 'success');
                 } else if (data.status === 'failed') {
                     stopPolling();
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('active_ingest_job_id');
+                        localStorage.removeItem('active_ingest_filename');
+                    }
                     setUploading(false);
                     setProgressPercent(100);
                     const errorDetail = data.error_message || 'An error occurred during embedding generation';
@@ -250,7 +305,31 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         }, 2000);
     };
 
+    const handleCancelJob = async () => {
+        if (!jobId) return;
+        addLog('Sending cancellation request to Admin Service...', 'info');
+        try {
+            const res = await cancelIngestJob(jobId);
+            if (res.error) {
+                addLog(`Cancellation failed: ${res.error}`, 'error');
+                toast(`Failed to cancel: ${res.error}`, 'error');
+            } else {
+                addLog('Cancellation signal received by backend. Aborting...', 'info');
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('active_ingest_job_id');
+                    localStorage.removeItem('active_ingest_filename');
+                }
+            }
+        } catch (err) {
+            addLog('Network failure sending cancellation signal', 'error');
+        }
+    };
+
     const handleClose = () => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('active_ingest_job_id');
+            localStorage.removeItem('active_ingest_filename');
+        }
         resetState();
         onClose();
     };
@@ -377,12 +456,29 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 </div>
 
                 <div className="flex justify-end gap-3 border-t border-border pt-4">
-                    <button
-                        onClick={handleClose}
-                        className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
-                    >
-                        {jobStatus === 'completed' ? 'Close' : 'Cancel'}
-                    </button>
+                    {uploading && jobStatus && jobStatus !== 'completed' && jobStatus !== 'failed' ? (
+                        <>
+                            <button
+                                onClick={handleCancelJob}
+                                className="h-8 border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 px-4 text-[10px] font-bold transition-colors cursor-pointer select-none rounded-md"
+                            >
+                                Stop Ingestion
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
+                            >
+                                Minimize (Keep Running)
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={handleClose}
+                            className="h-8 border border-border bg-background hover:bg-muted px-4 text-[10px] font-bold text-foreground transition-colors cursor-pointer select-none rounded-md"
+                        >
+                            {jobStatus === 'completed' || jobStatus === 'failed' ? 'Close' : 'Cancel'}
+                        </button>
+                    )}
                     {!jobStatus && file && (
                         <button 
                             onClick={handleUpload} 

@@ -114,6 +114,18 @@ export async function getIngestStatus(jobId: string) {
     }
 }
 
+export async function cancelIngestJob(jobId: string) {
+    try {
+        const cancelResult = await fetchFromAdminService(`/api/ingest/cancel/${jobId}`, { 
+            method: 'POST',
+        });
+        return { success: true, ...cancelResult };
+    } catch (error: any) {
+        console.error('[Actions] cancelIngestJob error:', error.stack || error);
+        return { error: error.message || 'Failed to cancel ingestion job' };
+    }
+}
+
 export async function login(password: string) {
     try {
         if (!password) {
