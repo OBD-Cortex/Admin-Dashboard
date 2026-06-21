@@ -261,7 +261,7 @@ export default function ClientDashboard({ initialStats, initialDevices }: Client
                     }]);
                 }
             }
-        }, 5000);
+        }, 10000);
     }, [stopIngestPolling, toast]);
 
     // Resume polling for an active job stored in localStorage on first mount
